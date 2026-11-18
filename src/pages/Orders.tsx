@@ -50,6 +50,17 @@ export default function Orders() {
 
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [notifyShip, setNotifyShip] = useState(true);
+  const [tracking, setTracking] = useState("");
+  const canEmail = s.emailStatus === "verified" && s.emailShipping !== false;
+  const fulfil = async (o: Order) => {
+    await setStatus(o, { fulfillmentStatus: "fulfilled" });
+    if (canEmail && notifyShip && o.customerEmail) {
+      try { await ops("/email/order", { site: s, order: o, tracking: tracking.trim() || undefined }); }
+      catch (e: any) { setActionError(`Order marked fulfilled, but the shipping email failed: ${e.message}`); }
+    }
+    setTracking("");
+  };
   const setStatus = async (o: Order, patch: Partial<Order>) => {
     setBusy(true); setActionError(null);
     try { const next = await update("orders", o.$id, patch); setSelected(next); reload(); }
@@ -103,7 +114,7 @@ export default function Orders() {
           {selected.financialStatus === "pending" && <Button disabled={busy} onClick={() => setStatus(selected, { financialStatus: "paid" })}>Mark as paid</Button>}
           {selected.financialStatus === "paid" && <Button variant="ghost" disabled={busy} onClick={() => refund(selected)}>Refund</Button>}
           {selected.fulfillmentStatus === "unfulfilled" && <Button variant="ghost" onClick={() => setStatus(selected, { fulfillmentStatus: "cancelled" })}>Cancel</Button>}
-          {selected.fulfillmentStatus === "unfulfilled" && <Button variant="primary" loading={busy} onClick={() => setStatus(selected, { fulfillmentStatus: "fulfilled" })}>Mark fulfilled</Button>}
+          {selected.fulfillmentStatus === "unfulfilled" && <Button variant="primary" loading={busy} onClick={() => fulfil(selected)}>Mark fulfilled</Button>}
         </>}>
         {selected && <>
           {actionError && <ErrorBox error={actionError} />}
@@ -111,6 +122,12 @@ export default function Orders() {
           <div className="text-sm text-zinc-600">Paid via <strong>{providerLabel[selected.paymentProvider ?? "manual"]}</strong>
             {paymentLink(selected) && <> · <a className="underline" href={paymentLink(selected)!} target="_blank" rel="noreferrer">view payment</a></>}</div>
           <div className="text-sm"><div className="font-medium">{selected.customerName}</div><div className="text-zinc-500">{selected.customerEmail}</div></div>
+          {selected.fulfillmentStatus === "unfulfilled" && (canEmail ? (
+            <div className="space-y-2 rounded-lg bg-zinc-50 p-3 text-sm">
+              <label className="flex items-center gap-2"><input type="checkbox" checked={notifyShip} onChange={e => setNotifyShip(e.target.checked)} />Email {selected.customerEmail || "the customer"} when marked fulfilled</label>
+              {notifyShip && <Input placeholder="Tracking number or link (optional)" value={tracking} onChange={e => setTracking(e.target.value)} />}
+            </div>
+          ) : <p className="text-xs text-zinc-500">Shipping emails are off. <a className="underline" href="/settings#email">Set up email</a> to notify customers.</p>)}
           <ul className="divide-y divide-zinc-100 rounded-lg border border-zinc-200 text-sm">
             {selected.items.map((li, i) => <li key={i} className="flex justify-between px-3 py-2"><span>{li.quantity} × {li.title}</span><span className="tabular-nums">{money(li.price * li.quantity, s.currency)}</span></li>)}
             <li className="flex justify-between px-3 py-2 font-semibold"><span>Total</span><span>{money(selected.total, s.currency)}</span></li>

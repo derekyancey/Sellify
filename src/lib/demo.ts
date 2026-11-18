@@ -10,7 +10,9 @@ const ago = (days: number) => new Date(Date.now() - days * 864e5 - rand() * 864e
 export function buildDemo() {
   seed = 42;
   const sites: Site[] = [
-    { $id: "site_coffee", $createdAt: ago(200), name: "Northline Coffee", domain: "northlinecoffee.com", currency: "USD", cloudflareZoneId: "demo-zone-1", netlifySiteId: "demo-netlify-1", gscProperty: "sc-domain:northlinecoffee.com", ga4PropertyId: "123456789" },
+    { $id: "site_coffee", $createdAt: ago(200), name: "Northline Coffee", domain: "northlinecoffee.com", currency: "USD", cloudflareZoneId: "demo-zone-1", netlifySiteId: "demo-netlify-1", gscProperty: "sc-domain:northlinecoffee.com", ga4PropertyId: "123456789",
+      ownerEmail: "owner@example.com", senderName: "Northline Coffee", senderAddress: "orders@northlinecoffee.com", emailDomainId: "demo-dom-1", emailStatus: "verified",
+      emailReceipts: true, emailOwnerAlerts: true, emailShipping: true },
     { $id: "site_candles", $createdAt: ago(120), name: "Ember & Wick", domain: "emberandwick.shop", currency: "USD", cloudflareZoneId: "demo-zone-2", netlifySiteId: "demo-netlify-2", gscProperty: "sc-domain:emberandwick.shop", ga4PropertyId: "987654321" },
   ];
   const catalog: Record<string, [string, number][]> = {
@@ -66,8 +68,12 @@ const series = (days: number, base: number, spread: number) =>
 export function demoOps(path: string, body: any): any {
   const domain = body?.domain || String(body?.property || "").replace(/^sc-domain:/, "").replace(/^https?:\/\//, "").replace(/\/$/, "") || "example.com";
   switch (path) {
+    case "/email/setup": return { domainId: "demo-dom-" + id().slice(0, 5), status: "pending", addedToCloudflare: ["TXT resend._domainkey", "MX send", "TXT send"], alreadyPresent: [], records: demoEmailRecords(domain, "pending") };
+    case "/email/status": return { status: "verified", records: demoEmailRecords(domain, "verified") };
+    case "/email/test": return { ok: true, id: "em_demo", to: body.site?.ownerEmail };
+    case "/email/order": return { ok: true, id: "em_demo" };
     case "/payments/refund": return { ok: true, refundId: "re_demo", status: "succeeded" };
-    case "/health": return { ok: true, integrations: { cloudflare: true, netlify: true, google: true, stripe: true, paypal: true }, serviceAccountEmail: "sellify@your-project.iam.gserviceaccount.com" };
+    case "/health": return { ok: true, integrations: { cloudflare: true, netlify: true, google: true, stripe: true, paypal: true, email: true }, serviceAccountEmail: "sellify@your-project.iam.gserviceaccount.com" };
     case "/cloudflare/zone": return { id: body.zoneId, name: domain, status: "active", name_servers: ["ada.ns.cloudflare.com", "rob.ns.cloudflare.com"], original_name_servers: ["dns1.registrar-servers.com", "dns2.registrar-servers.com"], plan: { name: "Free Website" } };
     case "/cloudflare/zones/find": return { zones: [] };
     case "/cloudflare/zones/create": return { zone: { id: "demo-zone-" + id().slice(0, 6), status: "pending", name_servers: ["ada.ns.cloudflare.com", "rob.ns.cloudflare.com"] } };
@@ -111,6 +117,14 @@ export function demoOps(path: string, body: any): any {
     case "/seo/crawl": return demoCrawl(domain);
     default: throw new Error(`Demo mode has no mock for ${path}`);
   }
+}
+
+function demoEmailRecords(domain: string, status: string) {
+  return [
+    { type: "TXT", name: `resend._domainkey.${domain}`, value: "p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDdemo…", status, purpose: "DKIM" },
+    { type: "MX", name: `send.${domain}`, value: "feedback-smtp.us-east-1.amazonses.com", priority: 10, status, purpose: "SPF" },
+    { type: "TXT", name: `send.${domain}`, value: "v=spf1 include:amazonses.com ~all", status, purpose: "SPF" },
+  ];
 }
 
 function demoCrawl(domain: string) {

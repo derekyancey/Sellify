@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Circle } from "lucide-react";
 import { useSite } from "../context/Site";
 import { list, ops } from "../lib/data";
 import { useAsync } from "../lib/useAsync";
 import { date, daysAgo, money, num, ymd } from "../lib/format";
 import { Badge, Card, Loading, PageHeader, Stat, Table, Td } from "../components/ui";
+import type { Site } from "../lib/types";
 import { FinStatus, FulStatus } from "./Orders";
 
 export default function HomePage() {
@@ -44,6 +45,7 @@ export default function HomePage() {
   return (
     <>
       <PageHeader title={`Welcome back`} subtitle={`${s.name} · last 30 days`} />
+      <SetupChecklist site={s} />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label="Revenue" value={money(revenue, s.currency)} sub={`${paid.length} paid orders`} />
         <Stat label="Orders" value={num(recent.length)} sub={`${toFulfill.length} to fulfill`} />
@@ -96,5 +98,34 @@ export default function HomePage() {
       </Card>
       {!s.ga4PropertyId && !s.gscProperty && <p className="mt-4 text-xs text-zinc-500">Tip: connect Google Analytics and Search Console in <Link className="underline" to="/settings">settings</Link> to see traffic here. <Badge tone="blue">free</Badge></p>}
     </>
+  );
+}
+
+function SetupChecklist({ site }: { site: Site }) {
+  const health = useAsync(() => ops("/health").catch(() => null), []);
+  const payments = !!(health.data?.integrations?.stripe || health.data?.integrations?.paypal);
+  const steps = [
+    { label: "Confirm your email and verify your sending domain", done: site.emailStatus === "verified" && !!site.ownerEmail, to: "/settings#email" },
+    { label: "Connect the domain to Cloudflare", done: !!site.cloudflareZoneId, to: "/settings" },
+    { label: "Connect Netlify hosting", done: !!site.netlifySiteId, to: "/settings" },
+    { label: "Connect Google Analytics and Search Console", done: !!(site.ga4PropertyId && site.gscProperty), to: "/settings" },
+    { label: "Turn on payments (Stripe / PayPal)", done: payments, to: "/settings" },
+  ];
+  const done = steps.filter(x => x.done).length;
+  if (health.loading || done === steps.length) return null;
+  return (
+    <Card title={`Finish setting up ${site.name}`} actions={<span className="text-sm text-zinc-500">{done} of {steps.length} done</span>} className="mb-4">
+      <div className="mb-3 h-1.5 overflow-hidden rounded-full bg-zinc-100"><div className="h-full bg-brand-500" style={{ width: `${(done / steps.length) * 100}%` }} /></div>
+      <ul className="space-y-1.5 text-sm">
+        {steps.map(x => (
+          <li key={x.label}>
+            <Link to={x.to} className="flex items-center gap-2 hover:underline">
+              {x.done ? <CheckCircle2 className="size-4 text-emerald-600" /> : <Circle className="size-4 text-zinc-300" />}
+              <span className={x.done ? "text-zinc-400 line-through" : ""}>{x.label}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </Card>
   );
 }

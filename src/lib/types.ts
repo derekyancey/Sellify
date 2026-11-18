@@ -8,7 +8,17 @@ export interface Site extends Base {
   netlifySiteId?: string;
   gscProperty?: string;        // e.g. sc-domain:example.com or https://example.com/
   ga4PropertyId?: string;      // numeric GA4 property id
+  // Email (Resend). Nothing is sent until ownerEmail is set and emailStatus is "verified".
+  ownerEmail?: string;         // where order alerts go + reply-to for customer emails
+  senderName?: string;         // "Northline Coffee"
+  senderAddress?: string;      // orders@northlinecoffee.com
+  emailDomainId?: string;
+  emailStatus?: EmailStatus;
+  emailReceipts?: boolean;
+  emailOwnerAlerts?: boolean;
+  emailShipping?: boolean;
 }
+export type EmailStatus = "none" | "pending" | "verified" | "failed";
 
 export type ProductStatus = "active" | "draft" | "archived";
 export interface Product extends Base {

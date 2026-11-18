@@ -10,11 +10,13 @@ Routes (all POST with a JSON body, called via functions.createExecution from the
   /google/ga4 | /google/gsc | /google/gsc/sitemaps | /google/gsc/submit-sitemap
   /seo/crawl
   /payments/refund
+  /email/setup | /email/status | /email/test | /email/order
 
 Secrets are function environment variables, never sent to the browser:
   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID (only for "add zone"),
   NETLIFY_AUTH_TOKEN, GOOGLE_SERVICE_ACCOUNT_JSON, ADMIN_TEAM_ID,
-  STRIPE_SECRET_KEY, PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_ENV (for refunds)
+  STRIPE_SECRET_KEY, PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_ENV (for refunds),
+  RESEND_API_KEY (email)
 """
 import json
 import os
@@ -25,6 +27,7 @@ import requests
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # works however the runtime loads this file
 import crawler  # noqa: E402
+import emails  # noqa: E402
 import google_apis  # noqa: E402
 from errors import HttpError  # noqa: E402
 
@@ -127,6 +130,7 @@ def health(_):
             "google": bool(email),
             "stripe": bool(os.environ.get("STRIPE_SECRET_KEY")),
             "paypal": bool(os.environ.get("PAYPAL_CLIENT_ID") and os.environ.get("PAYPAL_CLIENT_SECRET")),
+            "email": bool(os.environ.get("RESEND_API_KEY")),
         },
         "serviceAccountEmail": email,
     }
@@ -284,6 +288,80 @@ def payments_refund(b):
     raise HttpError(f"Can't refund provider '{provider}' automatically")
 
 
+# --------------------------------------------------------------------------- email (Resend)
+def _email_records(domain, d):
+    out = []
+    for r in d.get("records", []):
+        name = r.get("name") or ""
+        full = domain if name in ("", "@") else (name if name.endswith(domain) else f"{name}.{domain}")
+        out.append({"type": r.get("type"), "name": full, "value": r.get("value"), "priority": r.get("priority"),
+                    "status": r.get("status"), "purpose": r.get("record")})
+    return out
+
+
+def _status(d):
+    s = d.get("status") or "pending"
+    return "verified" if s == "verified" else "failed" if s == "failed" else "pending"
+
+
+def email_setup(b):
+    """Register the site's domain with Resend and publish its DNS records to Cloudflare."""
+    (domain,) = need(b, "domain")
+    existing = next((d for d in emails.resend("GET", "/domains").get("data", []) if d.get("name") == domain), None)
+    d = emails.resend("GET", f"/domains/{existing['id']}") if existing else emails.resend("POST", "/domains", {"name": domain})
+    records = _email_records(domain, d)
+    added, skipped = [], []
+    if b.get("zoneId"):
+        current = cf("GET", f"/zones/{b['zoneId']}/dns_records", params={"per_page": 500})
+        have = {(r["type"], r["name"].lower(), r["content"].strip('"')) for r in current}
+        for r in records:
+            key = (r["type"], r["name"].lower(), (r["value"] or "").strip('"'))
+            if key in have:
+                skipped.append(r["name"]); continue
+            rec = {"type": r["type"], "name": r["name"], "content": r["value"], "ttl": 1}
+            if r["type"] == "MX":
+                rec["priority"] = int(r.get("priority") or 10)
+            cf("POST", f"/zones/{b['zoneId']}/dns_records", json=rec)
+            added.append(f"{r['type']} {r['name']}")
+    try:
+        emails.resend("POST", f"/domains/{d['id']}/verify")
+    except HttpError:
+        pass  # verification is retried by Resend; status shows the result
+    return {"domainId": d["id"], "status": _status(d), "records": records, "addedToCloudflare": added, "alreadyPresent": skipped}
+
+
+def email_status(b):
+    domain_id, domain = need(b, "domainId", "domain")
+    d = emails.resend("GET", f"/domains/{domain_id}")
+    if _status(d) != "verified":
+        try:
+            emails.resend("POST", f"/domains/{domain_id}/verify")
+        except HttpError:
+            pass
+    return {"status": _status(d), "records": _email_records(domain, d)}
+
+
+def email_test(b):
+    (site,) = need(b, "site")
+    if not site.get("ownerEmail") or not site.get("senderAddress"):
+        raise HttpError("Enter your email and sender address first")
+    subject, body_html, text = emails.test_email(site)
+    res = emails.send(site, site["ownerEmail"], subject, body_html, text)
+    return {"ok": True, "id": res.get("id"), "to": site["ownerEmail"]}
+
+
+def email_order(b):
+    """Customer notifications sent from the dashboard (currently: shipped)."""
+    site, order = need(b, "site", "order")
+    if not emails.can_send(site):
+        raise HttpError("Finish email setup for this site first (Settings → Email)", 409)
+    if not order.get("customerEmail"):
+        raise HttpError("This order has no customer email")
+    subject, body_html, text = emails.order_shipped(site, order, b.get("tracking"))
+    res = emails.send(site, order["customerEmail"], subject, body_html, text, idempotency_key=f"shipped-{order.get('$id')}")
+    return {"ok": True, "id": res.get("id")}
+
+
 ROUTES = {
     "/health": health,
     "/cloudflare/zone": cf_zone,
@@ -305,6 +383,10 @@ ROUTES = {
     "/google/gsc/submit-sitemap": gsc_submit,
     "/seo/crawl": seo_crawl,
     "/payments/refund": payments_refund,
+    "/email/setup": email_setup,
+    "/email/status": email_status,
+    "/email/test": email_test,
+    "/email/order": email_order,
 }
 
 

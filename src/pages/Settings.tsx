@@ -6,6 +6,7 @@ import { create, ops, remove, resetDemo, update } from "../lib/data";
 import { config, isDemo } from "../lib/appwrite";
 import { useAsync } from "../lib/useAsync";
 import type { Site } from "../lib/types";
+import EmailSetup from "./EmailSetup";
 import { Button, Card, ErrorBox, Field, Input, Loading, PageHeader, Select, Table, Td } from "../components/ui";
 
 type Draft = Omit<Site, "$id" | "$createdAt"> & { $id?: string };
@@ -16,6 +17,9 @@ export default function SettingsPage() {
   const [params, setParams] = useSearchParams();
   const [editing, setEditing] = useState<Draft | null>(params.get("new") ? { ...blank } : null);
   useEffect(() => { if (params.get("new")) setEditing({ ...blank }); }, [params]);
+  useEffect(() => {
+    if (location.hash) setTimeout(() => document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: "smooth" }), 150);
+  }, []);
 
   return (
     <>
@@ -38,6 +42,7 @@ export default function SettingsPage() {
             ))}
           </Table>
         </Card>
+        {site && <EmailSetup site={site} />}
         {site && <SellOnSite site={site} />}
         <IntegrationStatus />
         {isDemo && (
@@ -129,6 +134,7 @@ function IntegrationStatus() {
     ["google", "Google (Search Console + GA4)", "GOOGLE_SERVICE_ACCOUNT_JSON"],
     ["stripe", "Stripe (cards, Apple Pay, Google Pay)", "STRIPE_SECRET_KEY on both functions, and STRIPE_WEBHOOK_SECRET on checkout"],
     ["paypal", "PayPal", "PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET and PAYPAL_ENV on both functions"],
+    ["email", "Email (Resend)", "RESEND_API_KEY on both functions"],
   ] as const;
   return (
     <Card title="Integration status">
@@ -137,7 +143,7 @@ function IntegrationStatus() {
           {items.map(([k, label, env]) => (
             <li key={k} className="flex items-start gap-2">
               {data.integrations[k] ? <CheckCircle2 className="mt-0.5 size-4 text-emerald-600" /> : <XCircle className="mt-0.5 size-4 text-red-500" />}
-              <div><div className="font-medium">{label}</div>{!data.integrations[k] && <div className="text-zinc-500">Set <code>{env}</code>{k === "stripe" || k === "paypal" ? "" : " on the site-ops function"}.</div>}</div>
+              <div><div className="font-medium">{label}</div>{!data.integrations[k] && <div className="text-zinc-500">Set <code>{env}</code>{k === "stripe" || k === "paypal" || k === "email" ? "" : " on the site-ops function"}.</div>}</div>
             </li>
           ))}
           {data.serviceAccountEmail && <li className="rounded-lg bg-zinc-50 p-2 text-zinc-600">Add <code className="font-semibold text-zinc-900">{data.serviceAccountEmail}</code> as a user in each GA4 property (Viewer) and Search Console property (Full).</li>}

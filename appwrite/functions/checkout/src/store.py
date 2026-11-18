@@ -96,12 +96,12 @@ class Store:
         customer_id = self._upsert_customer(site_id, email, name, float(a(co, "total"))) if email else None
         last = self.db.list_rows(DB, "orders", queries=[Query.equal("siteId", site_id), Query.order_desc("number"), Query.limit(1)])
         number = (a(last.rows[0], "number") if last.rows else 1000) + 1
+        items = [{k: l[k] for k in ("productId", "title", "quantity", "price")} for l in lines]
+        order = {"siteId": site_id, "number": number, "customerId": customer_id, "customerName": name, "customerEmail": email,
+                 "items": json.dumps(items), "total": float(a(co, "total")), "financialStatus": "paid",
+                 "fulfillmentStatus": "unfulfilled", "paymentProvider": provider, "paymentRef": payment_ref}
         try:
-            self.db.create_row(DB, "orders", checkout_id, {
-                "siteId": site_id, "number": number, "customerId": customer_id, "customerName": name, "customerEmail": email,
-                "items": json.dumps([{k: l[k] for k in ("productId", "title", "quantity", "price")} for l in lines]),
-                "total": float(a(co, "total")), "financialStatus": "paid", "fulfillmentStatus": "unfulfilled",
-                "paymentProvider": provider, "paymentRef": payment_ref})
+            self.db.create_row(DB, "orders", checkout_id, order)
         except AppwriteException as e:
             if e.code == 409:  # a concurrent webhook/capture already created it
                 return {"orderId": checkout_id, "duplicate": True}
@@ -112,7 +112,7 @@ class Store:
             except AppwriteException:
                 pass  # product deleted since checkout; the order still stands
         self.db.update_row(DB, "checkouts", checkout_id, {"status": "completed", "providerRef": payment_ref})
-        return {"orderId": checkout_id, "number": number}
+        return {"orderId": checkout_id, "number": number, "_order": {**order, "$id": checkout_id, "items": items}}
 
     def _upsert_customer(self, site_id, email, name, total):
         found = self.db.list_rows(DB, "customers", queries=[Query.equal("siteId", site_id), Query.equal("email", email), Query.limit(1)])

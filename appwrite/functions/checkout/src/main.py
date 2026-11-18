@@ -9,7 +9,8 @@ checkout: PUBLIC Appwrite Function your storefronts call to take payments.
 
 Prices, stock and currency are always read from Appwrite, never from the browser.
 Env: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_ENV (sandbox|live),
-     SHIP_TO_COUNTRIES (optional, e.g. "US,CA"), ALLOWED_RETURN_HOSTS (optional extra hosts for redirect URLs)
+     SHIP_TO_COUNTRIES (optional, e.g. "US,CA"), ALLOWED_RETURN_HOSTS (optional extra hosts for redirect URLs),
+     RESEND_API_KEY (order emails; only sent once the site's email setup is verified)
 """
 import json
 import os
@@ -19,6 +20,7 @@ from urllib.parse import urlparse
 import requests
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import emails  # noqa: E402
 import payments  # noqa: E402
 from errors import HttpError  # noqa: E402
 from store import Store, a  # noqa: E402
@@ -53,6 +55,28 @@ def _store(req):
     if not key:
         raise HttpError("No Appwrite key available to the checkout function (enable scopes in appwrite.json)", 500)
     return Store(key)
+
+
+def _complete(req, store, result, log=print):
+    """After a NEW paid order: email the customer a receipt and alert the owner. Never fails the payment."""
+    order = result.pop("_order", None)
+    if not order:
+        return result
+    try:
+        site = store.site(order["siteId"])
+        if not emails.can_send(site):
+            return result
+        sent = []
+        if emails.get(site, "emailReceipts") is not False and order.get("customerEmail"):
+            emails.send(site, order["customerEmail"], *emails.order_receipt(site, order), idempotency_key=f"receipt-{order['$id']}")
+            sent.append("receipt")
+        if emails.get(site, "emailOwnerAlerts") is not False:
+            emails.send(site, emails.get(site, "ownerEmail"), *emails.owner_new_order(site, order), idempotency_key=f"alert-{order['$id']}")
+            sent.append("owner")
+        result["emailed"] = sent
+    except Exception as e:  # noqa: BLE001 - the payment already succeeded
+        log(f"order email failed for {order.get('$id')}: {e!r}")
+    return result
 
 
 def _safe_url(url, site, field):
@@ -101,9 +125,10 @@ def stripe_webhook(req):
     if not checkout_id:
         return {"received": True, "ignored": "not a Sellify checkout"}
     details = s.get("customer_details") or {}
-    result = _store(req).finalize(checkout_id, "stripe", s.get("payment_intent") or s["id"],
-                                  details.get("email") or s.get("customer_email"), details.get("name"), s["amount_total"] / 100)
-    return {"received": True, **result}
+    store = _store(req)
+    result = store.finalize(checkout_id, "stripe", s.get("payment_intent") or s["id"],
+                            details.get("email") or s.get("customer_email"), details.get("name"), s["amount_total"] / 100)
+    return {"received": True, **_complete(req, store, result)}
 
 
 def paypal_create(req):
@@ -125,7 +150,8 @@ def paypal_capture(req):
     if not order_id:
         raise HttpError("Missing paypalOrderId")
     checkout_id, capture_id, amount, email, name = payments.paypal_capture(order_id)
-    return _store(req).finalize(checkout_id, "paypal", capture_id, email, name, amount)
+    store = _store(req)
+    return _complete(req, store, store.finalize(checkout_id, "paypal", capture_id, email, name, amount))
 
 
 ROUTES = {

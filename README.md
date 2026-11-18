@@ -6,6 +6,7 @@ A Shopify-style admin for **all of your websites** in one place. Switch between 
 | --- | --- | --- |
 | **Home** | Revenue, orders, AOV, sessions, to-do alerts (unfulfilled orders, low stock) | Appwrite, GA4 |
 | **Orders / Products / Customers** | Full CRUD, draft orders, fulfil, one-click refunds, CSV export | Appwrite Database |
+| **Email** | Guided setup, order receipts, new-order alerts, shipping emails | Resend, Cloudflare DNS |
 | **Checkout** | Cart + payments on your own sites: cards, Apple Pay, Google Pay, PayPal | Stripe Checkout, PayPal |
 | **Analytics** | Sessions, users, sources, top pages; Google clicks, impressions, CTR, position, top queries | Google Analytics 4, Google Search Console |
 | **SEO** | Site crawler (broken links, redirects, titles, metas, H1s, canonicals, noindex, alt text, thin/slow pages), Lighthouse scores, sitemap submit | Python crawler, PageSpeed Insights, Search Console |
@@ -107,6 +108,18 @@ const order = await Sellify.handleReturn(); // on your success page: confirms Pa
 ```
 
 **Test before launching:** use Stripe test mode (card `4242 4242 4242 4242`) and a PayPal sandbox buyer account. Then switch to live keys and `PAYPAL_ENV=live`.
+
+## Email (receipts, order alerts, shipping notices)
+
+Email is a setup step for each site (**Sites & settings → Email**, also linked from the checklist on Home). **Nothing is sent until it's finished:**
+
+1. **Your email:** where new-order alerts go and where customers' replies land. It's pre-filled from your login, but you must confirm it.
+2. **Verify your domain:** Sellify registers the store's domain with [Resend](https://resend.com) (free: 3,000 emails/month, 100/day) and adds the DKIM/SPF records to Cloudflare for you. These go on `resend._domainkey` and `send.` subdomains, so your existing mailbox records (MX at the root) aren't touched.
+3. **Test and choose:** send yourself a test, then toggle receipts, new-order alerts and shipping emails.
+
+Setup: create a Resend account, make an API key with **Full access** (it needs to add domains), and set `RESEND_API_KEY` on **both** the `site-ops` and `checkout` functions. Then re-run `python appwrite/setup.py` to add the email columns.
+
+`emails.py` exists in both function folders because each Appwrite function deploys on its own. Keep the two copies identical.
 
 ## Project layout
 ```

@@ -34,13 +34,18 @@ S = lambda key, size=255, req=False: ("varchar", key, req, {"size": size})
 LT = lambda key, req=False: ("longtext", key, req, {})
 F = lambda key, req=False, **kw: ("float", key, req, kw)
 I = lambda key, req=False, **kw: ("integer", key, req, kw)
+B = lambda key, req=False, **kw: ("boolean", key, req, kw)
 E = lambda key, elements, default: ("enum", key, False, {"elements": elements, "default": default})
 
 SCHEMA = {
     "sites": {
         "public_read": False,
         "columns": [S("name", 128, True), S("domain", 255, True), S("currency", 8), S("cloudflareZoneId", 64),
-                    S("netlifySiteId", 64), S("gscProperty", 255), S("ga4PropertyId", 32)],
+                    S("netlifySiteId", 64), S("gscProperty", 255), S("ga4PropertyId", 32),
+                    # email setup: nothing is sent until ownerEmail is confirmed and emailStatus is "verified"
+                    S("ownerEmail", 255), S("senderName", 128), S("senderAddress", 255), S("emailDomainId", 64),
+                    E("emailStatus", ["none", "pending", "verified", "failed"], "none"),
+                    B("emailReceipts", default=True), B("emailOwnerAlerts", default=True), B("emailShipping", default=True)],
         "indexes": [("domain_unique", TablesDBIndexType.UNIQUE, ["domain"])],
     },
     "products": {
