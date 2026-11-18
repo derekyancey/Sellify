@@ -11,12 +11,14 @@ Routes (all POST with a JSON body, called via functions.createExecution from the
   /seo/crawl
   /payments/refund
   /email/setup | /email/status | /email/test | /email/order | /email/recovery | /email/campaign
+  /automations/preview | /automations/run   (also runs on this function's 30-minute schedule)
 
 Secrets are function environment variables, never sent to the browser:
   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID (only for "add zone"),
   APPWRITE_SITES_CNAME_TARGET (the CNAME target Appwrite shows when you add a domain), GOOGLE_SERVICE_ACCOUNT_JSON, ADMIN_TEAM_ID,
   STRIPE_SECRET_KEY, PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_ENV (for refunds),
-  RESEND_API_KEY (email), UNSUBSCRIBE_SECRET + CHECKOUT_PUBLIC_URL (campaign unsubscribe links)
+  RESEND_API_KEY (email), UNSUBSCRIBE_SECRET + CHECKOUT_PUBLIC_URL (campaign unsubscribe links),
+  AUTOMATION_MAX_PER_RUN (default 50)
 """
 import json
 import os
@@ -27,6 +29,7 @@ import sys
 import requests
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # works however the runtime loads this file
+import automations  # noqa: E402
 import crawler  # noqa: E402
 import emails  # noqa: E402
 import google_apis  # noqa: E402
@@ -458,6 +461,14 @@ def email_campaign(b):
     return {"ok": failed == 0, "sent": sent, "failed": failed, "error": last_error}
 
 
+def automations_preview(b):
+    return automations.run(appwrite_client(), dry_run=True, site_id=b.get("siteId"))
+
+
+def automations_run(b):
+    return automations.run(appwrite_client(), site_id=b.get("siteId"))
+
+
 ROUTES = {
     "/health": health,
     "/cloudflare/zone": cf_zone,
@@ -485,6 +496,8 @@ ROUTES = {
     "/email/order": email_order,
     "/email/recovery": email_recovery,
     "/email/campaign": email_campaign,
+    "/automations/preview": automations_preview,
+    "/automations/run": automations_run,
 }
 
 
@@ -499,6 +512,14 @@ def _body(req):
 
 def main(context):
     path = (context.req.path or "/").rstrip("/") or "/"
+    headers = {k.lower(): v for k, v in (context.req.headers or {}).items()}
+    if headers.get("x-appwrite-trigger") == "schedule":  # Appwrite's timer, not a person: send due automation emails
+        _REQUEST["key"] = headers.get("x-appwrite-key") or os.environ.get("APPWRITE_API_KEY", "")
+        try:
+            return context.res.json(automations.run(appwrite_client(), log=context.error))
+        except Exception as e:  # noqa: BLE001
+            context.error(f"automations: {e!r}")
+            return context.res.json({"error": str(e)}, 500)
     handler = ROUTES.get(path)
     if not handler:
         return context.res.json({"error": f"Unknown route {path}"}, 404)

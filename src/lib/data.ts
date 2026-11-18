@@ -109,7 +109,7 @@ export async function createOrder(siteId: string, data: Omit<Order, "$id" | "$cr
 export async function ops<T = any>(path: string, body: Record<string, unknown> = {}, functionId = config.functionId): Promise<T> {
   if (isDemo) {
     await new Promise(r => setTimeout(r, 250));
-    return demoOps(functionId === config.functionId ? path : `${functionId}:${path}`, body) as T;
+    return demoOps(path, body) as T;
   }
   const exec = await functions.createExecution({
     functionId, xpath: path, method: "POST" as any,
@@ -143,5 +143,5 @@ export async function pagespeed(url: string, strategy: "mobile" | "desktop") {
   };
 }
 
-/** The scheduled "automations" Python function: preview (dry run) or run now. */
-export const automations = (mode: "preview" | "run", siteId: string) => ops(`/${mode}`, { siteId }, config.automationsFunctionId);
+/** Automations (run by site-ops every 30 minutes): preview (dry run) or run now. */
+export const automations = (mode: "preview" | "run", siteId: string) => ops(`/automations/${mode}`, { siteId });

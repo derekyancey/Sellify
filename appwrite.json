@@ -13,7 +13,7 @@
         "team:admins"
       ],
       "events": [],
-      "schedule": "",
+      "schedule": "*/30 * * * *",
       "timeout": 30,
       "enabled": true,
       "logging": true,
@@ -22,7 +22,9 @@
         "sites.read",
         "sites.write",
         "rules.read",
-        "rules.write"
+        "rules.write",
+        "rows.read",
+        "rows.write"
       ]
     },
     {
@@ -37,26 +39,6 @@
       ],
       "events": [],
       "schedule": "",
-      "timeout": 30,
-      "enabled": true,
-      "logging": true,
-      "scopes": [
-        "rows.read",
-        "rows.write"
-      ]
-    },
-    {
-      "$id": "automations",
-      "name": "automations",
-      "runtime": "python-3.12",
-      "path": "appwrite/functions/automations",
-      "entrypoint": "src/main.py",
-      "commands": "pip install -r requirements.txt",
-      "execute": [
-        "team:admins"
-      ],
-      "events": [],
-      "schedule": "*/30 * * * *",
       "timeout": 30,
       "enabled": true,
       "logging": true,

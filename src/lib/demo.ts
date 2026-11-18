@@ -96,9 +96,9 @@ export function demoOps(path: string, body: any): any {
     case "/email/status": return { status: "verified", records: demoEmailRecords(domain, "verified") };
     case "/email/test": return { ok: true, id: "em_demo", to: body.site?.ownerEmail };
     case "/email/order": return { ok: true, id: "em_demo" };
-    case "automations:/preview": return { dryRun: true, budgetLeft: 50, results: [
+    case "/automations/preview": return { dryRun: true, budgetLeft: 50, results: [
       { siteId: body.siteId, type: "abandoned_cart", eligible: 2, sent: 0 }, { siteId: body.siteId, type: "welcome", eligible: 3, sent: 0 }, { siteId: body.siteId, type: "winback", eligible: 1, sent: 0 }] };
-    case "automations:/run": return { dryRun: false, budgetLeft: 44, results: [
+    case "/automations/run": return { dryRun: false, budgetLeft: 44, results: [
       { siteId: body.siteId, type: "abandoned_cart", eligible: 2, sent: 2 }, { siteId: body.siteId, type: "welcome", eligible: 3, sent: 3 }, { siteId: body.siteId, type: "winback", eligible: 1, sent: 1 }] };
     case "/email/campaign": return { ok: true, sent: (body.recipients ?? []).length, failed: 0 };
     case "/email/recovery": return { ok: true, id: "em_demo" };

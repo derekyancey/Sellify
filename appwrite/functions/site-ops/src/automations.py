@@ -1,5 +1,5 @@
 """
-automations: scheduled Appwrite Function (every 30 min) that sends automatic emails per site.
+Automations: run by the site-ops function's 30-minute schedule (and from the dashboard), sending automatic emails per site.
 
   abandoned_cart  unpaid checkout with an email, older than delayHours (≤ 7 days) -> cart-recovery email (once)
   welcome         new subscriber (opted in within 14 days, after delayHours)       -> chosen template (once)
@@ -8,17 +8,14 @@ automations: scheduled Appwrite Function (every 30 min) that sends automatic ema
 Nothing is sent for a site until its email setup is verified, and only automations switched on in the dashboard run.
 Marketing emails (welcome, win-back) only go to opted-in customers and carry a signed unsubscribe link.
 
-Routes:  / (schedule) and /run -> send;  /preview -> count what would be sent, send nothing.
+Entry points (in site-ops main.py): the schedule trigger -> run;  /automations/run -> send;  /automations/preview -> dry run.
 Env: RESEND_API_KEY, UNSUBSCRIBE_SECRET, CHECKOUT_PUBLIC_URL, AUTOMATION_MAX_PER_RUN (default 50; Resend free = 100/day)
 """
 import datetime as dt
 import json
 import os
-import sys
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import emails  # noqa: E402
-from errors import HttpError  # noqa: E402
+import emails
 
 DB = os.environ.get("APPWRITE_DATABASE_ID", "yancey")
 TYPES = ("abandoned_cart", "welcome", "winback")
@@ -165,23 +162,7 @@ class Runner:
         return {"dryRun": self.dry, "results": report, "budgetLeft": self.budget}
 
 
-def main(context):
-    from appwrite.client import Client
+def run(client, dry_run=False, site_id=None, log=print):
     from appwrite.services.tables_db import TablesDB
-
-    path = (context.req.path or "/").rstrip("/") or "/"
-    headers = {k.lower(): v for k, v in (context.req.headers or {}).items()}
-    key = headers.get("x-appwrite-key") or os.environ.get("APPWRITE_API_KEY")
-    if path not in ("/", "/run", "/preview"):
-        return context.res.json({"error": f"Unknown route {path}"}, 404)
-    try:
-        body = json.loads(getattr(context.req, "body_text", "") or "{}") if (getattr(context.req, "body_text", "") or "").strip().startswith("{") else {}
-        client = (Client().set_endpoint(os.environ["APPWRITE_FUNCTION_API_ENDPOINT"])
-                  .set_project(os.environ["APPWRITE_FUNCTION_PROJECT_ID"]).set_key(key))
-        runner = Runner(TablesDB(client), dry_run=path == "/preview", budget=int(os.environ.get("AUTOMATION_MAX_PER_RUN", "50")), log=context.error)
-        return context.res.json(runner.run(body.get("siteId")))
-    except HttpError as e:
-        return context.res.json({"error": str(e)}, e.status)
-    except Exception as e:  # noqa: BLE001
-        context.error(repr(e))
-        return context.res.json({"error": str(e) or e.__class__.__name__}, 500)
+    runner = Runner(TablesDB(client), dry_run=dry_run, budget=int(os.environ.get("AUTOMATION_MAX_PER_RUN", "50")), log=log)
+    return runner.run(site_id)

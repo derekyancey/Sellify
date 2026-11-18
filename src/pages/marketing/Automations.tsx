@@ -45,7 +45,7 @@ export default function Automations() {
   if (loading || !data) return <Loading />;
   return (
     <>
-      <PageHeader title="Automations" subtitle="Emails that send themselves. Checked every 30 minutes by a scheduled Appwrite function (free)."
+      <PageHeader title="Automations" subtitle="Emails that send themselves. Checked every 30 minutes on a schedule (part of your site-ops function, so it's free)."
         actions={<><Button loading={busy === "preview"} onClick={() => run("preview")}><Eye className="size-4" />Preview due emails</Button>
           <Button variant="primary" disabled={!verified} loading={busy === "run"} onClick={() => run("run")}><Play className="size-4" />Run now</Button></>} />
       {!verified && <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">Automations stay paused until <Link className="underline" to={sp("/settings#email")}>email setup</Link> is verified.</div>}

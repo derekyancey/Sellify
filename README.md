@@ -77,7 +77,9 @@ Store emails (receipts, campaigns) are sent from each store's own domain, never 
    This creates the tables and your login, and is safe to re-run. Then turn off public sign-ups under **Auth → Security** if you like (logins are created by you anyway).
 3. Copy `.env.example` to `.env` and fill in the endpoint and project ID.
 
-### 2. The Python function (`appwrite/functions/site-ops`)
+### 2. The Python functions (`site-ops` and `checkout`)
+
+`python appwrite/deploy_functions.py` creates both from `appwrite.json`. Set `GIT_INSTALLATION_ID` and `GIT_REPOSITORY_ID` (from your site's Git settings) so they redeploy on every push.
 Deploy it with the Appwrite CLI (`npm i -g appwrite-cli`, `appwrite login`, set `projectId` in `appwrite.json`, then `appwrite push functions`), or connect this repo in the console (**Functions → Create → Git**, runtime Python 3.12, root `appwrite/functions/site-ops`, entrypoint `src/main.py`, build command `pip install -r requirements.txt`, execute access `team:admins`, scope `teams.read`).
 
 Set these function environment variables:
@@ -169,11 +171,11 @@ Re-run `python appwrite/setup.py` after pulling: it adds the new tables (collect
 
 ## Automations and product feeds
 
-- **Automations** (`appwrite/functions/automations`): a Python function scheduled every 30 minutes (`appwrite.json`).
+- **Automations** (`appwrite/functions/site-ops/src/automations.py`): the `site-ops` function runs on a 30-minute schedule (`appwrite.json`), and scheduled runs send due automation emails. This keeps Yancey within Appwrite's free plan of 2 functions.
   - **Abandoned-cart reminder:** unpaid checkouts with an email, after N hours, within 7 days. Sent once, and skipped if the customer has bought since.
   - **Welcome email:** new subscribers, sent once.
   - **Win-back email:** subscribers whose last order is older than N days; once per gap between orders.
-  - **Settings:** each one is switched on per site under **Marketing → Automations**, which also has *Preview due emails* (a dry run) and *Run now*. Set `RESEND_API_KEY`, `UNSUBSCRIBE_SECRET`, `CHECKOUT_PUBLIC_URL` and optionally `AUTOMATION_MAX_PER_RUN` (default 50) on the function.
+  - **Settings:** each one is switched on per site under **Marketing → Automations**, which also has *Preview due emails* (a dry run) and *Run now*. These use `site-ops`' `RESEND_API_KEY`, `UNSUBSCRIBE_SECRET`, `CHECKOUT_PUBLIC_URL` and optionally `AUTOMATION_MAX_PER_RUN` (default 50).
 - **Product feed:** the checkout function serves `/feed.xml?site=<id>` in Google Merchant Center format, which TikTok, Pinterest and Meta also accept. Set `VITE_CHECKOUT_PUBLIC_URL` so the dashboard can show the URL. Set each site's product page path under **Sales channels → Google & YouTube**. Products without an image are left out, because Google requires one.
 - **Shared code:** `appwrite/shared/` is the single source for code used by several functions. Run `python appwrite/sync_shared.py` after editing it, and `--check` before deploying.
 
@@ -189,7 +191,7 @@ public/yancey.js          storefront cart + checkout script (served by the dashb
 examples/storefront.html   starter storefront page
 appwrite/setup.py          creates the database schema, team and admin user
 appwrite/shared/           code shared by functions (sync with appwrite/sync_shared.py)
-appwrite/functions/automations/src/main.py   scheduled cart / welcome / win-back emails
+appwrite/functions/site-ops/src/automations.py   scheduled cart / welcome / win-back emails
 appwrite/functions/checkout/src/
   main.py                  public checkout routes + Stripe webhook
   payments.py              Stripe Checkout and PayPal Orders v2
