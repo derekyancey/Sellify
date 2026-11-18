@@ -134,7 +134,7 @@ function StoreUrl({ site, others, save, sp }: { site: Site; others: Site[]; save
           <div className="font-medium">{done} saved. Next:</div>
           <ol className="mt-1 list-decimal pl-5">
             <li><a className="underline" href="#connections">Connect it to Cloudflare</a> (Find or Add below). If the domain is at Namecheap, switch its nameservers to Cloudflare's.</li>
-            <li>Pick the Netlify site, then <Link className="underline" to={sp("/domains")}>Domain &amp; DNS → Point to Netlify</Link>.</li>
+            <li>Pick the Appwrite site that hosts it, then <Link className="underline" to={sp("/domains")}>Domain &amp; DNS → Point to Appwrite Sites</Link>.</li>
             <li><a className="underline" href="#email">Verify it for email</a>.</li>
           </ol>
         </div>
@@ -144,12 +144,12 @@ function StoreUrl({ site, others, save, sp }: { site: Site; others: Site[]; save
 }
 
 function Connections({ site, save }: { site: Site; save(p: Partial<Site>): Promise<void> }) {
-  const [d, setD] = useState({ cloudflareZoneId: site.cloudflareZoneId ?? "", netlifySiteId: site.netlifySiteId ?? "", gscProperty: site.gscProperty ?? "", ga4PropertyId: site.ga4PropertyId ?? "" });
-  useEffect(() => setD({ cloudflareZoneId: site.cloudflareZoneId ?? "", netlifySiteId: site.netlifySiteId ?? "", gscProperty: site.gscProperty ?? "", ga4PropertyId: site.ga4PropertyId ?? "" }), [site]);
+  const [d, setD] = useState({ cloudflareZoneId: site.cloudflareZoneId ?? "", hostingSiteId: site.hostingSiteId ?? "", gscProperty: site.gscProperty ?? "", ga4PropertyId: site.ga4PropertyId ?? "" });
+  useEffect(() => setD({ cloudflareZoneId: site.cloudflareZoneId ?? "", hostingSiteId: site.hostingSiteId ?? "", gscProperty: site.gscProperty ?? "", ga4PropertyId: site.ga4PropertyId ?? "" }), [site]);
   const [err, setErr] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const netlifySites = useAsync(() => ops<{ sites: { id: string; name: string; url: string }[] }>("/netlify/sites").catch(() => ({ sites: [] })), []);
+  const hostSites = useAsync(() => ops<{ sites: { id: string; name: string; framework: string }[] }>("/hosting/sites").catch(() => ({ sites: [] })), []);
   const set = (k: keyof typeof d, v: string) => setD(x => ({ ...x, [k]: v }));
   const dirty = (Object.keys(d) as (keyof typeof d)[]).some(k => (d[k] || "") !== (site[k] || ""));
 
@@ -171,19 +171,19 @@ function Connections({ site, save }: { site: Site; save(p: Partial<Site>): Promi
         <Field label="Cloudflare zone" hint={<span className="flex gap-3"><button type="button" className="underline" onClick={() => zone(false)}>Find by domain</button><button type="button" className="underline" onClick={() => zone(true)}>Add to Cloudflare</button></span>}>
           <Input value={d.cloudflareZoneId} onChange={e => set("cloudflareZoneId", e.target.value)} placeholder="Zone ID" />
         </Field>
-        <Field label="Netlify site" hint="The Netlify site that hosts this store.">
-          {netlifySites.loading ? <Loading /> : netlifySites.data?.sites.length ? (
-            <Select value={d.netlifySiteId} onChange={e => set("netlifySiteId", e.target.value)}>
-              <option value="">None</option>{netlifySites.data.sites.map(n => <option key={n.id} value={n.id}>{n.name} ({n.url.replace(/^https?:\/\//, "")})</option>)}
+        <Field label="Hosting (Appwrite site)" hint="The Appwrite site that serves this store's website.">
+          {hostSites.loading ? <Loading /> : hostSites.data?.sites.length ? (
+            <Select value={d.hostingSiteId} onChange={e => set("hostingSiteId", e.target.value)}>
+              <option value="">None</option>{hostSites.data.sites.map(n => <option key={n.id} value={n.id}>{n.name} ({n.framework})</option>)}
             </Select>
-          ) : <Input value={d.netlifySiteId} onChange={e => set("netlifySiteId", e.target.value)} placeholder="Netlify site ID" />}
+          ) : <Input value={d.hostingSiteId} onChange={e => set("hostingSiteId", e.target.value)} placeholder="Appwrite site ID" />}
         </Field>
         <Field label="Search Console property" hint="Usually sc-domain:yourdomain."><Input value={d.gscProperty} onChange={e => set("gscProperty", e.target.value)} placeholder={`sc-domain:${site.domain}`} /></Field>
         <Field label="GA4 property ID" hint="Numbers only: GA → Admin → Property details."><Input value={d.ga4PropertyId} onChange={e => set("ga4PropertyId", e.target.value.replace(/\D/g, ""))} placeholder="123456789" /></Field>
       </div>
       <Button variant="primary" disabled={!dirty} loading={busy} onClick={async () => {
         setBusy(true); setErr(null);
-        try { await save({ cloudflareZoneId: d.cloudflareZoneId || undefined, netlifySiteId: d.netlifySiteId || undefined, gscProperty: d.gscProperty || undefined, ga4PropertyId: d.ga4PropertyId || undefined }); setNote("Connections saved."); }
+        try { await save({ cloudflareZoneId: d.cloudflareZoneId || undefined, hostingSiteId: d.hostingSiteId || undefined, gscProperty: d.gscProperty || undefined, ga4PropertyId: d.ga4PropertyId || undefined }); setNote("Connections saved."); }
         catch (e: any) { setErr(e.message); } finally { setBusy(false); }
       }}>Save connections</Button>
     </div>

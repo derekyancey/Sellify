@@ -9,7 +9,7 @@ export default function OnlineStore() {
   const sp = useStorePath();
   return (
     <>
-      <PageHeader title="Online store" subtitle={`Your storefront at ${s.domain}, hosted on Netlify`}
+      <PageHeader title="Online store" subtitle={`Your storefront at ${s.domain}, hosted on Appwrite Sites`}
         actions={<a href={`https://${s.domain}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium">View store <ExternalLink className="size-4" /></a>} />
       <div className="space-y-4">
         <SellOnSite site={s} />

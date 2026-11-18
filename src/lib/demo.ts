@@ -11,10 +11,10 @@ const ago = (days: number) => new Date(Date.now() - days * 864e5 - rand() * 864e
 export function buildDemo() {
   seed = 42;
   const sites: Site[] = [
-    { $id: "site_coffee", $createdAt: ago(200), name: "Northline Coffee", domain: "northlinecoffee.com", currency: "USD", cloudflareZoneId: "demo-zone-1", netlifySiteId: "demo-netlify-1", gscProperty: "sc-domain:northlinecoffee.com", ga4PropertyId: "123456789",
+    { $id: "site_coffee", $createdAt: ago(200), name: "Northline Coffee", domain: "northlinecoffee.com", currency: "USD", cloudflareZoneId: "demo-zone-1", hostingSiteId: "demo-host-1", gscProperty: "sc-domain:northlinecoffee.com", ga4PropertyId: "123456789",
       ownerEmail: "owner@example.com", senderName: "Northline Coffee", senderAddress: "orders@northlinecoffee.com", emailDomainId: "demo-dom-1", emailStatus: "verified",
       emailReceipts: true, emailOwnerAlerts: true, emailShipping: true },
-    { $id: "site_candles", $createdAt: ago(120), name: "Ember & Wick", domain: "emberandwick.shop", currency: "USD", cloudflareZoneId: "demo-zone-2", netlifySiteId: "demo-netlify-2", gscProperty: "sc-domain:emberandwick.shop", ga4PropertyId: "987654321" },
+    { $id: "site_candles", $createdAt: ago(120), name: "Ember & Wick", domain: "emberandwick.shop", currency: "USD", cloudflareZoneId: "demo-zone-2", hostingSiteId: "demo-host-2", gscProperty: "sc-domain:emberandwick.shop", ga4PropertyId: "987654321" },
   ];
   sites.push({ $id: "site_bakery", $createdAt: ago(3), name: "Fern & Flour Bakery", currency: "USD", emailStatus: "none" });
   const catalog: Record<string, [string, number][]> = {
@@ -103,24 +103,26 @@ export function demoOps(path: string, body: any): any {
     case "/email/campaign": return { ok: true, sent: (body.recipients ?? []).length, failed: 0 };
     case "/email/recovery": return { ok: true, id: "em_demo" };
     case "/payments/refund": return { ok: true, refundId: "re_demo", status: "succeeded" };
-    case "/health": return { ok: true, integrations: { cloudflare: true, netlify: true, google: true, stripe: true, paypal: true, email: true }, serviceAccountEmail: "yancey@your-project.iam.gserviceaccount.com" };
+    case "/health": return { ok: true, integrations: { cloudflare: true, hosting: true, google: true, stripe: true, paypal: true, email: true }, serviceAccountEmail: "yancey@your-project.iam.gserviceaccount.com" };
     case "/cloudflare/zone": return { id: body.zoneId, name: domain, status: "active", name_servers: ["ada.ns.cloudflare.com", "rob.ns.cloudflare.com"], original_name_servers: ["dns1.registrar-servers.com", "dns2.registrar-servers.com"], plan: { name: "Free Website" } };
     case "/cloudflare/zones/find": return { zones: [] };
     case "/cloudflare/zones/create": return { zone: { id: "demo-zone-" + id().slice(0, 6), status: "pending", name_servers: ["ada.ns.cloudflare.com", "rob.ns.cloudflare.com"] } };
     case "/cloudflare/dns/list": return { records: [
-      { id: "r1", type: "CNAME", name: domain, content: "demo-site.netlify.app", proxied: false, ttl: 1 },
-      { id: "r2", type: "CNAME", name: `www.${domain}`, content: "demo-site.netlify.app", proxied: false, ttl: 1 },
+      { id: "r1", type: "CNAME", name: domain, content: "sites.appwrite.example", proxied: false, ttl: 1 },
+      { id: "r2", type: "CNAME", name: `www.${domain}`, content: "sites.appwrite.example", proxied: false, ttl: 1 },
       { id: "r3", type: "MX", name: domain, content: "mx1.improvmx.com", priority: 10, proxied: false, ttl: 1 },
       { id: "r4", type: "TXT", name: domain, content: "v=spf1 include:spf.improvmx.com ~all", proxied: false, ttl: 1 },
     ] };
     case "/cloudflare/dns/create": case "/cloudflare/dns/update": return { record: { id: id(), ...body.record } };
     case "/cloudflare/dns/delete": return { ok: true };
     case "/cloudflare/purge": return { ok: true };
-    case "/cloudflare/connect-netlify": return { created: ["CNAME @", "CNAME www"], netlify: "custom domain set (demo)" };
-    case "/netlify/site": return { id: body.siteId, name: "demo-site", url: `https://${domain}`, ssl_url: `https://${domain}`, admin_url: "https://app.netlify.com", custom_domain: domain, domain_aliases: [`www.${domain}`], ssl: true, published_deploy: { id: "d1", published_at: ago(1) } };
-    case "/netlify/deploys": return { deploys: Array.from({ length: 8 }, (_, i) => ({ id: "d" + i, state: i === 2 ? "error" : "ready", branch: "main", title: pick(["Update homepage copy", "Add holiday collection", "Fix checkout button", "Bump deps", "New product photos"]), commit_ref: id().slice(0, 7), created_at: ago(i * 2), deploy_time: 20 + Math.floor(rand() * 60), error_message: i === 2 ? "Build script returned non-zero exit code: 2" : null })) };
-    case "/netlify/build": return { ok: true };
-    case "/netlify/sites": return { sites: [{ id: "demo-netlify-1", name: "northline-coffee", url: "https://northlinecoffee.com" }] };
+    case "/cloudflare/connect-hosting": return { created: [`CNAME ${domain}`, `CNAME www.${domain}`], domainsAdded: [domain, `www.${domain}`] };
+    case "/hosting/sites": return { sites: [{ id: "demo-host-1", name: "Northline storefront", framework: "astro", status: "ready" }, { id: "demo-host-2", name: "Ember & Wick storefront", framework: "vite", status: "ready" }] };
+    case "/hosting/site": return { id: body.siteId, name: "Storefront", framework: "astro", live: true, deploymentId: "d0", deployedAt: ago(1), repository: true, branch: "main",
+      domains: [{ id: "r1", domain: `${body.siteId}.appwrite.network`, status: "verified", certificate: "generated" }] };
+    case "/hosting/deployments": return { deployments: Array.from({ length: 8 }, (_, i) => ({ id: "d" + i, status: i === 2 ? "failed" : "ready", active: i === 0, branch: "main",
+      message: pick(["Update homepage copy", "Add holiday collection", "Fix checkout button", "Bump deps", "New product photos"]), commit: id().slice(0, 7), createdAt: ago(i * 2), buildSeconds: 20 + Math.floor(rand() * 60), type: "vcs" })) };
+    case "/hosting/redeploy": return { ok: true, deploymentId: "dnew" };
     case "/google/ga4": return {
       totals: { sessions: 8421, activeUsers: 6110, screenPageViews: 21950, conversions: 312, bounceRate: 0.41 },
       daily: series(28, 280, 60).map(r => ({ date: r.date, sessions: r.value, users: Math.round(r.value * 0.72) })),

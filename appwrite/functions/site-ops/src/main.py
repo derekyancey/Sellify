@@ -5,8 +5,8 @@ Routes (all POST with a JSON body, called via functions.createExecution from the
   /health
   /cloudflare/zone | /cloudflare/zones/find | /cloudflare/zones/create
   /cloudflare/dns/list | /cloudflare/dns/create | /cloudflare/dns/update | /cloudflare/dns/delete
-  /cloudflare/purge | /cloudflare/connect-netlify
-  /netlify/sites | /netlify/site | /netlify/deploys | /netlify/build
+  /cloudflare/purge | /cloudflare/connect-hosting
+  /hosting/sites | /hosting/site | /hosting/deployments | /hosting/redeploy      (Appwrite Sites)
   /google/ga4 | /google/gsc | /google/gsc/sitemaps | /google/gsc/submit-sitemap
   /seo/crawl
   /payments/refund
@@ -14,7 +14,7 @@ Routes (all POST with a JSON body, called via functions.createExecution from the
 
 Secrets are function environment variables, never sent to the browser:
   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID (only for "add zone"),
-  NETLIFY_AUTH_TOKEN, GOOGLE_SERVICE_ACCOUNT_JSON, ADMIN_TEAM_ID,
+  APPWRITE_SITES_CNAME_TARGET (the CNAME target Appwrite shows when you add a domain), GOOGLE_SERVICE_ACCOUNT_JSON, ADMIN_TEAM_ID,
   STRIPE_SECRET_KEY, PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_ENV (for refunds),
   RESEND_API_KEY (email), UNSUBSCRIBE_SECRET + CHECKOUT_PUBLIC_URL (campaign unsubscribe links)
 """
@@ -33,7 +33,6 @@ import google_apis  # noqa: E402
 from errors import HttpError  # noqa: E402
 
 CF = "https://api.cloudflare.com/client/v4"
-NETLIFY = "https://api.netlify.com/api/v1"
 TIMEOUT = 20
 
 
@@ -48,20 +47,25 @@ def require_admin(context):
     if not team_id:
         raise HttpError("ADMIN_TEAM_ID is not set on the site-ops function", 500)
 
-    from appwrite.client import Client
     from appwrite.query import Query
     from appwrite.services.teams import Teams
 
-    client = (
-        Client()
-        .set_endpoint(os.environ["APPWRITE_FUNCTION_API_ENDPOINT"])
-        .set_project(os.environ["APPWRITE_FUNCTION_PROJECT_ID"])
-        .set_key(headers.get("x-appwrite-key") or os.environ.get("APPWRITE_API_KEY", ""))
-    )
+    _REQUEST["key"] = headers.get("x-appwrite-key") or os.environ.get("APPWRITE_API_KEY", "")
+    client = appwrite_client()
     res = Teams(client).list_memberships(team_id, queries=[Query.equal("userId", user_id)])
     members = res.memberships if hasattr(res, "memberships") else res["memberships"]
     if not any(_get(m, "confirm") for m in members):
         raise HttpError("Your account isn't on the admin team", 403)
+
+
+_REQUEST = {"key": None}
+
+
+def appwrite_client():
+    """Server client for this project, using the function's per-execution API key (scopes in appwrite.json)."""
+    from appwrite.client import Client
+    return (Client().set_endpoint(os.environ["APPWRITE_FUNCTION_API_ENDPOINT"])
+            .set_project(os.environ["APPWRITE_FUNCTION_PROJECT_ID"]).set_key(_REQUEST["key"] or ""))
 
 
 def _get(obj, key):
@@ -83,13 +87,6 @@ def cf(method, path, **kw):
         msg = "; ".join(e.get("message", "") for e in data.get("errors", [])) or r.text[:200]
         raise HttpError(f"Cloudflare: {msg}", 502)
     return data.get("result")
-
-
-def nf(method, path, **kw):
-    r = requests.request(method, NETLIFY + path, headers={"Authorization": f"Bearer {env('NETLIFY_AUTH_TOKEN')}"}, timeout=TIMEOUT, **kw)
-    if not r.ok:
-        raise HttpError(f"Netlify: {r.status_code} {r.text[:200]}", 502)
-    return r.json() if r.content else {}
 
 
 def need(body, *keys):
@@ -127,7 +124,7 @@ def health(_):
         "ok": True,
         "integrations": {
             "cloudflare": bool(os.environ.get("CLOUDFLARE_API_TOKEN")),
-            "netlify": bool(os.environ.get("NETLIFY_AUTH_TOKEN")),
+            "hosting": bool(os.environ.get("APPWRITE_SITES_CNAME_TARGET")),
             "google": bool(email),
             "stripe": bool(os.environ.get("STRIPE_SECRET_KEY")),
             "paypal": bool(os.environ.get("PAYPAL_CLIENT_ID") and os.environ.get("PAYPAL_CLIENT_SECRET")),
@@ -185,52 +182,111 @@ def cf_purge(b):
     return {"ok": True}
 
 
-def cf_connect_netlify(b):
-    """Point apex + www at a Netlify site (DNS-only, so Netlify can issue SSL) and register the domain on Netlify."""
-    zone_id, domain, site_id = need(b, "zoneId", "domain", "netlifySiteId")
-    site = nf("GET", f"/sites/{site_id}")
-    target = f"{site['name']}.netlify.app"
-    hosts = {domain, f"www.{domain}"}
+def _aw_err(e):
+    return HttpError(f"Appwrite: {getattr(e, 'message', None) or e}", 502)
+
+
+def _rules_for(site_id):
+    from appwrite.query import Query
+    from appwrite.services.proxy import Proxy
+    rules = Proxy(appwrite_client()).list_rules(queries=[Query.equal("deploymentResourceId", site_id), Query.limit(50)]).rules
+    return [{"id": _get(r, "id"), "domain": _get(r, "domain"), "status": _get(r, "status"), "certificate": _get(r, "certificatestatus"),
+             "logs": _get(r, "logs")} for r in rules]
+
+
+def cf_connect_hosting(b):
+    """Serve the store's domain (and www) from an Appwrite Site: add the domains to the site, then point Cloudflare DNS at Appwrite."""
+    from appwrite.exception import AppwriteException
+    from appwrite.services.proxy import Proxy
+    zone_id, domain, site_id = need(b, "zoneId", "domain", "siteId")
+    target = env("APPWRITE_SITES_CNAME_TARGET").strip().rstrip(".")
+    proxy = Proxy(appwrite_client())
+    hosts = [domain, f"www.{domain}"]
+    added = []
+    for host in hosts:
+        try:
+            proxy.create_site_rule(host, site_id)
+            added.append(host)
+        except AppwriteException as e:
+            if e.code != 409:  # 409 = this domain is already on the project
+                raise _aw_err(e)
+    # DNS-only CNAMEs (apex works on Cloudflare through CNAME flattening) so Appwrite can issue the certificate.
     for r in cf("GET", f"/zones/{zone_id}/dns_records", params={"per_page": 500}):
         if r["name"] in hosts and r["type"] in ("A", "AAAA", "CNAME"):
             cf("DELETE", f"/zones/{zone_id}/dns_records/{r['id']}")
     created = []
-    for host in sorted(hosts):  # apex CNAME works on Cloudflare via CNAME flattening
+    for host in hosts:
         cf("POST", f"/zones/{zone_id}/dns_records", json={"type": "CNAME", "name": host, "content": target, "proxied": False, "ttl": 1})
         created.append(f"CNAME {host} -> {target}")
-    nf("PATCH", f"/sites/{site_id}", json={"custom_domain": domain, "domain_aliases": sorted(set(site.get("domain_aliases") or []) | {f"www.{domain}"})})
+    for rule in _rules_for(site_id):  # ask Appwrite to verify now; it also retries on its own
+        if rule["domain"] in hosts and rule["status"] != "verified":
+            try:
+                proxy.update_rule_status(rule["id"])
+            except AppwriteException:
+                pass
+    return {"created": created, "domainsAdded": added}
+
+
+def hosting_sites(_):
+    from appwrite.services.sites import Sites
     try:
-        nf("POST", f"/sites/{site_id}/ssl")  # ask Netlify to (re)provision Let's Encrypt
+        sites = Sites(appwrite_client()).list().sites
+    except Exception as e:  # noqa: BLE001
+        raise _aw_err(e)
+    return {"sites": [{"id": _get(x, "id"), "name": _get(x, "name"), "framework": _get(x, "framework"),
+                       "status": _get(x, "latestdeploymentstatus")} for x in sites]}
+
+
+def hosting_site(b):
+    from appwrite.services.sites import Sites
+    (site_id,) = need(b, "siteId")
+    try:
+        x = Sites(appwrite_client()).get(site_id)
+        domains = _rules_for(site_id)
+    except Exception as e:  # noqa: BLE001
+        raise _aw_err(e)
+    return {"id": _get(x, "id"), "name": _get(x, "name"), "framework": _get(x, "framework"), "live": _get(x, "live"),
+            "deploymentId": _get(x, "deploymentid"), "deployedAt": _get(x, "deploymentcreatedat"),
+            "repository": bool(_get(x, "providerrepositoryid")), "branch": _get(x, "providerbranch"), "domains": domains}
+
+
+def hosting_deployments(b):
+    from appwrite.query import Query
+    from appwrite.services.sites import Sites
+    (site_id,) = need(b, "siteId")
+    try:
+        sites = Sites(appwrite_client())
+        active = _get(sites.get(site_id), "deploymentid")
+        deps = sites.list_deployments(site_id, queries=[Query.order_desc("$createdAt"), Query.limit(15)]).deployments
+    except Exception as e:  # noqa: BLE001
+        raise _aw_err(e)
+    return {"deployments": [{"id": _get(d, "id"), "status": _get(d, "status"), "active": _get(d, "id") == active,
+                             "message": _get(d, "providercommitmessage"), "branch": _get(d, "providerbranch"),
+                             "commit": _get(d, "providercommithash"), "createdAt": _get(d, "createdat"),
+                             "buildSeconds": _get(d, "buildduration"), "type": _get(d, "type")} for d in deps]}
+
+
+def hosting_redeploy(b):
+    """Rebuild from the connected Git branch, or re-run the latest deployment if the site isn't connected to Git."""
+    from appwrite.enums.vcs_reference_type import VCSReferenceType
+    from appwrite.query import Query
+    from appwrite.services.sites import Sites
+    (site_id,) = need(b, "siteId")
+    sites = Sites(appwrite_client())
+    try:
+        site = sites.get(site_id)
+        if _get(site, "providerrepositoryid"):
+            d = sites.create_vcs_deployment(site_id, VCSReferenceType.BRANCH, _get(site, "providerbranch") or "main", activate=True)
+        else:
+            latest = sites.list_deployments(site_id, queries=[Query.order_desc("$createdAt"), Query.limit(1)]).deployments
+            if not latest:
+                raise HttpError("This site has no deployments yet. Connect it to Git or upload one in Appwrite.", 409)
+            d = sites.create_duplicate_deployment(site_id, _get(latest[0], "id"))
     except HttpError:
-        pass  # DNS may not have propagated yet; Netlify retries automatically
-    return {"created": created, "netlify": f"custom domain set to {domain}"}
-
-
-def nf_sites(_):
-    sites = nf("GET", "/sites", params={"per_page": 100, "filter": "all"})
-    return {"sites": [{"id": s["id"], "name": s["name"], "url": s.get("ssl_url") or s.get("url")} for s in sites]}
-
-
-def nf_site(b):
-    (site_id,) = need(b, "siteId")
-    s = nf("GET", f"/sites/{site_id}")
-    keys = ("id", "name", "url", "ssl_url", "admin_url", "custom_domain", "domain_aliases", "ssl")
-    out = {k: s.get(k) for k in keys}
-    out["published_deploy"] = {k: (s.get("published_deploy") or {}).get(k) for k in ("id", "published_at")}
-    return out
-
-
-def nf_deploys(b):
-    (site_id,) = need(b, "siteId")
-    deploys = nf("GET", f"/sites/{site_id}/deploys", params={"per_page": 15})
-    keys = ("id", "state", "branch", "title", "commit_ref", "created_at", "deploy_time", "error_message", "deploy_ssl_url")
-    return {"deploys": [{k: d.get(k) for k in keys} for d in deploys]}
-
-
-def nf_build(b):
-    (site_id,) = need(b, "siteId")
-    nf("POST", f"/sites/{site_id}/builds", json={"clear_cache": bool(b.get("clearCache"))})
-    return {"ok": True}
+        raise
+    except Exception as e:  # noqa: BLE001
+        raise _aw_err(e)
+    return {"ok": True, "deploymentId": _get(d, "id")}
 
 
 def ga4(b):
@@ -412,11 +468,11 @@ ROUTES = {
     "/cloudflare/dns/update": cf_dns_update,
     "/cloudflare/dns/delete": cf_dns_delete,
     "/cloudflare/purge": cf_purge,
-    "/cloudflare/connect-netlify": cf_connect_netlify,
-    "/netlify/sites": nf_sites,
-    "/netlify/site": nf_site,
-    "/netlify/deploys": nf_deploys,
-    "/netlify/build": nf_build,
+    "/cloudflare/connect-hosting": cf_connect_hosting,
+    "/hosting/sites": hosting_sites,
+    "/hosting/site": hosting_site,
+    "/hosting/deployments": hosting_deployments,
+    "/hosting/redeploy": hosting_redeploy,
     "/google/ga4": ga4,
     "/google/gsc": gsc,
     "/google/gsc/sitemaps": gsc_sitemaps,

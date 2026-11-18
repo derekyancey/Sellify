@@ -33,8 +33,8 @@ function DomainsInner() {
     <>
       <PageHeader title="Domain & DNS" subtitle={`${s.domain} · managed by Cloudflare`} actions={<>
         <Button loading={busy === "purge"} onClick={() => act("purge", () => ops("/cloudflare/purge", { zoneId }), "Cloudflare cache purged.")}><RefreshCw className="size-4" />Purge cache</Button>
-        {s.netlifySiteId && <Button loading={busy === "connect"} onClick={() => confirm(`Point ${s.domain} and www.${s.domain} at Netlify? Existing apex/www A, AAAA and CNAME records will be replaced.`) &&
-          act("connect", () => ops("/cloudflare/connect-netlify", { zoneId, domain: s.domain, netlifySiteId: s.netlifySiteId }), "Domain pointed at Netlify. SSL can take a few minutes to issue.")}><Link2 className="size-4" />Point to Netlify</Button>}
+        {s.hostingSiteId && <Button loading={busy === "connect"} onClick={() => confirm(`Serve ${s.domain} and www.${s.domain} from your Appwrite site? Existing root/www A, AAAA and CNAME records will be replaced. Mail (MX) and TXT records are not touched.`) &&
+          act("connect", () => ops("/cloudflare/connect-hosting", { zoneId, domain: s.domain, siteId: s.hostingSiteId }), "Domain connected to Appwrite Sites. Verification and HTTPS usually take a few minutes.")}><Link2 className="size-4" />Point to Appwrite Sites</Button>}
       </>} />
       {msg && <div className={`mb-4 rounded-lg px-3 py-2 text-sm ${msg.startsWith("Error") ? "bg-red-50 text-red-800" : "bg-emerald-50 text-emerald-800"}`}>{msg}</div>}
 
@@ -80,7 +80,7 @@ function DomainsInner() {
             ))}
           </Table>
         )}
-        <p className="mt-3 text-xs text-zinc-500">Tip: records pointing at Netlify should be <strong>DNS only</strong> so Netlify can issue the SSL certificate.</p>
+        <p className="mt-3 text-xs text-zinc-500">Tip: records pointing at Appwrite Sites should be <strong>DNS only</strong> so Appwrite can issue the HTTPS certificate.</p>
       </Card>
 
       {editing && <RecordForm initial={editing} onClose={() => setEditing(null)} onSave={async rec => {
@@ -107,7 +107,7 @@ function RecordForm({ initial, onClose, onSave }: { initial: DnsRecord; onClose(
         <Field label="Type"><Select value={r.type} onChange={e => setR({ ...r, type: e.target.value })}>{TYPES.map(t => <option key={t}>{t}</option>)}</Select></Field>
         <div className="col-span-2"><Field label="Name" hint="Use @ or the domain for the root"><Input value={r.name} onChange={e => setR({ ...r, name: e.target.value })} /></Field></div>
       </div>
-      <Field label="Content"><Input value={r.content} onChange={e => setR({ ...r, content: e.target.value })} placeholder={r.type === "CNAME" ? "your-site.netlify.app" : r.type === "A" ? "192.0.2.1" : ""} /></Field>
+      <Field label="Content"><Input value={r.content} onChange={e => setR({ ...r, content: e.target.value })} placeholder={r.type === "CNAME" ? "target from Appwrite" : r.type === "A" ? "192.0.2.1" : ""} /></Field>
       <div className="grid grid-cols-2 gap-3">
         <Field label="TTL"><Select value={r.ttl} onChange={e => setR({ ...r, ttl: +e.target.value })}>{[[1, "Auto"], [300, "5 min"], [3600, "1 hour"], [86400, "1 day"]].map(([v, l]) => <option key={v} value={v}>{l}</option>)}</Select></Field>
         {r.type === "MX" && <Field label="Priority"><Input type="number" value={r.priority ?? 10} onChange={e => setR({ ...r, priority: +e.target.value })} /></Field>}

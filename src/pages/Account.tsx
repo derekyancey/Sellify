@@ -33,7 +33,7 @@ export function IntegrationStatus() {
   const { data, error, loading } = useAsync(() => ops("/health"), []);
   const items = [
     ["cloudflare", "Cloudflare", "CLOUDFLARE_API_TOKEN"],
-    ["netlify", "Netlify", "NETLIFY_AUTH_TOKEN"],
+    ["hosting", "Hosting (Appwrite Sites) custom domains", "APPWRITE_SITES_CNAME_TARGET"],
     ["google", "Google (Search Console + GA4)", "GOOGLE_SERVICE_ACCOUNT_JSON"],
     ["stripe", "Stripe (cards, Apple Pay, Google Pay)", "STRIPE_SECRET_KEY on both functions, and STRIPE_WEBHOOK_SECRET on checkout"],
     ["paypal", "PayPal", "PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET and PAYPAL_ENV on both functions"],

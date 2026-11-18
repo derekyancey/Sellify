@@ -13,7 +13,7 @@ A Shopify-style admin for **all of your websites** in one place. Switch between 
 | **Content** | Files (images for products and emails) | Appwrite Storage |
 | **Analytics / SEO** | GA4, Search Console, crawler, PageSpeed, sitemaps | Google, Python crawler |
 | **Sales channels** | Online store (embed snippet), Google & YouTube and TikTok (product feed) | yancey.js, Merchant Center free listings |
-| **Infrastructure** | Domain & DNS, Deploys | Cloudflare, Netlify |
+| **Infrastructure** | Domain & DNS, Deploys | Cloudflare, Appwrite Sites |
 | **Checkout** | Cards, Apple Pay, Google Pay, PayPal | Stripe Checkout, PayPal |
 
 ### Roadmap (shown in-app as "soon")
@@ -25,15 +25,15 @@ Each planned page already describes its free approach. In brief:
 | Shipping labels | Shippo / EasyPost APIs: pay per label, no monthly fee |
 | Gift cards, Purchase orders, Transfers, Companies, Menus | Custom tables in Appwrite, no third-party cost |
 | Attribution | UTM tags + GA4 source/medium joined with orders |
-| Blog & pages | [Decap CMS](https://decapcms.org) (open source, Git-based, made for Netlify) |
+| Blog & pages | [Decap CMS](https://decapcms.org) (open source, Git-based) |
 | Finance | Stripe Balance/Payouts + PayPal Reporting APIs (read-only) |
 | Point of sale | Stripe Terminal / Tap to Pay (per transaction) |
 
 ```
- Browser (React + Vite + Tailwind, hosted on Netlify)
+ Browser (React + Vite + Tailwind, hosted on Appwrite Sites)
    │  Appwrite Web SDK (login session)
    ├──► Appwrite Database ── sites · products · orders · customers
-   ├──► Appwrite Function "site-ops" (Python) ── Cloudflare · Netlify · Search Console · GA4 · crawler
+   ├──► Appwrite Function "site-ops" (Python) ── Cloudflare · Appwrite Sites · Search Console · GA4 · crawler
    └──► PageSpeed Insights API (called directly, it's public)
 ```
 
@@ -52,22 +52,22 @@ With no `VITE_APPWRITE_PROJECT_ID` set, the app runs on sample data for two stor
 
 **realniggafoods.com hosts Yancey itself**, the way shopify.com hosts Shopify. You sign in there and see all of your websites as **stores**. Each store has its own **Store settings**, where you add or change its URL; a store can be created before it has one.
 
-The domain is already on Cloudflare, so there's no Namecheap step:
+Everything runs on **Appwrite** (database, login, files, functions and hosting) plus **Cloudflare** (DNS). The domain is already on Cloudflare, so there's no Namecheap step:
 
-1. **Deploy the dashboard to Netlify:** *Add new site → Import an existing project → GitHub → this repo*. The build settings come from `netlify.toml`. Add the `VITE_*` variables from `.env.example` under *Site configuration → Environment variables*.
-2. **Netlify → Domain management → Add a domain:** `realniggafoods.com`. Netlify adds `www` as an alias.
-3. **Cloudflare → realniggafoods.com → DNS:**
-   - Remove any existing `A`/`AAAA`/`CNAME` records for the root and `www`.
-   - Add `CNAME @ → <your-site>.netlify.app` and `CNAME www → <your-site>.netlify.app`, both **DNS only** (grey cloud), so Netlify can issue the HTTPS certificate.
+1. **Host the dashboard on Appwrite Sites:** run `appwrite push sites` (the `yancey` site in `appwrite.json`: Vite, static, `npm run build`, output `dist`, fallback `index.html`). Or in the console use *Sites → Create site → Connect Git repository → this repo* with the same settings, which redeploys on every push. Add the `VITE_*` variables from `.env.example` under the site's *Settings → Environment variables*.
+2. **Add the domain:** *Sites → yancey → Domains → Add domain* → `realniggafoods.com` (and `www.realniggafoods.com`). Appwrite shows the DNS record to create.
+3. **Cloudflare → realniggafoods.com → DNS:** create the records Appwrite shows. Use a `CNAME` at the root, which Cloudflare flattens. Set them to **DNS only** (grey cloud) so Appwrite can issue the HTTPS certificate. Leave the MX, SPF, DMARC and Google verification records alone.
 4. **Appwrite → Overview → Platforms:** add Web platforms for `realniggafoods.com`, `www.realniggafoods.com` and `localhost`.
-5. Open https://realniggafoods.com, sign in, then **Add store** for each of your websites and give each its URL under **Store settings**.
+5. Open https://realniggafoods.com, sign in, then **Add store** for each website and give each its URL under **Store settings**.
+
+**Stores hosted on Appwrite Sites, too:** copy the CNAME target Appwrite shows into `APPWRITE_SITES_CNAME_TARGET` on the `site-ops` function. After that, each store's **Domain & DNS → Point to Appwrite Sites** adds the store's domain and `www` to its Appwrite site and creates the DNS-only CNAMEs in Cloudflare in one click.
 
 Store emails (receipts, campaigns) are sent from each store's own domain, never from realniggafoods.com.
 
 ## Going live
 
 ### 1. Appwrite (database + login)
-1. Create a project at [cloud.appwrite.io](https://cloud.appwrite.io). Under **Overview → Integrations → Platforms** add a **Web** platform for `localhost` and your dashboard's domain (e.g. `admin.yourdomain.com` or `*.netlify.app`).
+1. Create a project at [cloud.appwrite.io](https://cloud.appwrite.io). Under **Overview → Integrations → Platforms** add a **Web** platform for `localhost` and your dashboard's domain (`realniggafoods.com`).
 2. Create an API key (**Overview → Integrations → API keys**) with the `databases`, `tables`, `teams` and `users` scopes, then run:
    ```bash
    pip install -r appwrite/requirements.txt
@@ -87,18 +87,18 @@ Set these function environment variables:
 | `ADMIN_TEAM_ID` | `admins` (created by setup.py) |
 | `CLOUDFLARE_API_TOKEN` | Cloudflare → My Profile → API Tokens → custom token with **Zone:Read, DNS:Edit, Cache Purge:Purge** for all zones (add **Zone:Edit** if you want "Add to Cloudflare") |
 | `CLOUDFLARE_ACCOUNT_ID` | Only needed for "Add to Cloudflare"; shown on your Cloudflare dashboard sidebar |
-| `NETLIFY_AUTH_TOKEN` | Netlify → User settings → Applications → Personal access tokens |
+| `APPWRITE_SITES_CNAME_TARGET` | The CNAME value Appwrite shows under *Sites → (site) → Domains → Add domain* |
 | `GOOGLE_SERVICE_ACCOUNT_JSON` | See below. Paste the whole JSON key file. |
 
 **Google (free):** in [Google Cloud console](https://console.cloud.google.com) create a project, enable the **Google Search Console API** and **Google Analytics Data API**, create a service account and download a JSON key. Then add the service account's email (shown in **Account → Integration status**) as a user in each **Search Console property** (Full) and each **GA4 property** (Viewer).
 
-### 3. Each Namecheap domain → Cloudflare → Netlify
-1. In Yancey, **Your stores → Add store**, type the domain and click **Add to Cloudflare** (or add it in Cloudflare yourself and click **Find by domain**).
-2. In Namecheap: **Domain List → Manage → Nameservers → Custom DNS**, and enter the two Cloudflare nameservers Yancey shows. Activation usually takes under an hour.
-3. Pick the Netlify site, save, then on **Domain & DNS** click **Point to Netlify**. It creates DNS-only CNAMEs for the root and `www` and registers the domain on Netlify so it can issue the SSL certificate.
+### 3. Each store's domain → Cloudflare → Appwrite Sites
+1. In Yancey, **Your stores → Add store**, then under **Store settings → Store URL** add the domain and click **Add to Cloudflare** (or **Find by domain** if it's already there).
+2. If the domain is registered at Namecheap: **Domain List → Manage → Nameservers → Custom DNS**, and enter the two Cloudflare nameservers Yancey shows. Activation usually takes under an hour.
+3. Pick the store's Appwrite site under **Connections**, then on **Domain & DNS** click **Point to Appwrite Sites**.
 
-### 4. Host the dashboard on Netlify
-Import this repo into Netlify (build settings come from `netlify.toml`) and add the `VITE_*` variables from `.env.example` under **Site configuration → Environment variables**. Remember to add the Netlify URL as a Web platform in Appwrite.
+### 4. Host the dashboard on Appwrite Sites
+`appwrite push sites` deploys the `yancey` site from `appwrite.json`. Or connect this repo under *Sites → Create site* so it redeploys on every push. Add the `VITE_*` variables from `.env.example` under the site's *Settings → Environment variables*, and add its domain as a Web platform in Appwrite. See "Your setup" above for realniggafoods.com.
 
 ## Taking payments: Stripe, Apple Pay, Google Pay, PayPal
 
@@ -195,7 +195,7 @@ appwrite/functions/checkout/src/
   payments.py              Stripe Checkout and PayPal Orders v2
   store.py                 cart pricing, idempotent order creation
 appwrite/functions/site-ops/src/
-  main.py                  router, auth check, Cloudflare + Netlify
+  main.py                  router, auth check, Cloudflare + Appwrite Sites hosting
   google_apis.py           Search Console + GA4
   crawler.py               SEO crawler
 ```

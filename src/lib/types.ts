@@ -5,7 +5,7 @@ export interface Site extends Base {
   domain?: string;             // e.g. example.com (optional: a store can be created before it has a URL)
   currency: string;            // ISO code, e.g. USD
   cloudflareZoneId?: string;
-  netlifySiteId?: string;
+  hostingSiteId?: string;
   gscProperty?: string;        // e.g. sc-domain:example.com or https://example.com/
   ga4PropertyId?: string;      // numeric GA4 property id
   // Email (Resend). Nothing is sent until ownerEmail is set and emailStatus is "verified".

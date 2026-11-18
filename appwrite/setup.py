@@ -46,7 +46,7 @@ SCHEMA = {
     "sites": {
         "public_read": False,
         "columns": [S("name", 128, True), S("domain", 255), S("currency", 8), S("cloudflareZoneId", 64),
-                    S("netlifySiteId", 64), S("gscProperty", 255), S("ga4PropertyId", 32), S("feedProductPath", 255),
+                    S("hostingSiteId", 64), S("gscProperty", 255), S("ga4PropertyId", 32), S("feedProductPath", 255),
                     # email setup: nothing is sent until ownerEmail is confirmed and emailStatus is "verified"
                     S("ownerEmail", 255), S("senderName", 128), S("senderAddress", 255), S("emailDomainId", 64),
                     E("emailStatus", ["none", "pending", "verified", "failed"], "none"),
@@ -194,7 +194,7 @@ def main():
             row.update(domain=store_domain, gscProperty=f"sc-domain:{store_domain}")
         ensure(f"store '{name}' ({store_domain or 'no URL yet'})", lambda: db.create_row(DB_ID, "sites", ID.unique(), row))
 
-    print("\nDone. Put these in your .env / Netlify environment:")
+    print("\nDone. Put these in your .env and on the Yancey site in Appwrite (Sites → yancey → Settings → Environment variables):")
     print(f"  VITE_APPWRITE_ENDPOINT={os.environ.get('APPWRITE_ENDPOINT', 'https://cloud.appwrite.io/v1')}")
     print(f"  VITE_APPWRITE_PROJECT_ID={os.environ['APPWRITE_PROJECT_ID']}")
     print(f"  VITE_APPWRITE_DATABASE_ID={DB_ID}")

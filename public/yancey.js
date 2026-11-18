@@ -1,7 +1,7 @@
 /*!
  * yancey.js: drop-in cart + checkout for your storefront sites.
  *
- * <script src="https://YOUR-DASHBOARD.netlify.app/yancey.js"
+ * <script src="https://YOUR-YANCEY-DOMAIN/yancey.js"
  *         data-endpoint="https://<region>.cloud.appwrite.io/v1"
  *         data-project="YOUR_PROJECT_ID"
  *         data-site="SITE_ID_FROM_SELLIFY"

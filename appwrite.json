@@ -18,7 +18,11 @@
       "enabled": true,
       "logging": true,
       "scopes": [
-        "teams.read"
+        "teams.read",
+        "sites.read",
+        "sites.write",
+        "rules.read",
+        "rules.write"
       ]
     },
     {
@@ -60,6 +64,23 @@
         "rows.read",
         "rows.write"
       ]
+    }
+  ],
+  "sites": [
+    {
+      "$id": "yancey",
+      "name": "Yancey",
+      "framework": "vite",
+      "adapter": "static",
+      "buildRuntime": "node-22",
+      "installCommand": "npm install",
+      "buildCommand": "npm run build",
+      "outputDirectory": "./dist",
+      "fallbackFile": "index.html",
+      "path": ".",
+      "enabled": true,
+      "logging": true,
+      "timeout": 30
     }
   ]
 }

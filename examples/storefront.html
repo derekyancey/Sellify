@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Minimal storefront using yancey.js. Copy into any site you host on Netlify.
+  Minimal storefront using yancey.js. Copy into any site you host on Appwrite Sites (or anywhere).
   1. Replace the data-* values (Yancey → Sites & settings → "Sell on your site" shows them filled in).
   2. Add this site's domain as a Web platform in your Appwrite project (needed for browser requests).
   This page is also its own success page: it passes its own URL as successUrl, so Stripe and PayPal send buyers back here.
@@ -52,7 +52,7 @@
     <p class="muted">You'll be redirected to a secure Stripe or PayPal page to pay.</p>
   </aside>
 
-  <script src="https://YOUR-DASHBOARD.netlify.app/yancey.js"
+  <script src="https://YOUR-YANCEY-DOMAIN/yancey.js"
           data-endpoint="https://cloud.appwrite.io/v1"
           data-project="YOUR_APPWRITE_PROJECT_ID"
           data-site="YOUR_SITE_ID"></script>
