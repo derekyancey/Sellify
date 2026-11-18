@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AlertTriangle, CheckCircle2, Circle } from "lucide-react";
-import { useSite } from "../context/Site";
+import { useSite, useStorePath } from "../context/Site";
 import { list, ops } from "../lib/data";
 import { useAsync } from "../lib/useAsync";
 import { date, daysAgo, money, num, ymd } from "../lib/format";
@@ -12,6 +12,7 @@ import { FinStatus, FulStatus } from "./Orders";
 export default function HomePage() {
   const { site } = useSite();
   const s = site!;
+  const sp = useStorePath();
   const store = useAsync(async () => {
     const [orders, products, customers] = await Promise.all([list("orders", s.$id), list("products", s.$id), list("customers", s.$id)]);
     return { orders, products, customers };
@@ -56,8 +57,8 @@ export default function HomePage() {
 
       {(toFulfill.length > 0 || lowStock.length > 0) && (
         <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-          {toFulfill.length > 0 && <Link to="/orders?filter=unfulfilled" className="flex-1 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900"><strong>{toFulfill.length}</strong> paid {toFulfill.length === 1 ? "order" : "orders"} waiting to be fulfilled →</Link>}
-          {lowStock.length > 0 && <Link to="/products" className="flex flex-1 items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-900"><AlertTriangle className="size-4" /><span><strong>{lowStock.length}</strong> {lowStock.length === 1 ? "product" : "products"} low on stock →</span></Link>}
+          {toFulfill.length > 0 && <Link to={sp("/orders?filter=unfulfilled")} className="flex-1 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900"><strong>{toFulfill.length}</strong> paid {toFulfill.length === 1 ? "order" : "orders"} waiting to be fulfilled →</Link>}
+          {lowStock.length > 0 && <Link to={sp("/products/inventory")} className="flex flex-1 items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-900"><AlertTriangle className="size-4" /><span><strong>{lowStock.length}</strong> {lowStock.length === 1 ? "product" : "products"} low on stock →</span></Link>}
         </div>
       )}
 
@@ -85,7 +86,7 @@ export default function HomePage() {
         </Card>
       </div>
 
-      <Card title="Recent orders" className="mt-4" actions={<Link to="/orders" className="text-sm text-zinc-500 hover:text-zinc-900">View all</Link>}>
+      <Card title="Recent orders" className="mt-4" actions={<Link to={sp("/orders")} className="text-sm text-zinc-500 hover:text-zinc-900">View all</Link>}>
         <Table head={["Order", "Date", "Customer", "Payment", "Fulfillment", "Total"]} empty={!orders.length}>
           {orders.slice(0, 6).map(o => (
             <tr key={o.$id}>
@@ -96,20 +97,22 @@ export default function HomePage() {
           ))}
         </Table>
       </Card>
-      {!s.ga4PropertyId && !s.gscProperty && <p className="mt-4 text-xs text-zinc-500">Tip: connect Google Analytics and Search Console in <Link className="underline" to="/settings">settings</Link> to see traffic here. <Badge tone="blue">free</Badge></p>}
+      {!s.ga4PropertyId && !s.gscProperty && <p className="mt-4 text-xs text-zinc-500">Tip: connect Google Analytics and Search Console in <Link className="underline" to={sp("/settings")}>store settings</Link> to see traffic here. <Badge tone="blue">free</Badge></p>}
     </>
   );
 }
 
 function SetupChecklist({ site }: { site: Site }) {
+  const sp = useStorePath();
   const health = useAsync(() => ops("/health").catch(() => null), []);
   const payments = !!(health.data?.integrations?.stripe || health.data?.integrations?.paypal);
   const steps = [
+    { label: "Add your store's URL", done: !!site.domain, to: "/settings#url" },
     { label: "Confirm your email and verify your sending domain", done: site.emailStatus === "verified" && !!site.ownerEmail, to: "/settings#email" },
-    { label: "Connect the domain to Cloudflare", done: !!site.cloudflareZoneId, to: "/settings" },
-    { label: "Connect Netlify hosting", done: !!site.netlifySiteId, to: "/settings" },
-    { label: "Connect Google Analytics and Search Console", done: !!(site.ga4PropertyId && site.gscProperty), to: "/settings" },
-    { label: "Turn on payments (Stripe / PayPal)", done: payments, to: "/settings" },
+    { label: "Connect the domain to Cloudflare", done: !!site.cloudflareZoneId, to: "/settings#connections" },
+    { label: "Connect Netlify hosting", done: !!site.netlifySiteId, to: "/settings#connections" },
+    { label: "Connect Google Analytics and Search Console", done: !!(site.ga4PropertyId && site.gscProperty), to: "/settings#connections" },
+    { label: "Turn on payments (Stripe / PayPal)", done: payments, to: "/account" },
   ];
   const done = steps.filter(x => x.done).length;
   if (health.loading || done === steps.length) return null;
@@ -119,7 +122,7 @@ function SetupChecklist({ site }: { site: Site }) {
       <ul className="space-y-1.5 text-sm">
         {steps.map(x => (
           <li key={x.label}>
-            <Link to={x.to} className="flex items-center gap-2 hover:underline">
+            <Link to={x.to.startsWith("/account") ? x.to : sp(x.to)} className="flex items-center gap-2 hover:underline">
               {x.done ? <CheckCircle2 className="size-4 text-emerald-600" /> : <Circle className="size-4 text-zinc-300" />}
               <span className={x.done ? "text-zinc-400 line-through" : ""}>{x.label}</span>
             </Link>

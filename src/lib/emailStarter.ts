@@ -16,6 +16,6 @@ export const starterTemplate = (store: string, url: string) => `
       <tr><td style="padding:0 32px 24px;font-size:15px;line-height:1.6;color:#3f3f46">Write a short, friendly note about what's new, a sale, or a story from the shop.</td></tr>
       <tr><td style="padding:0 32px 32px"><a href="{{store_url}}" style="display:inline-block;background:#18181b;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:bold">Shop now</a></td></tr>
     </table>
-    <p style="font-size:12px;color:#71717a;margin:16px 0 0">You're getting this because you signed up at ${store} (${url}).<br/><a href="{{unsubscribe_url}}" style="color:#71717a">Unsubscribe</a></p>
+    <p style="font-size:12px;color:#71717a;margin:16px 0 0">You're getting this because you signed up at ${store}${url ? ` (${url})` : ""}.<br/><a href="{{unsubscribe_url}}" style="color:#71717a">Unsubscribe</a></p>
   </td></tr>
 </table>`.trim();

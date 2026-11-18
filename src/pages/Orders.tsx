@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Download, Plus, Trash2 } from "lucide-react";
-import { useSite } from "../context/Site";
+import { storeSlug, useSite, useStorePath } from "../context/Site";
 import { createOrder, list, ops, update } from "../lib/data";
 import { useAsync } from "../lib/useAsync";
 import { date, dateTime, money } from "../lib/format";
@@ -40,6 +40,7 @@ const isDraft = (o: Order) => o.financialStatus === "pending" && (o.paymentProvi
 
 export default function Orders({ drafts = false }: { drafts?: boolean }) {
   const { site } = useSite(); const s = site!;
+  const sp = useStorePath();
   const [params, setParams] = useSearchParams();
   const filter = drafts ? "all" : (params.get("filter") as FilterKey) || "all";
   const [q, setQ] = useState("");
@@ -85,7 +86,7 @@ export default function Orders({ drafts = false }: { drafts?: boolean }) {
   return (
     <>
       <PageHeader title={drafts ? "Draft orders" : "Orders"} subtitle={drafts ? "Manual orders waiting for payment. Mark them paid once you've been paid." : `${data?.length ?? 0} total`} actions={<>
-        <Button onClick={() => downloadCsv(`${s.domain}-orders.csv`, rows.map(o => ({ order: o.number, date: o.$createdAt, customer: o.customerName, email: o.customerEmail, total: o.total, payment: o.financialStatus, provider: o.paymentProvider ?? "manual", paymentRef: o.paymentRef ?? "", fulfillment: o.fulfillmentStatus, items: o.items.map(i => `${i.quantity}x ${i.title}`).join("; ") })))}><Download className="size-4" />Export</Button>
+        <Button onClick={() => downloadCsv(`${storeSlug(s)}-orders.csv`, rows.map(o => ({ order: o.number, date: o.$createdAt, customer: o.customerName, email: o.customerEmail, total: o.total, payment: o.financialStatus, provider: o.paymentProvider ?? "manual", paymentRef: o.paymentRef ?? "", fulfillment: o.fulfillmentStatus, items: o.items.map(i => `${i.quantity}x ${i.title}`).join("; ") })))}><Download className="size-4" />Export</Button>
         <Button variant="primary" onClick={() => setCreating(true)}><Plus className="size-4" />{drafts ? "Create draft" : "Create order"}</Button>
       </>} />
       <Card>
@@ -130,7 +131,7 @@ export default function Orders({ drafts = false }: { drafts?: boolean }) {
               <label className="flex items-center gap-2"><input type="checkbox" checked={notifyShip} onChange={e => setNotifyShip(e.target.checked)} />Email {selected.customerEmail || "the customer"} when marked fulfilled</label>
               {notifyShip && <Input placeholder="Tracking number or link (optional)" value={tracking} onChange={e => setTracking(e.target.value)} />}
             </div>
-          ) : <p className="text-xs text-zinc-500">Shipping emails are off. <a className="underline" href="/settings#email">Set up email</a> to notify customers.</p>)}
+          ) : <p className="text-xs text-zinc-500">Shipping emails are off. <Link className="underline" to={sp("/settings#email")}>Set up email</Link> to notify customers.</p>)}
           <ul className="divide-y divide-zinc-100 rounded-lg border border-zinc-200 text-sm">
             {selected.items.map((li, i) => <li key={i} className="flex justify-between px-3 py-2"><span>{li.quantity} × {li.title}</span><span className="tabular-nums">{money(li.price * li.quantity, s.currency)}</span></li>)}
             <li className="flex justify-between px-3 py-2 font-semibold"><span>Total</span><span>{money(selected.total, s.currency)}</span></li>

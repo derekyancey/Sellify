@@ -1,25 +1,41 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { list } from "../lib/data";
 import type { Site } from "../lib/types";
 
-interface SiteCtx { sites: Site[]; site: Site | null; select(id: string): void; reload(): Promise<void>; loading: boolean }
-const Ctx = createContext<SiteCtx>(null!);
-const KEY = "yancey-current-site";
+interface StoresCtx { sites: Site[]; reload(): Promise<void>; loading: boolean }
+const Ctx = createContext<StoresCtx>(null!);
 
+/** All of the user's stores. The *current* store comes from the URL (/stores/:storeId/...). */
 export function SiteProvider({ children }: { children: ReactNode }) {
   const [sites, setSites] = useState<Site[]>([]);
-  const [currentId, setCurrentId] = useState<string | null>(() => { try { return localStorage.getItem(KEY); } catch { return null; } });
   const [loading, setLoading] = useState(true);
-
   const reload = useCallback(async () => {
     const rows = (await list("sites")).sort((a, b) => a.name.localeCompare(b.name));
     setSites(rows);
     setLoading(false);
   }, []);
   useEffect(() => { reload().catch(() => setLoading(false)); }, [reload]);
-
-  const select = (id: string) => { setCurrentId(id); try { localStorage.setItem(KEY, id); } catch { /* ignore */ } };
-  const site = sites.find(s => s.$id === currentId) ?? sites[0] ?? null;
-  return <Ctx.Provider value={{ sites, site, select, reload, loading }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ sites, reload, loading }}>{children}</Ctx.Provider>;
 }
-export const useSite = () => useContext(Ctx);
+
+export const useStores = () => useContext(Ctx);
+
+/** The store this page belongs to (null outside /stores/:storeId). */
+export function useSite() {
+  const { storeId } = useParams();
+  const { sites, reload, loading } = useContext(Ctx);
+  const navigate = useNavigate();
+  const site = sites.find(s => s.$id === storeId) ?? null;
+  const select = (id: string) => navigate(`/stores/${id}`);
+  return { sites, site, reload, loading, select };
+}
+
+/** Build a link inside the current store: sp("/orders") -> "/stores/<id>/orders". */
+export function useStorePath() {
+  const { storeId } = useParams();
+  return (path: string) => `/stores/${storeId}${path === "/" ? "" : path}`;
+}
+
+/** A label for file names etc. that works even before a store has a URL. */
+export const storeSlug = (s: Site) => s.domain || s.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");

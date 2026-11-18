@@ -10,6 +10,9 @@ def product_url(site, product):
 
 
 def build(site, products):
+    if not a(site, "domain"):
+        from errors import HttpError
+        raise HttpError("This store doesn't have a URL yet", 409)
     cur = (a(site, "currency") or "USD").upper()
     money = lambda v: f"{float(v):.2f} {cur}"
     items, skipped = [], []

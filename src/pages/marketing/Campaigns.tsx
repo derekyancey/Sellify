@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Plus, Send } from "lucide-react";
-import { useSite } from "../../context/Site";
+import { useSite, useStorePath } from "../../context/Site";
 import { create, list, ops, remove, update } from "../../lib/data";
 import { useAsync } from "../../lib/useAsync";
 import { dateTime } from "../../lib/format";
@@ -13,6 +13,7 @@ const RESEND_FREE_DAILY = 100;
 
 export default function Campaigns() {
   const { site } = useSite(); const s = site!;
+  const sp = useStorePath();
   const { data, loading, error, reload } = useAsync(async () => {
     const [campaigns, templates, segments, customers] = await Promise.all([list("campaigns", s.$id), list("templates", s.$id), list("segments", s.$id), list("customers", s.$id)]);
     return { campaigns, templates, segments, customers };
@@ -26,8 +27,8 @@ export default function Campaigns() {
       <PageHeader title="Campaigns" subtitle="Email your subscribers. Only customers who opted in to marketing are ever emailed."
         actions={<Button variant="primary" disabled={!data.templates.length} onClick={() => setEditing({ name: "", segmentId: "subscribers", templateId: data.templates[0]?.$id, subject: data.templates[0]?.subject })}><Plus className="size-4" />Create campaign</Button>} />
       {error && <ErrorBox error={error} />}
-      {s.emailStatus !== "verified" && <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">Finish <a className="underline" href="/settings#email">email setup</a> before sending campaigns.</div>}
-      {!data.templates.length && <div className="mb-4 rounded-lg bg-sky-50 px-3 py-2 text-sm text-sky-900">First, <Link className="underline" to="/marketing/designer">design an email template</Link>.</div>}
+      {s.emailStatus !== "verified" && <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">Finish <Link className="underline" to={sp("/settings#email")}>email setup</Link> before sending campaigns.</div>}
+      {!data.templates.length && <div className="mb-4 rounded-lg bg-sky-50 px-3 py-2 text-sm text-sky-900">First, <Link className="underline" to={sp("/marketing/designer")}>design an email template</Link>.</div>}
       <Card>
         <Table head={["Campaign", "Status", "Audience", "Sent", "Date"]} empty={!data.campaigns.length}>
           {data.campaigns.map(c => (

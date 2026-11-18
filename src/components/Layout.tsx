@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { ExternalLink, LogOut, Menu, Settings, X } from "lucide-react";
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { ChevronLeft, ExternalLink, LogOut, Menu, Settings, X } from "lucide-react";
 import { NAV } from "../lib/nav";
 import { useAuth } from "../context/Auth";
 import { useSite } from "../context/Site";
@@ -9,15 +9,22 @@ import { cx } from "./ui";
 
 export default function Layout() {
   const { user, logout } = useAuth();
-  const { sites, site, select } = useSite();
+  const { sites, site } = useSite();
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const { pathname: fullPath } = useLocation();
+  const base = `/stores/${site?.$id}`;
+  const pathname = fullPath.slice(base.length) || "/";
 
   const sidebar = (
     <nav className="flex h-full flex-col gap-4 overflow-y-auto p-3">
-      <div className="flex items-center gap-2 px-2 pt-1 text-lg font-bold text-white">
-        <span className="grid size-7 place-items-center rounded-lg bg-brand-500 text-sm">Y</span> Yancey
+      <div>
+        <Link to="/stores" className="flex items-center gap-2 px-2 pt-1 text-lg font-bold text-white">
+          <span className="grid size-7 place-items-center rounded-lg bg-brand-500 text-sm">Y</span> Yancey
+        </Link>
+        <Link to="/stores" onClick={() => setOpen(false)} className="mt-3 flex items-center gap-1 rounded-lg px-2 py-1 text-xs text-zinc-400 hover:bg-zinc-800 hover:text-white">
+          <ChevronLeft className="size-3.5" />All stores
+        </Link>
       </div>
       {NAV.map((g, gi) => (
         <div key={gi}>
@@ -27,7 +34,7 @@ export default function Layout() {
             const inSection = to === "/" ? pathname === "/" : pathname === section || pathname.startsWith(section + "/");
             return (
               <div key={to}>
-                <NavLink to={to} end={end ?? !!children} onClick={() => setOpen(false)}
+                <NavLink to={base + (to === "/" ? "" : to)} end={end ?? !!children} onClick={() => setOpen(false)}
                   className={({ isActive }) => cx("flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm",
                     isActive || (inSection && !children) ? "bg-zinc-800 text-white" : inSection ? "text-white" : "text-zinc-300 hover:bg-zinc-800/60 hover:text-white")}>
                   <Icon className="size-4" /><span className="flex-1">{label}</span>
@@ -36,7 +43,7 @@ export default function Layout() {
                 {children && inSection && (
                   <div className="mb-1 ml-[1.1rem] mt-0.5 border-l border-zinc-700 pl-3">
                     {children.map(c => (
-                      <NavLink key={c.to} to={c.to} end onClick={() => setOpen(false)}
+                      <NavLink key={c.to} to={base + c.to} end onClick={() => setOpen(false)}
                         className={({ isActive }) => cx("flex items-center justify-between rounded-md px-2 py-1 text-[13px]",
                           isActive ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-white")}>
                         {c.label}{c.planned && <span className="text-[10px] text-zinc-500">soon</span>}
@@ -50,10 +57,10 @@ export default function Layout() {
         </div>
       ))}
       <div className="mt-auto">
-        <NavLink to="/settings" onClick={() => setOpen(false)}
+        <NavLink to={base + "/settings"} onClick={() => setOpen(false)}
           className={({ isActive }) => cx("flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm",
             isActive ? "bg-zinc-800 text-white" : "text-zinc-300 hover:bg-zinc-800/60 hover:text-white")}>
-          <Settings className="size-4" />Sites &amp; settings
+          <Settings className="size-4" />Store settings
         </NavLink>
       </div>
     </nav>
@@ -75,19 +82,21 @@ export default function Layout() {
       <header className="sticky top-0 z-20 flex items-center gap-2 border-b border-zinc-200 bg-white/90 px-4 py-2.5 backdrop-blur">
         <button className="rounded p-1 lg:hidden" onClick={() => setOpen(true)} aria-label="Open menu"><Menu className="size-5" /></button>
         <select value={site?.$id ?? ""} aria-label="Current site"
-          onChange={e => e.target.value === "__new" ? navigate("/settings?new=1") : select(e.target.value)}
+          onChange={e => e.target.value === "__all" ? navigate("/stores") : e.target.value === "__new" ? navigate("/stores?new=1")
+            : navigate(`/stores/${e.target.value}${pathname.split("/").slice(0, 2).join("/").replace(/^\/$/, "")}`)}
           className="min-w-0 max-w-[60vw] rounded-lg border border-zinc-300 bg-white px-2.5 py-1.5 text-sm font-medium">
-          {sites.map(s => <option key={s.$id} value={s.$id}>{s.name} — {s.domain}</option>)}
-          <option value="__new">+ Add a site…</option>
+          {sites.map(s => <option key={s.$id} value={s.$id}>{s.name}{s.domain ? ` · ${s.domain}` : " · no URL yet"}</option>)}
+          <option value="__all">← All stores</option>
+          <option value="__new">+ Add a store…</option>
         </select>
-        {site && (
+        {site?.domain && (
           <a href={`https://${site.domain}`} target="_blank" rel="noreferrer" className="hidden items-center gap-1 text-sm text-zinc-500 hover:text-zinc-900 sm:flex">
             View site <ExternalLink className="size-3.5" />
           </a>
         )}
         <div className="ml-auto flex items-center gap-3">
           {isDemo && <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">Demo data</span>}
-          <span className="hidden text-sm text-zinc-600 sm:inline">{user?.name || user?.email}</span>
+          <Link to="/account" className="hidden text-sm text-zinc-600 hover:text-zinc-900 sm:inline">{user?.name || user?.email}</Link>
           {!isDemo && <button onClick={logout} className="rounded p-1 text-zinc-500 hover:bg-zinc-100" title="Sign out" aria-label="Sign out"><LogOut className="size-4" /></button>}
         </div>
       </header>

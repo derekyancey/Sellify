@@ -46,28 +46,23 @@ npm install
 npm run dev
 ```
 
-With no `VITE_APPWRITE_PROJECT_ID` set, the app runs on sample data for two stores, saved in your browser. Reset it under **Sites & settings**.
+With no `VITE_APPWRITE_PROJECT_ID` set, the app runs on sample data for two stores, saved in your browser. Reset it under **Store settings**.
 
-## Your setup: realniggafoods.com
+## Your setup: Yancey at realniggafoods.com
 
-The plan for the first store (a Namecheap domain, with DNS on Cloudflare and hosting on Netlify):
+**realniggafoods.com hosts Yancey itself**, the way shopify.com hosts Shopify. You sign in there and see all of your websites as **stores**. Each store has its own **Store settings**, where you add or change its URL; a store can be created before it has one.
 
-| Address | What it is | How |
-| --- | --- | --- |
-| `realniggafoods.com` and `www.` | The storefront | Its own Netlify site. Click **Domain & DNS → Point to Netlify** in Yancey. |
-| `admin.realniggafoods.com` | The Yancey dashboard (this repo) | Netlify custom domain + a DNS-only `CNAME admin → <dashboard>.netlify.app` in Cloudflare |
-| `orders@realniggafoods.com` | Sender for receipts, alerts and campaigns | Email setup step. Resend's records go on `send.` and `resend._domainkey`, so a mailbox at the root still works. |
+The domain is already on Cloudflare, so there's no Namecheap step:
 
-1. Run setup with your store included:
-   ```bash
-   APPWRITE_ENDPOINT=https://<region>.cloud.appwrite.io/v1 APPWRITE_PROJECT_ID=... APPWRITE_API_KEY=... \
-   ADMIN_EMAIL=you@example.com ADMIN_PASSWORD='...' STORE_DOMAIN=realniggafoods.com STORE_NAME='Your store name' \
-   python appwrite/setup.py
-   ```
-2. In Appwrite, add **Web platforms** for `localhost`, `admin.realniggafoods.com`, `realniggafoods.com` and `www.realniggafoods.com`.
-3. In Yancey: **Sites & settings → edit the store → Add to Cloudflare**. Then at Namecheap set **Custom DNS** to the two Cloudflare nameservers it shows.
-4. Once Cloudflare shows *active*: pick the storefront's Netlify site, then **Domain & DNS → Point to Netlify**.
-5. Add the `admin` CNAME for the dashboard, then do the email setup step and send a test.
+1. **Deploy the dashboard to Netlify:** *Add new site → Import an existing project → GitHub → this repo*. The build settings come from `netlify.toml`. Add the `VITE_*` variables from `.env.example` under *Site configuration → Environment variables*.
+2. **Netlify → Domain management → Add a domain:** `realniggafoods.com`. Netlify adds `www` as an alias.
+3. **Cloudflare → realniggafoods.com → DNS:**
+   - Remove any existing `A`/`AAAA`/`CNAME` records for the root and `www`.
+   - Add `CNAME @ → <your-site>.netlify.app` and `CNAME www → <your-site>.netlify.app`, both **DNS only** (grey cloud), so Netlify can issue the HTTPS certificate.
+4. **Appwrite → Overview → Platforms:** add Web platforms for `realniggafoods.com`, `www.realniggafoods.com` and `localhost`.
+5. Open https://realniggafoods.com, sign in, then **Add store** for each of your websites and give each its URL under **Store settings**.
+
+Store emails (receipts, campaigns) are sent from each store's own domain, never from realniggafoods.com.
 
 ## Going live
 
@@ -98,7 +93,7 @@ Set these function environment variables:
 **Google (free):** in [Google Cloud console](https://console.cloud.google.com) create a project, enable the **Google Search Console API** and **Google Analytics Data API**, create a service account and download a JSON key. Then add the service account's email (shown in **Sites & settings → Integration status**) as a user in each **Search Console property** (Full) and each **GA4 property** (Viewer).
 
 ### 3. Each Namecheap domain → Cloudflare → Netlify
-1. In Yancey, **Sites & settings → Add site**, type the domain and click **Add to Cloudflare** (or add it in Cloudflare yourself and click **Find by domain**).
+1. In Yancey, **Your stores → Add store**, type the domain and click **Add to Cloudflare** (or add it in Cloudflare yourself and click **Find by domain**).
 2. In Namecheap: **Domain List → Manage → Nameservers → Custom DNS**, and enter the two Cloudflare nameservers Yancey shows. Activation usually takes under an hour.
 3. Pick the Netlify site, save, then on **Domain & DNS** click **Point to Netlify**. It creates DNS-only CNAMEs for the root and `www` and registers the domain on Netlify so it can issue the SSL certificate.
 
@@ -136,7 +131,7 @@ Import this repo into Netlify (build settings come from `netlify.toml`) and add 
 
    The function's domain is shown under the function's **Domains** tab in Appwrite.
 3. **Enable refunds from the dashboard:** set `STRIPE_SECRET_KEY`, `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET` and `PAYPAL_ENV` on the `site-ops` function too.
-4. **On each storefront:** add the site's domain as a Web platform in Appwrite, then paste the snippet from **Sites & settings → Sell on your site**. `examples/storefront.html` is a complete starter page with a product grid, cart, and Stripe and PayPal buttons.
+4. **On each storefront:** add the site's domain as a Web platform in Appwrite, then paste the snippet from **Store settings → Sell on your site**. `examples/storefront.html` is a complete starter page with a product grid, cart, and Stripe and PayPal buttons.
 
 ```js
 await Yancey.products();                 // active products for this site
@@ -149,7 +144,7 @@ const order = await Yancey.handleReturn(); // on your success page: confirms Pay
 
 ## Email (receipts, order alerts, shipping notices)
 
-Email is a setup step for each site (**Sites & settings → Email**, also linked from the checklist on Home). **Nothing is sent until it's finished:**
+Email is a setup step for each site (**Store settings → Email**, also linked from the checklist on the store's Home). **Nothing is sent until it's finished:**
 
 1. **Your email:** where new-order alerts go and where customers' replies land. It's pre-filled from your login, but you must confirm it.
 2. **Verify your domain:** Yancey registers the store's domain with [Resend](https://resend.com) (free: 3,000 emails/month, 100/day) and adds the DKIM/SPF records to Cloudflare for you. These go on `resend._domainkey` and `send.` subdomains, so your existing mailbox records (MX at the root) aren't touched.

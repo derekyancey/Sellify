@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
-import { useSite } from "../context/Site";
+import { storeSlug, useSite } from "../context/Site";
 import { create, list, update } from "../lib/data";
 import { useAsync } from "../lib/useAsync";
 import { date, money } from "../lib/format";
@@ -25,7 +25,7 @@ export default function Customers() {
   return (
     <>
       <PageHeader title="Customers" subtitle={`${data?.length ?? 0} customers`} actions={<>
-        <Button onClick={() => downloadCsv(`${s.domain}-customers.csv`, rows.map(c => ({ name: c.name, email: c.email, phone: c.phone ?? "", subscribed: c.acceptsMarketing ? "yes" : "no", orders: c.ordersCount, spent: c.totalSpent })))}>Export</Button>
+        <Button onClick={() => downloadCsv(`${storeSlug(s)}-customers.csv`, rows.map(c => ({ name: c.name, email: c.email, phone: c.phone ?? "", subscribed: c.acceptsMarketing ? "yes" : "no", orders: c.ordersCount, spent: c.totalSpent })))}>Export</Button>
         <Button variant="primary" onClick={() => setAdding(true)}><Plus className="size-4" />Add customer</Button>
       </>} />
       <Card>

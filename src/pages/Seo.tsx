@@ -13,9 +13,9 @@ export default function Seo() {
     <>
       <PageHeader title="SEO" subtitle="Site crawler, PageSpeed Insights and sitemaps — all free" />
       <div className="space-y-6">
-        <Crawler key={s.$id} domain={s.domain} />
-        <PageSpeed key={s.$id + "ps"} domain={s.domain} />
-        {s.gscProperty && <Sitemaps property={s.gscProperty} domain={s.domain} />}
+        <Crawler key={s.$id} domain={s.domain!} />
+        <PageSpeed key={s.$id + "ps"} domain={s.domain!} />
+        {s.gscProperty && <Sitemaps property={s.gscProperty} domain={s.domain!} />}
       </div>
     </>
   );

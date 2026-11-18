@@ -9,7 +9,7 @@ their columns and indexes, and (optionally) your first admin login.
     export APPWRITE_PROJECT_ID=...                          # Appwrite console → project settings
     export APPWRITE_API_KEY=...                             # key with databases, tables, teams, users scopes
     export ADMIN_EMAIL=you@example.com ADMIN_PASSWORD=...   # optional: creates your login and adds it to the team
-    export STORE_DOMAIN=realniggafoods.com STORE_NAME="..."  # optional: creates your first store
+    export STORE_NAME="My Shop" STORE_DOMAIN=myshop.com     # optional: creates your first store (URL optional)
     python appwrite/setup.py
 """
 import os
@@ -45,7 +45,7 @@ E = lambda key, elements, default: ("enum", key, False, {"elements": elements, "
 SCHEMA = {
     "sites": {
         "public_read": False,
-        "columns": [S("name", 128, True), S("domain", 255, True), S("currency", 8), S("cloudflareZoneId", 64),
+        "columns": [S("name", 128, True), S("domain", 255), S("currency", 8), S("cloudflareZoneId", 64),
                     S("netlifySiteId", 64), S("gscProperty", 255), S("ga4PropertyId", 32), S("feedProductPath", 255),
                     # email setup: nothing is sent until ownerEmail is confirmed and emailStatus is "verified"
                     S("ownerEmail", 255), S("senderName", 128), S("senderAddress", 255), S("emailDomainId", 64),
@@ -186,12 +186,13 @@ def main():
         ensure(f"{email} on team '{TEAM_ID}'", lambda: teams.create_membership(TEAM_ID, ["owner"], user_id=user_id))
 
     store_domain = os.environ.get("STORE_DOMAIN", "").strip().lower().removeprefix("https://").removeprefix("http://").removeprefix("www.").rstrip("/")
-    if store_domain:
+    if store_domain or os.environ.get("STORE_NAME"):
         print("First store")
         name = os.environ.get("STORE_NAME") or store_domain.split(".")[0]
-        ensure(f"store '{name}' ({store_domain})", lambda: db.create_row(DB_ID, "sites", ID.unique(), {
-            "name": name, "domain": store_domain, "currency": os.environ.get("STORE_CURRENCY", "USD"),
-            "gscProperty": f"sc-domain:{store_domain}", "feedProductPath": "/?product={id}", "emailStatus": "none"}))
+        row = {"name": name, "currency": os.environ.get("STORE_CURRENCY", "USD"), "feedProductPath": "/?product={id}", "emailStatus": "none"}
+        if store_domain:
+            row.update(domain=store_domain, gscProperty=f"sc-domain:{store_domain}")
+        ensure(f"store '{name}' ({store_domain or 'no URL yet'})", lambda: db.create_row(DB_ID, "sites", ID.unique(), row))
 
     print("\nDone. Put these in your .env / Netlify environment:")
     print(f"  VITE_APPWRITE_ENDPOINT={os.environ.get('APPWRITE_ENDPOINT', 'https://cloud.appwrite.io/v1')}")

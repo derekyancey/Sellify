@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ImageOff, Plus } from "lucide-react";
-import { useSite } from "../context/Site";
+import { storeSlug, useSite } from "../context/Site";
 import { create, list, remove, update } from "../lib/data";
 import { useAsync } from "../lib/useAsync";
 import { money } from "../lib/format";
@@ -21,7 +21,7 @@ export default function Products() {
   return (
     <>
       <PageHeader title="Products" subtitle={`${data?.length ?? 0} products`} actions={<>
-        <Button onClick={() => downloadCsv(`${s.domain}-products.csv`, rows.map(({ $id, siteId, ...p }) => p))}>Export</Button>
+        <Button onClick={() => downloadCsv(`${storeSlug(s)}-products.csv`, rows.map(({ $id, siteId, ...p }) => p))}>Export</Button>
         <Button variant="primary" onClick={() => setEditing({ ...blank })}><Plus className="size-4" />Add product</Button>
       </>} />
       <Card>

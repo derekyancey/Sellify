@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Eye, Mail, Play, ShoppingCart, UserPlus, Undo2 } from "lucide-react";
-import { useSite } from "../../context/Site";
+import { useSite, useStorePath } from "../../context/Site";
 import { automations as runAutomations, create, list, update } from "../../lib/data";
 import { useAsync } from "../../lib/useAsync";
 import { dateTime } from "../../lib/format";
@@ -19,6 +19,7 @@ const KINDS: { type: AutomationType; title: string; icon: typeof Mail; desc: str
 
 export default function Automations() {
   const { site } = useSite(); const s = site!;
+  const sp = useStorePath();
   const { data, loading, error, reload } = useAsync(async () => ({ autos: await list("automations", s.$id), templates: await list("templates", s.$id) }), [s.$id]);
   const [busy, setBusy] = useState<string | null>(null);
   const [report, setReport] = useState<{ mode: string; results: any[] } | null>(null);
@@ -47,7 +48,7 @@ export default function Automations() {
       <PageHeader title="Automations" subtitle="Emails that send themselves. Checked every 30 minutes by a scheduled Appwrite function (free)."
         actions={<><Button loading={busy === "preview"} onClick={() => run("preview")}><Eye className="size-4" />Preview due emails</Button>
           <Button variant="primary" disabled={!verified} loading={busy === "run"} onClick={() => run("run")}><Play className="size-4" />Run now</Button></>} />
-      {!verified && <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">Automations stay paused until <a className="underline" href="/settings#email">email setup</a> is verified.</div>}
+      {!verified && <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">Automations stay paused until <Link className="underline" to={sp("/settings#email")}>email setup</Link> is verified.</div>}
       {(err || error) && <div className="mb-4"><ErrorBox error={err || error!} /></div>}
       {report && (
         <div className="mb-4 rounded-lg bg-sky-50 px-3 py-2 text-sm text-sky-900">
@@ -70,7 +71,7 @@ export default function Automations() {
                     onBlur={e => { const v = Math.max(0, +e.target.value || 0); save(k.type, { delayHours: k.unit === "days" ? v * 24 : v }); }} className="w-28" />
                 </Field>
                 {k.needsTemplate && <>
-                  <Field label="Template" hint={!data.templates.length ? <Link className="underline" to="/marketing/designer">Design a template first</Link> : undefined}>
+                  <Field label="Template" hint={!data.templates.length ? <Link className="underline" to={sp("/marketing/designer")}>Design a template first</Link> : undefined}>
                     <Select value={a?.templateId ?? ""} onChange={e => save(k.type, { templateId: e.target.value || undefined })}>
                       <option value="">Choose…</option>{data.templates.map(t => <option key={t.$id} value={t.$id}>{t.name}</option>)}
                     </Select>

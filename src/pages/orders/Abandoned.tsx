@@ -1,6 +1,7 @@
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Mail } from "lucide-react";
-import { useSite } from "../../context/Site";
+import { useSite, useStorePath } from "../../context/Site";
 import { list, ops, update } from "../../lib/data";
 import { useAsync } from "../../lib/useAsync";
 import { dateTime, money } from "../../lib/format";
@@ -12,6 +13,7 @@ const HOUR = 36e5;
 /** Checkouts that went to Stripe/PayPal but were never paid (open for >1h, or expired). */
 export default function Abandoned() {
   const { site } = useSite(); const s = site!;
+  const sp = useStorePath();
   const { data, loading, error, reload } = useAsync(() => list("checkouts", s.$id), [s.$id]);
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
@@ -32,7 +34,7 @@ export default function Abandoned() {
   return (
     <>
       <PageHeader title="Abandoned checkouts" subtitle={`${rows.length} unpaid carts worth ${money(lost, s.currency)} · ${recoverable.length} with an email address`} />
-      {!canEmail && <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">Finish <a className="underline" href="/settings#email">email setup</a> to send cart reminders.</div>}
+      {!canEmail && <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">Finish <Link className="underline" to={sp("/settings#email")}>email setup</Link> to send cart reminders.</div>}
       {msg && <div className={`mb-4 rounded-lg px-3 py-2 text-sm ${msg.startsWith("Error") ? "bg-red-50 text-red-800" : "bg-emerald-50 text-emerald-800"}`}>{msg}</div>}
       <Card>
         {error && <ErrorBox error={error} />}

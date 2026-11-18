@@ -1,7 +1,7 @@
 import { lazy, Suspense } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Plus } from "lucide-react";
-import { useSite } from "../../context/Site";
+import { useSite, useStorePath } from "../../context/Site";
 import { create, list } from "../../lib/data";
 import { useAsync } from "../../lib/useAsync";
 import { date } from "../../lib/format";
@@ -19,11 +19,12 @@ export default function Designer() {
 
 function TemplateList() {
   const { site } = useSite(); const s = site!;
+  const sp = useStorePath();
   const navigate = useNavigate();
   const { data, loading, error } = useAsync(() => list("templates", s.$id), [s.$id]);
   const createNew = async () => {
-    const t = await create("templates", { siteId: s.$id, name: "Untitled email", subject: `News from ${s.name}`, html: starterTemplate(s.name, `https://${s.domain}`) });
-    navigate(`/marketing/designer/${t.$id}`);
+    const t = await create("templates", { siteId: s.$id, name: "Untitled email", subject: `News from ${s.name}`, html: starterTemplate(s.name, s.domain ? `https://${s.domain}` : "") });
+    navigate(sp(`/marketing/designer/${t.$id}`));
   };
   return (
     <>
@@ -33,7 +34,7 @@ function TemplateList() {
       {loading ? <Loading /> : !data!.length ? <Card><p className="py-6 text-center text-sm text-zinc-500">No templates yet. Start one from the starter design.</p></Card> : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {data!.map(t => (
-            <Link key={t.$id} to={`/marketing/designer/${t.$id}`} className="group overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm hover:border-zinc-400">
+            <Link key={t.$id} to={sp(`/marketing/designer/${t.$id}`)} className="group overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm hover:border-zinc-400">
               <div className="pointer-events-none h-48 overflow-hidden bg-zinc-100">
                 <iframe title={t.name} srcDoc={t.html} className="h-[600px] w-[200%] origin-top-left scale-50 border-0" tabIndex={-1} sandbox="" />
               </div>

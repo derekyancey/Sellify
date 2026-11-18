@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import { ExternalLink } from "lucide-react";
-import { useSite } from "../../context/Site";
+import { useSite, useStorePath } from "../../context/Site";
 import { Card, PageHeader } from "../../components/ui";
-import { SellOnSite } from "../Settings";
+import { SellOnSite } from "../StoreSettings";
 
 export default function OnlineStore() {
   const { site } = useSite(); const s = site!;
+  const sp = useStorePath();
   return (
     <>
       <PageHeader title="Online store" subtitle={`Your storefront at ${s.domain}, hosted on Netlify`}
@@ -14,10 +15,10 @@ export default function OnlineStore() {
         <SellOnSite site={s} />
         <Card title="Manage">
           <ul className="space-y-1 text-sm">
-            <li><Link className="underline" to="/deploys">Deploys</Link>: publish changes, see build history</li>
-            <li><Link className="underline" to="/domains">Domain &amp; DNS</Link>: Cloudflare records and SSL</li>
-            <li><Link className="underline" to="/products/collections">Collections</Link>: what shows on your storefront pages</li>
-            <li><Link className="underline" to="/seo">SEO</Link>: crawl the store, page speed, sitemaps</li>
+            <li><Link className="underline" to={sp("/deploys")}>Deploys</Link>: publish changes, see build history</li>
+            <li><Link className="underline" to={sp("/domains")}>Domain &amp; DNS</Link>: Cloudflare records and SSL</li>
+            <li><Link className="underline" to={sp("/products/collections")}>Collections</Link>: what shows on your storefront pages</li>
+            <li><Link className="underline" to={sp("/seo")}>SEO</Link>: crawl the store, page speed, sitemaps</li>
           </ul>
         </Card>
       </div>

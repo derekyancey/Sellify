@@ -16,7 +16,9 @@ export function buildDemo() {
       emailReceipts: true, emailOwnerAlerts: true, emailShipping: true },
     { $id: "site_candles", $createdAt: ago(120), name: "Ember & Wick", domain: "emberandwick.shop", currency: "USD", cloudflareZoneId: "demo-zone-2", netlifySiteId: "demo-netlify-2", gscProperty: "sc-domain:emberandwick.shop", ga4PropertyId: "987654321" },
   ];
+  sites.push({ $id: "site_bakery", $createdAt: ago(3), name: "Fern & Flour Bakery", currency: "USD", emailStatus: "none" });
   const catalog: Record<string, [string, number][]> = {
+    site_bakery: [],
     site_coffee: [["House Blend 12oz", 16], ["Ethiopia Yirgacheffe", 21], ["Cold Brew Pack", 24], ["Decaf Colombia", 18], ["Pour-Over Kit", 45], ["Ceramic Mug", 14]],
     site_candles: [["Cedar & Smoke Candle", 32], ["Fig Leaf Candle", 30], ["Travel Tin Set", 28], ["Wick Trimmer", 12], ["Matchbox Duo", 8]],
   };
@@ -33,13 +35,13 @@ export function buildDemo() {
         imageUrl: title.includes("Mug") || title.includes("Matchbox") ? undefined : `https://placehold.co/600x600/e7e5e4/44403c?text=${encodeURIComponent(title.split(" ")[0])}` });
     }
     const siteProducts = products.filter(p => p.siteId === s.$id);
-    const siteCustomers: Customer[] = Array.from({ length: 18 }, () => {
+    const siteCustomers: Customer[] = Array.from({ length: siteProducts.length ? 18 : 0 }, () => {
       const name = `${pick(first)} ${pick(last)}`;
       return { $id: id(), $createdAt: ago(90), siteId: s.$id, name, email: name.toLowerCase().replace(" ", ".") + "@example.com", ordersCount: 0, totalSpent: 0, acceptsMarketing: rand() > 0.4 };
     });
     customers.push(...siteCustomers);
     let number = 1001;
-    for (let d = 45; d >= 0; d--) {
+    for (let d = 45; d >= 0 && siteProducts.length; d--) {
       const count = Math.floor(rand() * (s.$id === "site_coffee" ? 6 : 3));
       for (let i = 0; i < count; i++) {
         const c = pick(siteCustomers);
@@ -66,11 +68,12 @@ export function buildDemo() {
     discounts.push(
       { $id: id(), $createdAt: ago(40), siteId: s.$id, code: "WELCOME10", type: "percent", value: 10, usedCount: 14, active: true },
       { $id: id(), $createdAt: ago(20), siteId: s.$id, code: "SAVE5", type: "fixed", value: 5, minSubtotal: 40, usageLimit: 100, usedCount: 100, active: true });
+    if (!s.domain) continue;
     const tpl = { $id: id(), $createdAt: ago(15), siteId: s.$id, name: "New arrivals", subject: "Fresh from the shop 🎉", html: starterTemplate(s.name, `https://${s.domain}`) };
     templates.push(tpl);
     campaigns.push({ $id: id(), $createdAt: ago(10), siteId: s.$id, name: "October newsletter", subject: tpl.subject, templateId: tpl.$id, segmentId: "subscribers", status: "sent", sentCount: 11, sentAt: ago(10) });
     const cs = customers.filter(c => c.siteId === s.$id);
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < (sp.length ? 4 : 0); i++) {
       const p = pick(sp), q = 1 + Math.floor(rand() * 2);
       checkouts.push({ $id: id(), $createdAt: ago(i + 0.2), siteId: s.$id, provider: rand() > 0.5 ? "stripe" : "paypal", items: [{ productId: p.$id, title: p.title, quantity: q, price: p.price }],
         total: p.price * q, currency: s.currency, status: i % 2 ? "expired" : "open", email: i === 3 ? undefined : pick(cs).email });

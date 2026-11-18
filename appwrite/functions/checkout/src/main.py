@@ -89,7 +89,9 @@ def _safe_url(url, site, field):
     if not url:
         raise HttpError(f"Missing {field}")
     host = (urlparse(url).hostname or "").lower()
-    domain = a(site, "domain").lower()
+    domain = (a(site, "domain") or "").lower()
+    if not domain:
+        raise HttpError("This store doesn't have a URL yet. Add one in its store settings.", 409)
     allowed = {domain, f"www.{domain}", *[h.strip().lower() for h in os.environ.get("ALLOWED_RETURN_HOSTS", "").split(",") if h.strip()]}
     if urlparse(url).scheme not in ("https", "http") or not (host in allowed or host.endswith("." + domain) or host == "localhost"):
         raise HttpError(f"{field} must be on {domain}")

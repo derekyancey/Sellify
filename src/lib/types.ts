@@ -2,7 +2,7 @@ export interface Base { $id: string; $createdAt: string }
 
 export interface Site extends Base {
   name: string;
-  domain: string;              // e.g. example.com
+  domain?: string;             // e.g. example.com (optional: a store can be created before it has a URL)
   currency: string;            // ISO code, e.g. USD
   cloudflareZoneId?: string;
   netlifySiteId?: string;

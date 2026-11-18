@@ -62,7 +62,7 @@ function DomainsInner() {
         )}
       </Card>
 
-      <Card title="DNS records" actions={<Button variant="primary" onClick={() => setEditing({ type: "A", name: s.domain, content: "", ttl: 1, proxied: true })}><Plus className="size-4" />Add record</Button>}>
+      <Card title="DNS records" actions={<Button variant="primary" onClick={() => setEditing({ type: "A", name: s.domain!, content: "", ttl: 1, proxied: true })}><Plus className="size-4" />Add record</Button>}>
         {dns.loading ? <Loading /> : dns.error ? <ErrorBox error={dns.error} /> : (
           <Table head={["Type", "Name", "Content", "Proxy", "TTL", ""]} empty={!dns.data!.records.length}>
             {dns.data!.records.map(r => (

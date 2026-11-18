@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from "react";
 import { X, Loader2, AlertTriangle } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 export const cx = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(" ");
 
@@ -126,10 +126,11 @@ export function ErrorBox({ error, hint }: { error: string; hint?: ReactNode }) {
   );
 }
 export function NeedsSetup({ what, children }: { what: string; children?: ReactNode }) {
+  const { storeId } = useParams();
   return (
     <div className="rounded-xl border border-dashed border-zinc-300 bg-white p-6 text-sm text-zinc-600">
       <div className="font-medium text-zinc-800">{what} isn't connected for this site yet.</div>
-      <div className="mt-1">{children ?? <>Add it under <Link className="underline" to="/settings">Sites &amp; settings</Link>.</>}</div>
+      <div className="mt-1">{children ?? <>Add it under <Link className="underline" to={`/stores/${storeId}/settings#connections`}>store settings</Link>.</>}</div>
     </div>
   );
 }

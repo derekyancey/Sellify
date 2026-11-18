@@ -4,7 +4,7 @@ import grapesjs, { type Editor } from "grapesjs";
 import newsletter from "grapesjs-preset-newsletter";
 import "grapesjs/dist/css/grapes.min.css";
 import { ArrowLeft, Send } from "lucide-react";
-import { useSite } from "../../context/Site";
+import { useSite, useStorePath } from "../../context/Site";
 import { list, ops, remove, update } from "../../lib/data";
 import { listFiles, uploadFile } from "../../lib/files";
 import { MERGE_TAGS } from "../../lib/emailStarter";
@@ -14,6 +14,7 @@ import { Button, ErrorBox, Input, Loading } from "../../components/ui";
 export default function EmailEditor({ id }: { id: string }) {
   const { site } = useSite(); const s = site!;
   const navigate = useNavigate();
+  const sp = useStorePath();
   const holder = useRef<HTMLDivElement>(null);
   const editor = useRef<Editor | null>(null);
   const [tpl, setTpl] = useState<EmailTemplate | null>(null);
@@ -85,7 +86,7 @@ export default function EmailEditor({ id }: { id: string }) {
   return (
     <div className="-m-4 flex h-[calc(100vh-57px)] flex-col sm:-m-6">
       <div className="flex flex-wrap items-center gap-2 border-b border-zinc-200 bg-white px-3 py-2">
-        <Button variant="ghost" onClick={() => navigate("/marketing/designer")} aria-label="Back"><ArrowLeft className="size-4" /></Button>
+        <Button variant="ghost" onClick={() => navigate(sp("/marketing/designer"))} aria-label="Back"><ArrowLeft className="size-4" /></Button>
         <Input value={name} onChange={e => setName(e.target.value)} className="w-44" aria-label="Template name" />
         <Input value={subject} onChange={e => setSubject(e.target.value)} className="min-w-0 flex-1" placeholder="Subject line" aria-label="Subject" />
         <select className="rounded-lg border border-zinc-300 px-2 py-1.5 text-sm" value="" aria-label="Copy a merge tag"
@@ -94,7 +95,7 @@ export default function EmailEditor({ id }: { id: string }) {
         </select>
         <Button loading={busy === "test"} onClick={sendTest}><Send className="size-4" />Send test</Button>
         <Button variant="primary" loading={busy === "save"} onClick={save}>Save</Button>
-        <Button variant="ghost" className="text-red-600" onClick={async () => { if (confirm("Delete this template?")) { await remove("templates", tpl.$id); navigate("/marketing/designer"); } }}>Delete</Button>
+        <Button variant="ghost" className="text-red-600" onClick={async () => { if (confirm("Delete this template?")) { await remove("templates", tpl.$id); navigate(sp("/marketing/designer")); } }}>Delete</Button>
       </div>
       {msg && <div className={`px-3 py-1.5 text-sm ${msg.startsWith("Error") ? "bg-red-50 text-red-800" : "bg-sky-50 text-sky-900"}`}>{msg}</div>}
       <div className="min-h-0 flex-1"><div ref={holder} className="h-full" /></div>
