@@ -64,6 +64,19 @@ Everything runs on **Appwrite** (database, login, files, functions and hosting) 
 
 Store emails (receipts, campaigns) are sent from each store's own domain, never from realniggafoods.com.
 
+### Live configuration (as set up)
+
+| Piece | Value |
+| --- | --- |
+| Appwrite project | `6afd3365001c9a7ecfc6` at `https://nyc.cloud.appwrite.io/v1` (free plan) |
+| Dashboard | Appwrite site `6afd3429003b9012de47`, deploys from `main`, serving `realniggafoods.com` and `www.realniggafoods.com` |
+| Functions | `site-ops` (admin-only, runs automations hourly) and `checkout` (public, at `https://checkout.realniggafoods.com`), both deploying from `main` |
+| DNS (Cloudflare) | `@`, `www` and `checkout` are `CNAME appwrite.network` (DNS only); a CAA record lets Appwrite issue certificates; DMARC, SPF and Google verification are kept |
+| Already set | site `VITE_*` variables, `ADMIN_TEAM_ID`, `APPWRITE_SITES_CNAME_TARGET`, `UNSUBSCRIBE_SECRET` (both functions), `CHECKOUT_PUBLIC_URL` |
+| Still to add | `CLOUDFLARE_API_TOKEN` and `GOOGLE_SERVICE_ACCOUNT_JSON` (site-ops); `RESEND_API_KEY`, Stripe and PayPal keys (both); `STRIPE_WEBHOOK_SECRET` (checkout) |
+
+Free-plan limits that shaped this: 2 functions, no cron (hourly interval instead), and 3 web platforms.
+
 ## Going live
 
 ### 1. Appwrite (database + login)

@@ -1,5 +1,5 @@
 {
-  "projectId": "YOUR_APPWRITE_PROJECT_ID",
+  "projectId": "6afd3365001c9a7ecfc6",
   "projectName": "Yancey",
   "functions": [
     {
@@ -50,8 +50,8 @@
   ],
   "sites": [
     {
-      "$id": "yancey",
-      "name": "Yancey",
+      "$id": "6afd3429003b9012de47",
+      "name": "Sellify",
       "framework": "vite",
       "adapter": "static",
       "buildRuntime": "node-22",
@@ -64,5 +64,6 @@
       "logging": true,
       "timeout": 30
     }
-  ]
+  ],
+  "endpoint": "https://nyc.cloud.appwrite.io/v1"
 }
