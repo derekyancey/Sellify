@@ -387,16 +387,7 @@ def email_campaign(b):
     base = (os.environ.get("CHECKOUT_PUBLIC_URL") or "").rstrip("/")
     if not test and not base:
         raise HttpError("CHECKOUT_PUBLIC_URL is not set on site-ops (the checkout function's public domain)", 500)
-    site_id = site.get("$id", "")
-
-    def one(r):
-        cid = r.get("customerId", "")
-        url = f"{base}/unsubscribe?s={quote(site_id)}&c={quote(cid)}&t={emails.unsubscribe_token(cid)}" if base and not test else "#"
-        msg = {"from": emails.sender(site), "to": [r["email"]], "subject": subject,
-               "html": emails.personalize(body, site, r, url), "reply_to": site.get("ownerEmail")}
-        if url != "#":
-            msg["headers"] = {"List-Unsubscribe": f"<{url}>", "List-Unsubscribe-Post": "List-Unsubscribe=One-Click"}
-        return msg
+    one = lambda r: emails.marketing_message(site, subject, body, r, base, test)
 
     sent, failed, last_error = 0, 0, None
     batch_key = b.get("campaignId") or "test"

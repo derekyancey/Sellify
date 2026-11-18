@@ -8,6 +8,7 @@ checkout: PUBLIC Appwrite Function your storefronts call to take payments.
   POST /config           {siteId} -> which providers are enabled (so storefronts can show the right buttons)
   POST /discount         {siteId, items, code} -> preview a discount code
   GET|POST /unsubscribe  ?s=siteId&c=customerId&t=token   one-click unsubscribe from marketing email
+  GET /feed.xml?site=ID  product feed for Google Merchant Center (free listings), TikTok, Pinterest, Meta
   (optional on any cart route: discountCode, acceptsMarketing)
 
 Prices, stock and currency are always read from Appwrite, never from the browser.
@@ -24,6 +25,7 @@ import requests
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import emails  # noqa: E402
+import feed  # noqa: E402
 import payments  # noqa: E402
 from errors import HttpError  # noqa: E402
 from store import Store, a  # noqa: E402
@@ -187,8 +189,33 @@ def unsubscribe(req):
     return ("html", 200, UNSUB_PAGE.format(title="You're unsubscribed", body="You won't receive marketing emails from this store any more. Order receipts still arrive as usual."))
 
 
+def product_feed(req):
+    q = getattr(req, "query", None) or {}
+    store = _store(req)
+    site = store.site(str(q.get("site", "")))
+    from appwrite.query import Query
+    products, cursor = [], None
+    while True:
+        page = store.db.list_rows(store_db(), "products", queries=[Query.equal("siteId", a(site, "$id")), Query.limit(100)]
+                                  + ([Query.cursor_after(cursor)] if cursor else [])).rows
+        products += page
+        if len(page) < 100:
+            break
+        cursor = a(page[-1], "$id")
+    xml, count, skipped = feed.build(site, products)
+    if q.get("format") == "summary":
+        return {"products": count, "skippedNoImage": skipped}
+    return ("xml", 200, xml)
+
+
+def store_db():
+    from store import DB
+    return DB
+
+
 ROUTES = {
     "/config": config,
+    "/feed.xml": product_feed,
     "/discount": discount_preview,
     "/unsubscribe": unsubscribe,
     "/stripe/session": stripe_session,
@@ -207,8 +234,10 @@ def main(context):
         return context.res.json({"error": f"Unknown route {path}"}, 404)
     try:
         out = handler(context.req)
-        if isinstance(out, tuple) and out[0] == "html":
-            return context.res.text(out[2], out[1], {"content-type": "text/html; charset=utf-8"})
+        if isinstance(out, tuple) and out[0] in ("html", "xml"):
+            ctype = "text/html; charset=utf-8" if out[0] == "html" else "application/xml; charset=utf-8"
+            cache = "public, max-age=900" if out[0] == "xml" else "no-store"
+            return context.res.text(out[2], out[1], {"content-type": ctype, "cache-control": cache})
         return context.res.json(out)
     except HttpError as e:
         if e.status >= 500:

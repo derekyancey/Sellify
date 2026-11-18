@@ -17,6 +17,7 @@ export interface Site extends Base {
   emailReceipts?: boolean;
   emailOwnerAlerts?: boolean;
   emailShipping?: boolean;
+  feedProductPath?: string;    // product page path for shopping feeds, e.g. /products/{id}
 }
 export type EmailStatus = "none" | "pending" | "verified" | "failed";
 
@@ -41,6 +42,21 @@ export interface Customer extends Base {
   ordersCount: number;
   totalSpent: number;
   acceptsMarketing?: boolean;   // only these customers receive campaigns
+  lastOrderAt?: string;
+  welcomedAt?: string;
+  winbackAt?: string;
+}
+
+export type AutomationType = "abandoned_cart" | "welcome" | "winback";
+export interface Automation extends Base {
+  siteId: string;
+  type: AutomationType;
+  enabled: boolean;
+  delayHours?: number;
+  templateId?: string;
+  subject?: string;
+  lastRunAt?: string;
+  sentCount: number;
 }
 
 export type FinancialStatus = "pending" | "paid" | "refunded";
@@ -124,9 +140,9 @@ export interface Checkout extends Base {
   recoveryEmailedAt?: string;
 }
 
-export type TableName = "sites" | "products" | "orders" | "customers" | "collections" | "discounts" | "segments" | "templates" | "campaigns" | "checkouts";
+export type TableName = "sites" | "products" | "orders" | "customers" | "collections" | "discounts" | "segments" | "templates" | "campaigns" | "checkouts" | "automations";
 interface TableMap {
   sites: Site; products: Product; orders: Order; customers: Customer; collections: Collection; discounts: Discount;
-  segments: Segment; templates: EmailTemplate; campaigns: Campaign; checkouts: Checkout;
+  segments: Segment; templates: EmailTemplate; campaigns: Campaign; checkouts: Checkout; automations: Automation;
 }
 export type RowOf<T extends TableName> = TableMap[T];

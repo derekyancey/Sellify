@@ -6,7 +6,7 @@ import type { Order, RowOf, TableName } from "./types";
 /* ------------------------------------------------------------------ */
 /* Rows: Appwrite TablesDB in production, localStorage in demo mode    */
 /* ------------------------------------------------------------------ */
-const DEMO_KEY = "sellify-demo-v4";
+const DEMO_KEY = "sellify-demo-v5";
 type DemoDB = { [K in TableName]: RowOf<K>[] };
 
 function demoDb(): DemoDB {
@@ -18,7 +18,7 @@ function demoDb(): DemoDB {
   saveDemo(db);
   return db;
 }
-const emptyDb = () => ({ collections: [], discounts: [], segments: [], templates: [], campaigns: [], checkouts: [] });
+const emptyDb = () => ({ collections: [], discounts: [], segments: [], templates: [], campaigns: [], checkouts: [], automations: [] });
 function saveDemo(db: DemoDB) { try { localStorage.setItem(DEMO_KEY, JSON.stringify(db)); } catch { /* ignore */ } }
 export function resetDemo() { try { localStorage.removeItem(DEMO_KEY); } catch { /* ignore */ } }
 
@@ -98,7 +98,7 @@ export async function createOrder(siteId: string, data: Omit<Order, "$id" | "$cr
   }
   if (data.customerId && data.financialStatus === "paid") {
     const c = (await list("customers", siteId)).find(c => c.$id === data.customerId);
-    if (c) await update("customers", c.$id, { ordersCount: c.ordersCount + 1, totalSpent: c.totalSpent + data.total });
+    if (c) await update("customers", c.$id, { ordersCount: c.ordersCount + 1, totalSpent: c.totalSpent + data.total, lastOrderAt: new Date().toISOString() });
   }
   return order;
 }
@@ -106,13 +106,13 @@ export async function createOrder(siteId: string, data: Omit<Order, "$id" | "$cr
 /* ------------------------------------------------------------------ */
 /* Integrations: the Python Appwrite Function "site-ops"               */
 /* ------------------------------------------------------------------ */
-export async function ops<T = any>(path: string, body: Record<string, unknown> = {}): Promise<T> {
+export async function ops<T = any>(path: string, body: Record<string, unknown> = {}, functionId = config.functionId): Promise<T> {
   if (isDemo) {
     await new Promise(r => setTimeout(r, 250));
-    return demoOps(path, body) as T;
+    return demoOps(functionId === config.functionId ? path : `${functionId}:${path}`, body) as T;
   }
   const exec = await functions.createExecution({
-    functionId: config.functionId, xpath: path, method: "POST" as any,
+    functionId, xpath: path, method: "POST" as any,
     body: JSON.stringify(body), headers: { "content-type": "application/json" },
   });
   let payload: any = {};
@@ -142,3 +142,6 @@ export async function pagespeed(url: string, strategy: "mobile" | "desktop") {
       .map(a => ({ title: a.title, savings: a.displayValue || "" })).slice(0, 8),
   };
 }
+
+/** The scheduled "automations" Python function: preview (dry run) or run now. */
+export const automations = (mode: "preview" | "run", siteId: string) => ops(`/${mode}`, { siteId }, config.automationsFunctionId);

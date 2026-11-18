@@ -40,9 +40,7 @@ export const NAV: NavGroup[] = [
     { to: "/marketing/campaigns", label: "Marketing", icon: Megaphone, children: [
       { to: "/marketing/campaigns", label: "Campaigns" },
       { to: "/marketing/designer", label: "Email designer" },
-      { to: "/marketing/automations", label: "Automations", planned: {
-        what: "Automatic abandoned-cart reminders, welcome series, win-back emails.",
-        approach: "Appwrite scheduled functions (cron, free) that run the same recovery/campaign senders on a timer, using templates from the Email designer." } },
+      { to: "/marketing/automations", label: "Automations" },
       { to: "/marketing/attribution", label: "Attribution", planned: {
         what: "Which channels and campaigns drive sales.",
         approach: "Free: UTM tags on campaign links + GA4 source/medium reports (already connected), joined with Sellify orders by date." } },
@@ -68,13 +66,8 @@ export const NAV: NavGroup[] = [
   ] },
   { group: "Sales channels", items: [
     { to: "/channels/online-store", label: "Online store", icon: Store },
-    { to: "/channels/google", label: "Google & YouTube", icon: Globe, planned: {
-      what: "Free product listings on Google Search, Shopping, Images and YouTube.",
-      approach: "Google Merchant Center free listings: Sellify serves a product feed (XML) from the checkout function; you add the feed URL in Merchant Center once.",
-      links: [{ label: "Merchant Center", href: "https://merchants.google.com" }] } },
-    { to: "/channels/tiktok", label: "TikTok", icon: Globe, planned: {
-      what: "Sync your catalog to TikTok Shop / TikTok ads.",
-      approach: "TikTok catalog accepts the same product feed as Google, so this comes almost free once the Google feed exists." } },
+    { to: "/channels/google", label: "Google & YouTube", icon: Globe },
+    { to: "/channels/tiktok", label: "TikTok", icon: Globe },
     { to: "/channels/pos", label: "Point of sale", icon: Store, planned: {
       what: "Take in-person payments.",
       approach: "Stripe Terminal (pay per transaction, no monthly fee) or a 'Tap to Pay' phone; orders land in Sellify like online ones." } },

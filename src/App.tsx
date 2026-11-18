@@ -23,6 +23,8 @@ import Files from "./pages/content/Files";
 import Designer from "./pages/marketing/Designer";
 import Campaigns from "./pages/marketing/Campaigns";
 import OnlineStore from "./pages/channels/OnlineStore";
+import Feed from "./pages/channels/Feed";
+import Automations from "./pages/marketing/Automations";
 import { plannedPages } from "./lib/nav";
 
 function Guarded() {
@@ -56,6 +58,9 @@ function SiteGate() {
             <Route path="content" element={<Navigate to="/content/files" replace />} />
             <Route path="content/files" element={<Files />} />
             <Route path="channels/online-store" element={<OnlineStore />} />
+            <Route path="channels/google" element={<Feed key="google" platform="google" />} />
+            <Route path="channels/tiktok" element={<Feed key="tiktok" platform="tiktok" />} />
+            <Route path="marketing/automations" element={<Automations />} />
             {plannedPages.map(p => <Route key={p.to} path={p.to.slice(1)} element={<Planned label={p.label} planned={p.planned} />} />)}
             <Route path="products" element={<Products />} />
             <Route path="customers" element={<Customers />} />

@@ -1,9 +1,8 @@
 """
 Transactional email via Resend (free tier: 3,000 emails/month).
 
-NOTE: this file is duplicated in appwrite/functions/checkout/src/emails.py and
-appwrite/functions/site-ops/src/emails.py (each Appwrite function deploys its own folder).
-Edit one, then copy it over the other.
+SOURCE OF TRUTH: appwrite/shared/emails.py. Each Appwrite function deploys its own folder,
+so `python appwrite/sync_shared.py` copies this file into every function. Don't edit the copies.
 
 Nothing is sent unless the site's email setup is complete (see can_send).
 """
@@ -168,3 +167,16 @@ def personalize(body, site, recipient, unsubscribe_url):
     for k, v in tags.items():
         body = body.replace(k, v)
     return body
+
+
+def marketing_message(site, subject, body, recipient, base_url, test=False):
+    """One personalised marketing email with a signed one-click unsubscribe link (+ List-Unsubscribe header)."""
+    from urllib.parse import quote
+    cid = recipient.get("customerId", "")
+    site_id = get(site, "$id") or ""
+    url = f"{base_url.rstrip('/')}/unsubscribe?s={quote(site_id)}&c={quote(cid)}&t={unsubscribe_token(cid)}" if base_url and not test else "#"
+    msg = {"from": sender(site), "to": [recipient["email"]], "subject": subject,
+           "html": personalize(body, site, recipient, url), "reply_to": get(site, "ownerEmail")}
+    if url != "#":
+        msg["headers"] = {"List-Unsubscribe": f"<{url}>", "List-Unsubscribe-Post": "List-Unsubscribe=One-Click"}
+    return msg

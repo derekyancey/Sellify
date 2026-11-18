@@ -167,11 +167,13 @@ class Store:
         found = self.db.list_rows(DB, "customers", queries=[Query.equal("siteId", site_id), Query.equal("email", email), Query.limit(1)])
         if found.rows:
             c = found.rows[0]
-            patch = {"ordersCount": (a(c, "ordersCount") or 0) + 1, "totalSpent": round((a(c, "totalSpent") or 0) + total, 2)}
+            patch = {"ordersCount": (a(c, "ordersCount") or 0) + 1, "totalSpent": round((a(c, "totalSpent") or 0) + total, 2),
+                     "lastOrderAt": dt.datetime.now(dt.timezone.utc).isoformat()}
             if opted_in:  # opting in at checkout subscribes; not ticking the box never unsubscribes
                 patch["acceptsMarketing"] = True
             self.db.update_row(DB, "customers", a(c, "$id"), patch)
             return a(c, "$id")
         c = self.db.create_row(DB, "customers", ID.unique(), {
-            "siteId": site_id, "name": name, "email": email, "ordersCount": 1, "totalSpent": total, "acceptsMarketing": opted_in})
+            "siteId": site_id, "name": name, "email": email, "ordersCount": 1, "totalSpent": total, "acceptsMarketing": opted_in,
+            "lastOrderAt": dt.datetime.now(dt.timezone.utc).isoformat()})
         return a(c, "$id")

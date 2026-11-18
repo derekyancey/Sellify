@@ -45,7 +45,7 @@ SCHEMA = {
     "sites": {
         "public_read": False,
         "columns": [S("name", 128, True), S("domain", 255, True), S("currency", 8), S("cloudflareZoneId", 64),
-                    S("netlifySiteId", 64), S("gscProperty", 255), S("ga4PropertyId", 32),
+                    S("netlifySiteId", 64), S("gscProperty", 255), S("ga4PropertyId", 32), S("feedProductPath", 255),
                     # email setup: nothing is sent until ownerEmail is confirmed and emailStatus is "verified"
                     S("ownerEmail", 255), S("senderName", 128), S("senderAddress", 255), S("emailDomainId", 64),
                     E("emailStatus", ["none", "pending", "verified", "failed"], "none"),
@@ -61,7 +61,8 @@ SCHEMA = {
     "customers": {
         "public_read": False,
         "columns": [S("siteId", 36, True), S("name", 128, True), S("email", 255, True), S("phone", 32),
-                    I("ordersCount", min=0, default=0), F("totalSpent", min=0, default=0), B("acceptsMarketing", default=False)],
+                    I("ordersCount", min=0, default=0), F("totalSpent", min=0, default=0), B("acceptsMarketing", default=False),
+                    D("lastOrderAt"), D("welcomedAt"), D("winbackAt")],
         "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"]), ("by_email", TablesDBIndexType.KEY, ["email"])],
     },
     "orders": {
@@ -101,6 +102,12 @@ SCHEMA = {
         "public_read": False,
         "columns": [S("siteId", 36, True), S("name", 128, True), S("subject", 255), LT("html"), LT("design")],
         "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"])],
+    },
+    "automations": {
+        "public_read": False,
+        "columns": [S("siteId", 36, True), E("type", ["abandoned_cart", "welcome", "winback"], "abandoned_cart"), B("enabled", default=False),
+                    I("delayHours", min=0), S("templateId", 36), S("subject", 255), D("lastRunAt"), I("sentCount", min=0, default=0)],
+        "indexes": [("by_site_type", TablesDBIndexType.UNIQUE, ["siteId", "type"])],
     },
     "campaigns": {
         "public_read": False,

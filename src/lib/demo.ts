@@ -29,7 +29,8 @@ export function buildDemo() {
     for (const [title, price] of catalog[s.$id]) {
       products.push({ $id: id(), $createdAt: ago(150), siteId: s.$id, title, price, compareAtPrice: rand() > 0.7 ? price + 6 : undefined,
         sku: title.split(" ").map(w => w[0]).join("").toUpperCase() + "-" + Math.floor(rand() * 900 + 100),
-        inventory: Math.floor(rand() * 120), status: rand() > 0.85 ? "draft" : "active", description: "" });
+        inventory: Math.floor(rand() * 120), status: rand() > 0.85 ? "draft" : "active", description: "",
+        imageUrl: title.includes("Mug") || title.includes("Matchbox") ? undefined : `https://placehold.co/600x600/e7e5e4/44403c?text=${encodeURIComponent(title.split(" ")[0])}` });
     }
     const siteProducts = products.filter(p => p.siteId === s.$id);
     const siteCustomers: Customer[] = Array.from({ length: 18 }, () => {
@@ -92,6 +93,10 @@ export function demoOps(path: string, body: any): any {
     case "/email/status": return { status: "verified", records: demoEmailRecords(domain, "verified") };
     case "/email/test": return { ok: true, id: "em_demo", to: body.site?.ownerEmail };
     case "/email/order": return { ok: true, id: "em_demo" };
+    case "automations:/preview": return { dryRun: true, budgetLeft: 50, results: [
+      { siteId: body.siteId, type: "abandoned_cart", eligible: 2, sent: 0 }, { siteId: body.siteId, type: "welcome", eligible: 3, sent: 0 }, { siteId: body.siteId, type: "winback", eligible: 1, sent: 0 }] };
+    case "automations:/run": return { dryRun: false, budgetLeft: 44, results: [
+      { siteId: body.siteId, type: "abandoned_cart", eligible: 2, sent: 2 }, { siteId: body.siteId, type: "welcome", eligible: 3, sent: 3 }, { siteId: body.siteId, type: "winback", eligible: 1, sent: 1 }] };
     case "/email/campaign": return { ok: true, sent: (body.recipients ?? []).length, failed: 0 };
     case "/email/recovery": return { ok: true, id: "em_demo" };
     case "/payments/refund": return { ok: true, refundId: "re_demo", status: "succeeded" };

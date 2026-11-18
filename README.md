@@ -8,11 +8,11 @@ A Shopify-style admin for **all of your websites** in one place. Switch between 
 | **Orders** | All orders, Drafts, Abandoned checkouts (one-click recovery email) | Appwrite, Resend |
 | **Products** | All products, Collections, Inventory (bulk stock) | Appwrite |
 | **Customers** | All customers (marketing opt-in), Segments (rule builder) | Appwrite |
-| **Marketing** | Campaigns (send to a segment), Email designer (drag-and-drop) | [GrapesJS](https://github.com/GrapesJS/grapesjs) (BSD), Resend |
+| **Marketing** | Campaigns (send to a segment), Email designer (drag-and-drop), Automations (cart reminder, welcome, win-back) | [GrapesJS](https://github.com/GrapesJS/grapesjs) (BSD), Resend, Appwrite scheduled function |
 | **Discounts** | Percent/fixed codes with minimums, limits, dates, applied at checkout | Stripe coupons, PayPal |
 | **Content** | Files (images for products and emails) | Appwrite Storage |
 | **Analytics / SEO** | GA4, Search Console, crawler, PageSpeed, sitemaps | Google, Python crawler |
-| **Sales channels** | Online store (embed snippet) | sellify.js |
+| **Sales channels** | Online store (embed snippet), Google & YouTube and TikTok (product feed) | sellify.js, Merchant Center free listings |
 | **Infrastructure** | Domain & DNS, Deploys | Cloudflare, Netlify |
 | **Checkout** | Cards, Apple Pay, Google Pay, PayPal | Stripe Checkout, PayPal |
 
@@ -24,11 +24,9 @@ Each planned page already describes its free approach. In brief:
 | --- | --- |
 | Shipping labels | Shippo / EasyPost APIs: pay per label, no monthly fee |
 | Gift cards, Purchase orders, Transfers, Companies, Menus | Custom tables in Appwrite, no third-party cost |
-| Automations | Appwrite scheduled functions (cron) reusing the recovery and campaign senders |
 | Attribution | UTM tags + GA4 source/medium joined with orders |
 | Blog & pages | [Decap CMS](https://decapcms.org) (open source, Git-based, made for Netlify) |
 | Finance | Stripe Balance/Payouts + PayPal Reporting APIs (read-only) |
-| Google & YouTube, TikTok | Free Merchant Center listings from a product feed served by the checkout function |
 | Point of sale | Stripe Terminal / Tap to Pay (per transaction) |
 
 ```
@@ -153,6 +151,16 @@ Setup: create a Resend account, make an API key with **Full access** (it needs t
 
 Re-run `python appwrite/setup.py` after pulling: it adds the new tables (collections, discounts, segments, templates, campaigns), the new columns and the bucket.
 
+## Automations and product feeds
+
+- **Automations** (`appwrite/functions/automations`): a Python function scheduled every 30 minutes (`appwrite.json`).
+  - **Abandoned-cart reminder:** unpaid checkouts with an email, after N hours, within 7 days. Sent once, and skipped if the customer has bought since.
+  - **Welcome email:** new subscribers, sent once.
+  - **Win-back email:** subscribers whose last order is older than N days; once per gap between orders.
+  - **Settings:** each one is switched on per site under **Marketing → Automations**, which also has *Preview due emails* (a dry run) and *Run now*. Set `RESEND_API_KEY`, `UNSUBSCRIBE_SECRET`, `CHECKOUT_PUBLIC_URL` and optionally `AUTOMATION_MAX_PER_RUN` (default 50) on the function.
+- **Product feed:** the checkout function serves `/feed.xml?site=<id>` in Google Merchant Center format, which TikTok, Pinterest and Meta also accept. Set `VITE_CHECKOUT_PUBLIC_URL` so the dashboard can show the URL. Set each site's product page path under **Sales channels → Google & YouTube**. Products without an image are left out, because Google requires one.
+- **Shared code:** `appwrite/shared/` is the single source for code used by several functions. Run `python appwrite/sync_shared.py` after editing it, and `--check` before deploying.
+
 ## Project layout
 ```
 src/                       React dashboard
@@ -164,6 +172,8 @@ src/                       React dashboard
 public/sellify.js          storefront cart + checkout script (served by the dashboard)
 examples/storefront.html   starter storefront page
 appwrite/setup.py          creates the database schema, team and admin user
+appwrite/shared/           code shared by functions (sync with appwrite/sync_shared.py)
+appwrite/functions/automations/src/main.py   scheduled cart / welcome / win-back emails
 appwrite/functions/checkout/src/
   main.py                  public checkout routes + Stripe webhook
   payments.py              Stripe Checkout and PayPal Orders v2
