@@ -90,7 +90,7 @@ Set these function environment variables:
 | `NETLIFY_AUTH_TOKEN` | Netlify → User settings → Applications → Personal access tokens |
 | `GOOGLE_SERVICE_ACCOUNT_JSON` | See below. Paste the whole JSON key file. |
 
-**Google (free):** in [Google Cloud console](https://console.cloud.google.com) create a project, enable the **Google Search Console API** and **Google Analytics Data API**, create a service account and download a JSON key. Then add the service account's email (shown in **Sites & settings → Integration status**) as a user in each **Search Console property** (Full) and each **GA4 property** (Viewer).
+**Google (free):** in [Google Cloud console](https://console.cloud.google.com) create a project, enable the **Google Search Console API** and **Google Analytics Data API**, create a service account and download a JSON key. Then add the service account's email (shown in **Account → Integration status**) as a user in each **Search Console property** (Full) and each **GA4 property** (Viewer).
 
 ### 3. Each Namecheap domain → Cloudflare → Netlify
 1. In Yancey, **Your stores → Add store**, type the domain and click **Add to Cloudflare** (or add it in Cloudflare yourself and click **Find by domain**).
