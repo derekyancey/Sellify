@@ -12,6 +12,7 @@ A Shopify-style admin for **all of your websites** in one place. Switch between 
 | **Discounts** | Percent/fixed codes with minimums, limits, dates, applied at checkout | Stripe coupons, PayPal |
 | **Content** | Files (images for products and emails) | Appwrite Storage |
 | **Analytics / SEO** | GA4, Search Console, crawler, PageSpeed, sitemaps | Google, Python crawler |
+| **Finance** | Per-store sales, refunds, discounts, net and payment-method split, monthly chart, CSV for your accountant; Stripe/PayPal balances, fees and payouts | Yancey orders, Stripe + PayPal reporting APIs (read-only) |
 | **Sales channels** | Online store (embed snippet), Google & YouTube and TikTok (product feed) | yancey.js, Merchant Center free listings |
 | **Infrastructure** | Domain & DNS, Deploys | Cloudflare, Appwrite Sites |
 | **Checkout** | Cards, Apple Pay, Google Pay, PayPal | Stripe Checkout, PayPal |
@@ -26,7 +27,6 @@ Each planned page already describes its free approach. In brief:
 | Gift cards, Purchase orders, Transfers, Companies, Menus | Custom tables in Appwrite, no third-party cost |
 | Attribution | UTM tags + GA4 source/medium joined with orders |
 | Blog & pages | [Decap CMS](https://decapcms.org) (open source, Git-based) |
-| Finance | Stripe Balance/Payouts + PayPal Reporting APIs (read-only) |
 | Point of sale | Stripe Terminal / Tap to Pay (per transaction) |
 
 ```
@@ -198,6 +198,10 @@ Re-run `python appwrite/setup.py` after pulling: it adds the new tables (collect
   - **Settings:** each one is switched on per site under **Marketing → Automations**, which also has *Preview due emails* (a dry run) and *Run now*. These use `site-ops`' `RESEND_API_KEY`, `UNSUBSCRIBE_SECRET`, `CHECKOUT_PUBLIC_URL` and optionally `AUTOMATION_MAX_PER_RUN` (default 50).
 - **Product feed:** the checkout function serves `/feed.xml?site=<id>` in Google Merchant Center format, which TikTok, Pinterest and Meta also accept. Set `VITE_CHECKOUT_PUBLIC_URL` so the dashboard can show the URL. Set each site's product page path under **Sales channels → Google & YouTube**. Products without an image are left out, because Google requires one.
 - **Shared code:** `appwrite/shared/` is the single source for code used by several functions. Run `python appwrite/sync_shared.py` after editing it, and `--check` before deploying.
+
+## Finance
+
+Each store's **Finance** page shows that store's sales, refunds, discounts, net and split by payment method. These come from Yancey's own orders, with a 30-day, 90-day or 1-year view and **Export for accountant** (CSV). Below that, **Payment accounts** shows your Stripe and PayPal balances, fees, refunds and recent payouts. Those are read-only, come from the processors, and are shared by every store that uses the account. They appear once `STRIPE_SECRET_KEY` / `PAYPAL_CLIENT_ID` + `PAYPAL_CLIENT_SECRET` are set on `site-ops`. PayPal's figures need the *Transaction search* permission on the PayPal app.
 
 ## Project layout
 ```

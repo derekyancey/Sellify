@@ -12,6 +12,7 @@ Routes (all POST with a JSON body, called via functions.createExecution from the
   /seo/crawl
   /payments/refund
   /email/setup | /email/status | /email/test | /email/order | /email/recovery | /email/campaign
+  /finance/processors   (Stripe + PayPal balances, fees, payouts; read-only)
   /automations/preview | /automations/run   (also runs on this function's hourly schedule)
 
 Secrets are function environment variables, never sent to the browser:
@@ -33,6 +34,7 @@ import requests
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # works however the runtime loads this file
 import automations  # noqa: E402
 import crawler  # noqa: E402
+import finance  # noqa: E402
 import emails  # noqa: E402
 import google_apis  # noqa: E402
 import google_oauth  # noqa: E402
@@ -512,6 +514,10 @@ def email_campaign(b):
     return {"ok": failed == 0, "sent": sent, "failed": failed, "error": last_error}
 
 
+def finance_processors(b):
+    return finance.summary(max(1, min(int(b.get("days") or 30), 366)))
+
+
 def automations_preview(b):
     return automations.run(appwrite_client(), dry_run=True, site_id=b.get("siteId"))
 
@@ -552,6 +558,7 @@ ROUTES = {
     "/email/order": email_order,
     "/email/recovery": email_recovery,
     "/email/campaign": email_campaign,
+    "/finance/processors": finance_processors,
     "/automations/preview": automations_preview,
     "/automations/run": automations_run,
 }

@@ -5,6 +5,7 @@ import AppShell from "./components/AppShell";
 import StoresHome from "./pages/StoresHome";
 import StoreSettings from "./pages/StoreSettings";
 import Account from "./pages/Account";
+import Finance from "./pages/Finance";
 import GoogleCallback from "./pages/GoogleCallback";
 import Layout from "./components/Layout";
 import { Loading } from "./components/ui";
@@ -81,6 +82,7 @@ function StoreRoutes() {
         <Route path="content" element={<Navigate to="files" replace />} />
         <Route path="content/files" element={<Files />} />
         <Route path="analytics" element={<Analytics />} />
+        <Route path="finance" element={<Finance />} />
         <Route path="seo" element={needsUrl(<Seo />)} />
         <Route path="domains" element={needsUrl(<Domains />)} />
         <Route path="deploys" element={<Deploys />} />

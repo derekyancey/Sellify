@@ -60,9 +60,7 @@ export const NAV: NavGroup[] = [
   { group: "Insights", items: [
     { to: "/analytics", label: "Analytics", icon: BarChart3 },
     { to: "/seo", label: "SEO", icon: Search },
-    { to: "/finance", label: "Finance", icon: Landmark, planned: {
-      what: "Balances, payouts, fees and taxes collected across Stripe and PayPal.",
-      approach: "Read-only from the Stripe Balance/Payouts API and PayPal Reporting API via site-ops; CSV export for your accountant." } },
+    { to: "/finance", label: "Finance", icon: Landmark },
   ] },
   { group: "Sales channels", items: [
     { to: "/channels/online-store", label: "Online store", icon: Store },

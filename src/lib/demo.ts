@@ -102,6 +102,11 @@ export function demoOps(path: string, body: any): any {
       { siteId: body.siteId, type: "abandoned_cart", eligible: 2, sent: 2 }, { siteId: body.siteId, type: "welcome", eligible: 3, sent: 3 }, { siteId: body.siteId, type: "winback", eligible: 1, sent: 1 }] };
     case "/email/campaign": return { ok: true, sent: (body.recipients ?? []).length, failed: 0 };
     case "/email/recovery": return { ok: true, id: "em_demo" };
+    case "/finance/processors": return { days: body.days,
+      stripe: { available: [{ currency: "USD", amount: 1284.5 }], pending: [{ currency: "USD", amount: 312.2 }],
+        period: { USD: { gross: 3120, fees: 98.4, refunds: 64, net: 2957.6, payouts: 2600 } },
+        payouts: [{ id: "po_1", amount: 1300, currency: "USD", status: "paid", arrival: ago(3).slice(0, 10) }, { id: "po_2", amount: 1300, currency: "USD", status: "in_transit", arrival: ago(-1).slice(0, 10) }] },
+      paypal: { balances: [{ currency: "USD", available: 402.75, total: 402.75 }], period: { USD: { gross: 830, fees: 29.1, refunds: 0, net: 800.9 } } } };
     case "/payments/refund": return { ok: true, refundId: "re_demo", status: "succeeded" };
     case "/health": return { ok: true, integrations: { cloudflare: true, hosting: true, google: true, googleOAuth: true, stripe: true, paypal: true, email: true }, serviceAccountEmail: "yancey@your-project.iam.gserviceaccount.com" };
     case "/cloudflare/zone": return { id: body.zoneId, name: domain, status: "active", name_servers: ["ada.ns.cloudflare.com", "rob.ns.cloudflare.com"], original_name_servers: ["dns1.registrar-servers.com", "dns2.registrar-servers.com"], plan: { name: "Free Website" } };
