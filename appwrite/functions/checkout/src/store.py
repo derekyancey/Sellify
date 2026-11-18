@@ -11,7 +11,7 @@ from appwrite.services.tables_db import TablesDB
 
 from errors import HttpError
 
-DB = os.environ.get("APPWRITE_DATABASE_ID", "sellify")
+DB = os.environ.get("APPWRITE_DATABASE_ID", "yancey")
 
 
 def a(obj, key):

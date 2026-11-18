@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import emails  # noqa: E402
 from errors import HttpError  # noqa: E402
 
-DB = os.environ.get("APPWRITE_DATABASE_ID", "sellify")
+DB = os.environ.get("APPWRITE_DATABASE_ID", "yancey")
 TYPES = ("abandoned_cart", "welcome", "winback")
 
 

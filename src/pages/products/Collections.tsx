@@ -15,7 +15,7 @@ export default function Collections() {
   const [editing, setEditing] = useState<Draft | null>(null);
   return (
     <>
-      <PageHeader title="Collections" subtitle="Group products for your storefront: Sellify.collection('handle') returns them."
+      <PageHeader title="Collections" subtitle="Group products for your storefront: Yancey.collection('handle') returns them."
         actions={<Button variant="primary" onClick={() => setEditing({ title: "", handle: "", description: "", productIds: [] })}><Plus className="size-4" />Create collection</Button>} />
       <Card>
         {error && <ErrorBox error={error} />}
@@ -54,7 +54,7 @@ function Editor({ initial, products, onClose, onSaved }: { initial: Draft; produ
       <Button onClick={onClose}>Cancel</Button><Button variant="primary" loading={busy} onClick={save}>Save</Button></>}>
       {err && <ErrorBox error={err} />}
       <Field label="Title"><Input value={c.title} onChange={e => setC({ ...c, title: e.target.value, handle: c.$id ? c.handle : slug(e.target.value) })} /></Field>
-      <Field label="Handle" hint="Used in URLs and in Sellify.collection()."><Input value={c.handle} onChange={e => setC({ ...c, handle: slug(e.target.value) })} /></Field>
+      <Field label="Handle" hint="Used in URLs and in Yancey.collection()."><Input value={c.handle} onChange={e => setC({ ...c, handle: slug(e.target.value) })} /></Field>
       <Field label="Description"><Textarea rows={2} value={c.description ?? ""} onChange={e => setC({ ...c, description: e.target.value })} /></Field>
       <Field label={`Products (${c.productIds.length} selected)`}>
         <Input placeholder="Filter products" value={q} onChange={e => setQ(e.target.value)} className="mb-2" />

@@ -141,7 +141,7 @@ def stripe_webhook(req):
         return {"received": True, "pending": True}  # e.g. bank debits; async_payment_succeeded follows
     checkout_id = s.get("client_reference_id") or (s.get("metadata") or {}).get("checkoutId")
     if not checkout_id:
-        return {"received": True, "ignored": "not a Sellify checkout"}
+        return {"received": True, "ignored": "not a Yancey checkout"}
     details = s.get("customer_details") or {}
     store = _store(req)
     result = store.finalize(checkout_id, "stripe", s.get("payment_intent") or s["id"],

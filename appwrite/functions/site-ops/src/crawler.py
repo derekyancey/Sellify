@@ -7,7 +7,7 @@ from urllib.parse import urldefrag, urljoin, urlparse
 import requests
 from bs4 import BeautifulSoup
 
-UA = "Mozilla/5.0 (compatible; SellifyBot/1.0; +site-audit)"
+UA = "Mozilla/5.0 (compatible; YanceyBot/1.0; +site-audit)"
 SKIP_EXT = (".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".pdf", ".zip", ".mp4", ".mp3", ".css", ".js", ".ico", ".xml", ".woff", ".woff2")
 BUDGET_S = 24
 EMPTY = {"title": "", "metaDescription": "", "h1": [], "canonical": "", "noindex": False, "wordCount": 0, "imagesMissingAlt": 0}

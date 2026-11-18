@@ -3,7 +3,7 @@ import { config, isDemo, storage } from "./appwrite";
 
 /** Public files (product photos, email images) in one Appwrite Storage bucket; names are prefixed "<siteId>--". */
 export interface StoredFile { id: string; name: string; size: number; mime: string; url: string; createdAt: string }
-const DEMO_KEY = "sellify-demo-files";
+const DEMO_KEY = "yancey-demo-files";
 const demoFiles = (): StoredFile[] => { try { return JSON.parse(localStorage.getItem(DEMO_KEY) || "[]"); } catch { return []; } };
 const prefix = (siteId: string) => `${siteId}--`;
 

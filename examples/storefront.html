@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
-  Minimal storefront using sellify.js. Copy into any site you host on Netlify.
-  1. Replace the data-* values (Sellify → Sites & settings → "Sell on your site" shows them filled in).
+  Minimal storefront using yancey.js. Copy into any site you host on Netlify.
+  1. Replace the data-* values (Yancey → Sites & settings → "Sell on your site" shows them filled in).
   2. Add this site's domain as a Web platform in your Appwrite project (needed for browser requests).
   This page is also its own success page: it passes its own URL as successUrl, so Stripe and PayPal send buyers back here.
 -->
@@ -52,7 +52,7 @@
     <p class="muted">You'll be redirected to a secure Stripe or PayPal page to pay.</p>
   </aside>
 
-  <script src="https://YOUR-DASHBOARD.netlify.app/sellify.js"
+  <script src="https://YOUR-DASHBOARD.netlify.app/yancey.js"
           data-endpoint="https://cloud.appwrite.io/v1"
           data-project="YOUR_APPWRITE_PROJECT_ID"
           data-site="YOUR_SITE_ID"></script>
@@ -66,8 +66,8 @@
     function notice(text, isError) { $("notice").innerHTML = `<div class="msg ${isError ? "err" : ""}">${esc(text)}</div>`; }
 
     function renderCart() {
-      const items = Sellify.cart.items();
-      $("cartBtn").textContent = `Cart (${Sellify.cart.count()})`;
+      const items = Yancey.cart.items();
+      $("cartBtn").textContent = `Cart (${Yancey.cart.count()})`;
       let total = 0;
       $("lines").innerHTML = items.map(({ productId, quantity }) => {
         const p = catalog.find((x) => x.$id === productId);
@@ -86,20 +86,20 @@
 
     async function pay(provider, btn) {
       btn.disabled = true;
-      try { await Sellify.checkout(provider, { successUrl: location.pathname, discountCode: applied?.code, acceptsMarketing: $("optin").checked }); } catch (e) { notice(e.message, true); $("cart").classList.remove("open"); btn.disabled = false; }
+      try { await Yancey.checkout(provider, { successUrl: location.pathname, discountCode: applied?.code, acceptsMarketing: $("optin").checked }); } catch (e) { notice(e.message, true); $("cart").classList.remove("open"); btn.disabled = false; }
     }
 
     async function init() {
       // Coming back from Stripe / PayPal?
       try {
-        const result = await Sellify.handleReturn();
+        const result = await Yancey.handleReturn();
         if (result) {
           notice(result.number ? `Thank you! Your order #${result.number} is confirmed.` : "Thank you! Your payment went through and your order is confirmed.");
           history.replaceState(null, "", location.pathname);
         }
       } catch (e) { notice(`We couldn't confirm your payment: ${e.message}`, true); }
 
-      const [products, providers] = await Promise.all([Sellify.products(), Sellify.config().catch(() => ({ stripe: true, paypal: true }))]);
+      const [products, providers] = await Promise.all([Yancey.products(), Yancey.config().catch(() => ({ stripe: true, paypal: true }))]);
       catalog = products;
       $("payStripe").hidden = !providers.stripe;
       $("payPaypal").hidden = !providers.paypal;
@@ -117,14 +117,14 @@
 
     document.addEventListener("click", (e) => {
       const t = e.target.closest("button"); if (!t) return;
-      if (t.dataset.add) { Sellify.cart.add(t.dataset.add); $("cart").classList.add("open"); }
-      if (t.dataset.inc) Sellify.cart.add(t.dataset.inc);
-      if (t.dataset.dec) Sellify.cart.add(t.dataset.dec, -1);
+      if (t.dataset.add) { Yancey.cart.add(t.dataset.add); $("cart").classList.add("open"); }
+      if (t.dataset.inc) Yancey.cart.add(t.dataset.inc);
+      if (t.dataset.dec) Yancey.cart.add(t.dataset.dec, -1);
     });
-    window.addEventListener("sellify:cart", () => { if (applied) applyCode(applied.code, true); else renderCart(); });
+    window.addEventListener("yancey:cart", () => { if (applied) applyCode(applied.code, true); else renderCart(); });
     async function applyCode(code, quiet) {
       if (!code) { applied = null; return renderCart(); }
-      try { const r = await Sellify.discount(code); applied = r.discount; }
+      try { const r = await Yancey.discount(code); applied = r.discount; }
       catch (e) { applied = null; if (!quiet) notice(e.message, true); }
       renderCart();
     }

@@ -1,22 +1,22 @@
 /*!
- * sellify.js: drop-in cart + checkout for your storefront sites.
+ * yancey.js: drop-in cart + checkout for your storefront sites.
  *
- * <script src="https://YOUR-DASHBOARD.netlify.app/sellify.js"
+ * <script src="https://YOUR-DASHBOARD.netlify.app/yancey.js"
  *         data-endpoint="https://<region>.cloud.appwrite.io/v1"
  *         data-project="YOUR_PROJECT_ID"
  *         data-site="SITE_ID_FROM_SELLIFY"
  *         data-success-url="/thank-you"></script>
  *
- *   await Sellify.products()                     -> active products for this site
- *   Sellify.cart.add(productId, qty) / .remove(productId) / .setQuantity(id, n) / .items() / .count() / .clear()
- *   window.addEventListener("sellify:cart", e => e.detail)   // fires on every cart change
- *   await Sellify.config()                       -> { stripe: bool, paypal: bool }
- *   await Sellify.collection("best-sellers")     -> { title, description, products }
- *   await Sellify.discount("WELCOME10")          -> { subtotal, discount: { code, amount }, total } or throws
- *   await Sellify.checkout("stripe" | "paypal", { email, discountCode, acceptsMarketing })
+ *   await Yancey.products()                     -> active products for this site
+ *   Yancey.cart.add(productId, qty) / .remove(productId) / .setQuantity(id, n) / .items() / .count() / .clear()
+ *   window.addEventListener("yancey:cart", e => e.detail)   // fires on every cart change
+ *   await Yancey.config()                       -> { stripe: bool, paypal: bool }
+ *   await Yancey.collection("best-sellers")     -> { title, description, products }
+ *   await Yancey.discount("WELCOME10")          -> { subtotal, discount: { code, amount }, total } or throws
+ *   await Yancey.checkout("stripe" | "paypal", { email, discountCode, acceptsMarketing })
  *                                                // redirects to Stripe (card, Apple Pay, Google Pay) or PayPal
- *   Cart-recovery emails link back with ?sellify_cart=…; the cart is restored automatically.
- *   await Sellify.handleReturn()                 -> call on your success page; confirms PayPal payments, clears the cart
+ *   Cart-recovery emails link back with ?yancey_cart=…; the cart is restored automatically.
+ *   await Yancey.handleReturn()                 -> call on your success page; confirms PayPal payments, clears the cart
  */
 (function () {
   var me = document.currentScript || document.querySelector("script[data-site][data-project]");
@@ -24,11 +24,11 @@
     endpoint: (me && me.dataset.endpoint || "https://cloud.appwrite.io/v1").replace(/\/$/, ""),
     project: me && me.dataset.project,
     site: me && me.dataset.site,
-    database: (me && me.dataset.database) || "sellify",
+    database: (me && me.dataset.database) || "yancey",
     fn: (me && me.dataset.function) || "checkout",
     successUrl: (me && me.dataset.successUrl) || "/thank-you",
   };
-  var CART_KEY = "sellify-cart-" + cfg.site;
+  var CART_KEY = "yancey-cart-" + cfg.site;
   var abs = function (u) { return new URL(u, location.href).href; };
 
   function store(get, val) {
@@ -39,7 +39,7 @@
   }
   var memory = [];
 
-  function emit(items) { window.dispatchEvent(new CustomEvent("sellify:cart", { detail: items })); }
+  function emit(items) { window.dispatchEvent(new CustomEvent("yancey:cart", { detail: items })); }
 
   var cart = {
     items: function () { return store(true); },
@@ -99,16 +99,16 @@
     return call("/discount", { siteId: cfg.site, items: items || cart.items(), code: code });
   }
 
-  // Restore a cart from a recovery-email link (?sellify_cart=<base64url JSON>).
+  // Restore a cart from a recovery-email link (?yancey_cart=<base64url JSON>).
   (function restoreCart() {
     try {
-      var p = new URLSearchParams(location.search), raw = p.get("sellify_cart");
+      var p = new URLSearchParams(location.search), raw = p.get("yancey_cart");
       if (!raw) return;
       var json = atob(raw.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((raw.length + 3) % 4));
       var items = JSON.parse(json).filter(function (i) { return i && typeof i.productId === "string" && i.quantity > 0; })
         .map(function (i) { return { productId: i.productId, quantity: Math.min(100, Math.floor(i.quantity)) }; });
       store(false, items); setTimeout(function () { emit(items); });
-      p.delete("sellify_cart");
+      p.delete("yancey_cart");
       history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : "") + location.hash);
     } catch (e) { /* ignore bad links */ }
   })();
@@ -138,5 +138,5 @@
     return null;
   }
 
-  window.Sellify = { cart: cart, products: function () { return products(); }, collection: collection, discount: discount, checkout: checkout, handleReturn: handleReturn, config: function () { return call("/config", {}); }, settings: cfg };
+  window.Yancey = { cart: cart, products: function () { return products(); }, collection: collection, discount: discount, checkout: checkout, handleReturn: handleReturn, config: function () { return call("/config", {}); }, settings: cfg };
 })();

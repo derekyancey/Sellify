@@ -43,7 +43,7 @@ export const NAV: NavGroup[] = [
       { to: "/marketing/automations", label: "Automations" },
       { to: "/marketing/attribution", label: "Attribution", planned: {
         what: "Which channels and campaigns drive sales.",
-        approach: "Free: UTM tags on campaign links + GA4 source/medium reports (already connected), joined with Sellify orders by date." } },
+        approach: "Free: UTM tags on campaign links + GA4 source/medium reports (already connected), joined with Yancey orders by date." } },
     ] },
     { to: "/discounts", label: "Discounts", icon: Percent },
     { to: "/content/files", label: "Content", icon: FileImage, children: [
@@ -54,7 +54,7 @@ export const NAV: NavGroup[] = [
         links: [{ label: "Decap CMS", href: "https://decapcms.org" }] } },
       { to: "/content/menus", label: "Menus", planned: {
         what: "Edit navigation menus without touching code.",
-        approach: "Custom: a menus table read by sellify.js (Sellify.menu('main')), so storefronts render it at runtime." } },
+        approach: "Custom: a menus table read by yancey.js (Yancey.menu('main')), so storefronts render it at runtime." } },
     ] },
   ] },
   { group: "Insights", items: [
@@ -70,7 +70,7 @@ export const NAV: NavGroup[] = [
     { to: "/channels/tiktok", label: "TikTok", icon: Globe },
     { to: "/channels/pos", label: "Point of sale", icon: Store, planned: {
       what: "Take in-person payments.",
-      approach: "Stripe Terminal (pay per transaction, no monthly fee) or a 'Tap to Pay' phone; orders land in Sellify like online ones." } },
+      approach: "Stripe Terminal (pay per transaction, no monthly fee) or a 'Tap to Pay' phone; orders land in Yancey like online ones." } },
   ] },
   { group: "Infrastructure", items: [
     { to: "/domains", label: "Domain & DNS", icon: Globe },

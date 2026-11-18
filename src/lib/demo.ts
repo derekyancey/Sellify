@@ -100,7 +100,7 @@ export function demoOps(path: string, body: any): any {
     case "/email/campaign": return { ok: true, sent: (body.recipients ?? []).length, failed: 0 };
     case "/email/recovery": return { ok: true, id: "em_demo" };
     case "/payments/refund": return { ok: true, refundId: "re_demo", status: "succeeded" };
-    case "/health": return { ok: true, integrations: { cloudflare: true, netlify: true, google: true, stripe: true, paypal: true, email: true }, serviceAccountEmail: "sellify@your-project.iam.gserviceaccount.com" };
+    case "/health": return { ok: true, integrations: { cloudflare: true, netlify: true, google: true, stripe: true, paypal: true, email: true }, serviceAccountEmail: "yancey@your-project.iam.gserviceaccount.com" };
     case "/cloudflare/zone": return { id: body.zoneId, name: domain, status: "active", name_servers: ["ada.ns.cloudflare.com", "rob.ns.cloudflare.com"], original_name_servers: ["dns1.registrar-servers.com", "dns2.registrar-servers.com"], plan: { name: "Free Website" } };
     case "/cloudflare/zones/find": return { zones: [] };
     case "/cloudflare/zones/create": return { zone: { id: "demo-zone-" + id().slice(0, 6), status: "pending", name_servers: ["ada.ns.cloudflare.com", "rob.ns.cloudflare.com"] } };

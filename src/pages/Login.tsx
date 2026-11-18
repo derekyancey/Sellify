@@ -19,7 +19,7 @@ export default function Login() {
     <div className="grid min-h-screen place-items-center bg-zinc-900 p-4">
       <form onSubmit={submit} className="w-full max-w-sm space-y-4 rounded-2xl bg-white p-6 shadow-xl">
         <div className="flex items-center gap-2 text-lg font-bold">
-          <span className="grid size-8 place-items-center rounded-lg bg-brand-500 text-white">S</span> Sellify
+          <span className="grid size-8 place-items-center rounded-lg bg-brand-500 text-white">Y</span> Yancey
         </div>
         <p className="text-sm text-zinc-500">Sign in with your Appwrite account. Accounts are created by the owner in the Appwrite console.</p>
         {error && <ErrorBox error={error} />}

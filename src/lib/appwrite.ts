@@ -4,7 +4,7 @@ const env = import.meta.env;
 export const config = {
   endpoint: env.VITE_APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1",
   projectId: env.VITE_APPWRITE_PROJECT_ID || "",
-  databaseId: env.VITE_APPWRITE_DATABASE_ID || "sellify",
+  databaseId: env.VITE_APPWRITE_DATABASE_ID || "yancey",
   functionId: env.VITE_APPWRITE_FUNCTION_ID || "site-ops",
   bucketId: env.VITE_APPWRITE_BUCKET_ID || "files",
   automationsFunctionId: env.VITE_APPWRITE_AUTOMATIONS_FUNCTION_ID || "automations",

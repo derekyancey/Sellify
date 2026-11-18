@@ -58,7 +58,7 @@ def stripe_session(checkout_id, lines, currency, success_url, cancel_url, email=
         data[f"{p}[price_data][product_data][name]"] = l["title"]
         if l.get("imageUrl", "") and str(l["imageUrl"]).startswith("https://"):
             data[f"{p}[price_data][product_data][images][0]"] = l["imageUrl"]
-    if discount:  # one-off coupon for exactly the amount Sellify calculated
+    if discount:  # one-off coupon for exactly the amount Yancey calculated
         coupon = stripe("POST", "/coupons", {"amount_off": cents(discount["amount"]), "currency": currency.lower(),
                                              "duration": "once", "max_redemptions": 1, "name": discount["code"][:40]})
         data["discounts[0][coupon]"] = coupon["id"]

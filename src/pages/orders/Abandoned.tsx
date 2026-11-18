@@ -53,7 +53,7 @@ export default function Abandoned() {
             ))}
           </Table>
         )}
-        <p className="mt-3 text-xs text-zinc-500">The reminder links back to your store with the cart restored (sellify.js reads it from the link).</p>
+        <p className="mt-3 text-xs text-zinc-500">The reminder links back to your store with the cart restored (yancey.js reads it from the link).</p>
       </Card>
     </>
   );

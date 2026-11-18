@@ -85,7 +85,7 @@ export default function EmailSetup({ site }: { site: Site }) {
         </Step>
 
         <Step n={2} done={verified} disabled={!confirmed} title="Verify your domain"
-          desc={site.cloudflareZoneId ? "Sellify registers your domain with Resend and adds the DNS records to Cloudflare for you." : "Sellify registers your domain with Resend; you add the DNS records it shows at your DNS provider."}>
+          desc={site.cloudflareZoneId ? "Yancey registers your domain with Resend and adds the DNS records to Cloudflare for you." : "Yancey registers your domain with Resend; you add the DNS records it shows at your DNS provider."}>
           <div className="flex flex-wrap items-center gap-2">
             {!site.emailDomainId
               ? <Button variant="primary" loading={busy === "domain"} onClick={setupDomain}>Set up sending domain</Button>

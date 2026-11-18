@@ -118,24 +118,24 @@ def owner_new_order(site, order):
     cur = get(site, "currency") or "USD"
     heading = f"New order #{order['number']}: {_money(order['total'], cur)}"
     intro = f"{html.escape(order.get('customerName') or '')} ({html.escape(order.get('customerEmail') or 'no email')}) paid via {html.escape(order.get('paymentProvider') or 'checkout')}."
-    return (heading, _layout(site, heading, intro, order["items"], order["total"], cur, "Sent by Sellify for"),
+    return (heading, _layout(site, heading, intro, order["items"], order["total"], cur, "Sent by Yancey for"),
             _text(heading, intro, order["items"], order["total"], cur))
 
 
 def test_email(site):
     heading = "Email is set up 🎉"
-    intro = "This is a test from Sellify. Order receipts and alerts for this store will look like this."
+    intro = "This is a test from Yancey. Order receipts and alerts for this store will look like this."
     sample = [{"title": "Sample product", "quantity": 1, "price": 10}]
     cur = get(site, "currency") or "USD"
-    return ("Sellify test email", _layout(site, heading, intro, sample, 10, cur, "Sent by Sellify for"),
+    return ("Yancey test email", _layout(site, heading, intro, sample, 10, cur, "Sent by Yancey for"),
             _text(heading, intro, sample, 10, cur))
 
 
 # --------------------------------------------------------------------------- abandoned cart
 def cart_link(site, items):
-    """Link back to the store with the cart encoded; sellify.js restores it from ?sellify_cart=."""
+    """Link back to the store with the cart encoded; yancey.js restores it from ?yancey_cart=."""
     raw = json.dumps([{"productId": i["productId"], "quantity": i["quantity"]} for i in items], separators=(",", ":"))
-    return f"https://{get(site, 'domain')}/?sellify_cart=" + base64.urlsafe_b64encode(raw.encode()).decode().rstrip("=")
+    return f"https://{get(site, 'domain')}/?yancey_cart=" + base64.urlsafe_b64encode(raw.encode()).decode().rstrip("=")
 
 
 def abandoned_cart(site, checkout):

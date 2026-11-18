@@ -4,7 +4,7 @@ import type { Site } from "../lib/types";
 
 interface SiteCtx { sites: Site[]; site: Site | null; select(id: string): void; reload(): Promise<void>; loading: boolean }
 const Ctx = createContext<SiteCtx>(null!);
-const KEY = "sellify-current-site";
+const KEY = "yancey-current-site";
 
 export function SiteProvider({ children }: { children: ReactNode }) {
   const [sites, setSites] = useState<Site[]>([]);

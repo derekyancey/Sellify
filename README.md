@@ -1,4 +1,4 @@
-# Sellify
+# Yancey
 
 A Shopify-style admin for **all of your websites** in one place. Switch between sites from the top bar; each one gets:
 
@@ -12,7 +12,7 @@ A Shopify-style admin for **all of your websites** in one place. Switch between 
 | **Discounts** | Percent/fixed codes with minimums, limits, dates, applied at checkout | Stripe coupons, PayPal |
 | **Content** | Files (images for products and emails) | Appwrite Storage |
 | **Analytics / SEO** | GA4, Search Console, crawler, PageSpeed, sitemaps | Google, Python crawler |
-| **Sales channels** | Online store (embed snippet), Google & YouTube and TikTok (product feed) | sellify.js, Merchant Center free listings |
+| **Sales channels** | Online store (embed snippet), Google & YouTube and TikTok (product feed) | yancey.js, Merchant Center free listings |
 | **Infrastructure** | Domain & DNS, Deploys | Cloudflare, Netlify |
 | **Checkout** | Cards, Apple Pay, Google Pay, PayPal | Stripe Checkout, PayPal |
 
@@ -77,8 +77,8 @@ Set these function environment variables:
 **Google (free):** in [Google Cloud console](https://console.cloud.google.com) create a project, enable the **Google Search Console API** and **Google Analytics Data API**, create a service account and download a JSON key. Then add the service account's email (shown in **Sites & settings → Integration status**) as a user in each **Search Console property** (Full) and each **GA4 property** (Viewer).
 
 ### 3. Each Namecheap domain → Cloudflare → Netlify
-1. In Sellify, **Sites & settings → Add site**, type the domain and click **Add to Cloudflare** (or add it in Cloudflare yourself and click **Find by domain**).
-2. In Namecheap: **Domain List → Manage → Nameservers → Custom DNS**, and enter the two Cloudflare nameservers Sellify shows. Activation usually takes under an hour.
+1. In Yancey, **Sites & settings → Add site**, type the domain and click **Add to Cloudflare** (or add it in Cloudflare yourself and click **Find by domain**).
+2. In Namecheap: **Domain List → Manage → Nameservers → Custom DNS**, and enter the two Cloudflare nameservers Yancey shows. Activation usually takes under an hour.
 3. Pick the Netlify site, save, then on **Domain & DNS** click **Point to Netlify**. It creates DNS-only CNAMEs for the root and `www` and registers the domain on Netlify so it can issue the SSL certificate.
 
 ### 4. Host the dashboard on Netlify
@@ -87,7 +87,7 @@ Import this repo into Netlify (build settings come from `netlify.toml`) and add 
 ## Taking payments: Stripe, Apple Pay, Google Pay, PayPal
 
 ```
- Storefront (sellify.js)                     checkout function (Python, public)            Stripe / PayPal
+ Storefront (yancey.js)                     checkout function (Python, public)            Stripe / PayPal
    cart ──► /stripe/session or /paypal/create ──► reprices the cart from Appwrite ──► hosted payment page
    ◄────────────────── redirect back to your success page ◄──────────────────────────────┘
    Stripe: webhook ──► /stripe/webhook (signature checked) ──┐
@@ -118,10 +118,10 @@ Import this repo into Netlify (build settings come from `netlify.toml`) and add 
 4. **On each storefront:** add the site's domain as a Web platform in Appwrite, then paste the snippet from **Sites & settings → Sell on your site**. `examples/storefront.html` is a complete starter page with a product grid, cart, and Stripe and PayPal buttons.
 
 ```js
-await Sellify.products();                 // active products for this site
-Sellify.cart.add(productId);              // cart lives in localStorage; listen for "sellify:cart"
-await Sellify.checkout("stripe");         // or "paypal", which redirects to pay
-const order = await Sellify.handleReturn(); // on your success page: confirms PayPal and clears the cart
+await Yancey.products();                 // active products for this site
+Yancey.cart.add(productId);              // cart lives in localStorage; listen for "yancey:cart"
+await Yancey.checkout("stripe");         // or "paypal", which redirects to pay
+const order = await Yancey.handleReturn(); // on your success page: confirms PayPal and clears the cart
 ```
 
 **Test before launching:** use Stripe test mode (card `4242 4242 4242 4242`) and a PayPal sandbox buyer account. Then switch to live keys and `PAYPAL_ENV=live`.
@@ -131,7 +131,7 @@ const order = await Sellify.handleReturn(); // on your success page: confirms Pa
 Email is a setup step for each site (**Sites & settings → Email**, also linked from the checklist on Home). **Nothing is sent until it's finished:**
 
 1. **Your email:** where new-order alerts go and where customers' replies land. It's pre-filled from your login, but you must confirm it.
-2. **Verify your domain:** Sellify registers the store's domain with [Resend](https://resend.com) (free: 3,000 emails/month, 100/day) and adds the DKIM/SPF records to Cloudflare for you. These go on `resend._domainkey` and `send.` subdomains, so your existing mailbox records (MX at the root) aren't touched.
+2. **Verify your domain:** Yancey registers the store's domain with [Resend](https://resend.com) (free: 3,000 emails/month, 100/day) and adds the DKIM/SPF records to Cloudflare for you. These go on `resend._domainkey` and `send.` subdomains, so your existing mailbox records (MX at the root) aren't touched.
 3. **Test and choose:** send yourself a test, then toggle receipts, new-order alerts and shipping emails.
 
 Setup: create a Resend account, make an API key with **Full access** (it needs to add domains), and set `RESEND_API_KEY` on **both** the `site-ops` and `checkout` functions. Then re-run `python appwrite/setup.py` to add the email columns.
@@ -145,9 +145,9 @@ Setup: create a Resend account, make an API key with **Full access** (it needs t
   - Set `UNSUBSCRIBE_SECRET` (any long random string) on **both** functions.
   - Set `CHECKOUT_PUBLIC_URL` (the checkout function's domain) on `site-ops`.
   - Resend's free plan sends **100 emails a day**; the campaign screen warns you above that.
-- **Discounts:** checked server-side at checkout. Stripe receives a one-off coupon for the exact amount, and PayPal gets a discount breakdown. Storefronts can preview codes with `Sellify.discount(code)`.
+- **Discounts:** checked server-side at checkout. Stripe receives a one-off coupon for the exact amount, and PayPal gets a discount breakdown. Storefronts can preview codes with `Yancey.discount(code)`.
 - **Files:** `setup.py` creates a public-read `files` bucket. Uploads appear in the email designer's image picker.
-- **Cart recovery:** abandoned carts come from expired Stripe sessions (enable the `checkout.session.expired` webhook event) and from unpaid carts older than an hour. The reminder email links back with `?sellify_cart=…`, and `sellify.js` restores the cart from it.
+- **Cart recovery:** abandoned carts come from expired Stripe sessions (enable the `checkout.session.expired` webhook event) and from unpaid carts older than an hour. The reminder email links back with `?yancey_cart=…`, and `yancey.js` restores the cart from it.
 
 Re-run `python appwrite/setup.py` after pulling: it adds the new tables (collections, discounts, segments, templates, campaigns), the new columns and the bucket.
 
@@ -169,7 +169,7 @@ src/                       React dashboard
   lib/data.ts              data layer (Appwrite or demo) + calls to the Python function
   lib/demo.ts              sample data and mocked integration responses
   pages/                   one file per screen
-public/sellify.js          storefront cart + checkout script (served by the dashboard)
+public/yancey.js          storefront cart + checkout script (served by the dashboard)
 examples/storefront.html   starter storefront page
 appwrite/setup.py          creates the database schema, team and admin user
 appwrite/shared/           code shared by functions (sync with appwrite/sync_shared.py)

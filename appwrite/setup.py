@@ -1,5 +1,5 @@
 """
-One-time (and safe to re-run) Appwrite setup for Sellify.
+One-time (and safe to re-run) Appwrite setup for Yancey.
 
 Creates the admin team, the database, the sites / products / orders / customers tables,
 their columns and indexes, and (optionally) your first admin login.
@@ -27,7 +27,7 @@ from appwrite.services.tables_db import TablesDB
 from appwrite.services.teams import Teams
 from appwrite.services.users import Users
 
-DB_ID = os.environ.get("APPWRITE_DATABASE_ID", "sellify")
+DB_ID = os.environ.get("APPWRITE_DATABASE_ID", "yancey")
 BUCKET_ID = os.environ.get("APPWRITE_BUCKET_ID", "files")
 TEAM_ID = os.environ.get("ADMIN_TEAM_ID", "admins")
 
@@ -83,7 +83,7 @@ SCHEMA = {
         "indexes": [("by_ref", TablesDBIndexType.KEY, ["providerRef"]), ("by_site", TablesDBIndexType.KEY, ["siteId"])],
     },
     "collections": {
-        "public_read": True,  # storefronts read these with Sellify.collection()
+        "public_read": True,  # storefronts read these with Yancey.collection()
         "columns": [S("siteId", 36, True), S("title", 255, True), S("handle", 128, True), LT("description"), SA("productIds")],
         "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"]), ("by_handle", TablesDBIndexType.UNIQUE, ["siteId", "handle"])],
     },
@@ -143,11 +143,11 @@ def main():
     db, teams, users = TablesDB(client), Teams(client), Users(client)
 
     print("Team")
-    ensure(f"team '{TEAM_ID}'", lambda: teams.create(TEAM_ID, "Sellify admins"))
+    ensure(f"team '{TEAM_ID}'", lambda: teams.create(TEAM_ID, "Yancey admins"))
     admin = Role.team(TEAM_ID)
 
     print("Database")
-    ensure(f"database '{DB_ID}'", lambda: db.create(DB_ID, "Sellify"))
+    ensure(f"database '{DB_ID}'", lambda: db.create(DB_ID, "Yancey"))
 
     for table, spec in SCHEMA.items():
         print(f"Table {table}")

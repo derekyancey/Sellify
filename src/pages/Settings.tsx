@@ -155,7 +155,7 @@ function IntegrationStatus() {
 
 export function SellOnSite({ site }: { site: Site }) {
   const [copied, setCopied] = useState(false);
-  const snippet = `<script src="${location.origin}/sellify.js"
+  const snippet = `<script src="${location.origin}/yancey.js"
         data-endpoint="${config.endpoint}"
         data-project="${config.projectId || "YOUR_APPWRITE_PROJECT_ID"}"
         data-site="${site.$id}"
@@ -163,7 +163,7 @@ export function SellOnSite({ site }: { site: Site }) {
   const copy = async () => { try { await navigator.clipboard.writeText(snippet); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch { /* ignore */ } };
   return (
     <Card title={`Sell on ${site.domain}`} actions={<Button onClick={copy}>{copied ? "Copied!" : "Copy snippet"}</Button>}>
-      <p className="mb-2 text-sm text-zinc-600">Paste this into your site's HTML, then use <code>Sellify.cart.add(id)</code> and <code>Sellify.checkout("stripe" | "paypal")</code>. Stripe shows card, Apple Pay and Google Pay on one page. Paid orders appear under Orders automatically.</p>
+      <p className="mb-2 text-sm text-zinc-600">Paste this into your site's HTML, then use <code>Yancey.cart.add(id)</code> and <code>Yancey.checkout("stripe" | "paypal")</code>. Stripe shows card, Apple Pay and Google Pay on one page. Paid orders appear under Orders automatically.</p>
       <pre className="overflow-x-auto rounded-lg bg-zinc-900 p-3 text-xs text-zinc-100">{snippet}</pre>
       <p className="mt-2 text-xs text-zinc-500">Also add <strong>{site.domain}</strong> as a Web platform in Appwrite. For a complete starter page, see <code>examples/storefront.html</code> in the repo.</p>
     </Card>

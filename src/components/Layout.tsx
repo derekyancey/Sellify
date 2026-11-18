@@ -17,7 +17,7 @@ export default function Layout() {
   const sidebar = (
     <nav className="flex h-full flex-col gap-4 overflow-y-auto p-3">
       <div className="flex items-center gap-2 px-2 pt-1 text-lg font-bold text-white">
-        <span className="grid size-7 place-items-center rounded-lg bg-brand-500 text-sm">S</span> Sellify
+        <span className="grid size-7 place-items-center rounded-lg bg-brand-500 text-sm">Y</span> Yancey
       </div>
       {NAV.map((g, gi) => (
         <div key={gi}>

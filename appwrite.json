@@ -1,6 +1,6 @@
 {
   "projectId": "YOUR_APPWRITE_PROJECT_ID",
-  "projectName": "Sellify",
+  "projectName": "Yancey",
   "functions": [
     {
       "$id": "site-ops",
