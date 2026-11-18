@@ -43,7 +43,10 @@
   <aside id="cart" aria-label="Cart">
     <div class="line"><strong>Your cart</strong><button class="alt" id="closeCart">Close</button></div>
     <div id="lines"></div>
+    <div class="line"><input id="code" placeholder="Discount code" style="flex:1;padding:8px;border:1px solid var(--line);border-radius:8px;font:inherit" /><button class="alt" id="applyCode">Apply</button></div>
+    <div class="line muted" id="discountLine" hidden><span id="discountLabel"></span><span id="discountAmt"></span></div>
     <div class="line"><strong>Total</strong><strong id="total">$0.00</strong></div>
+    <label class="muted"><input type="checkbox" id="optin" /> Email me news and offers (you can unsubscribe anytime)</label>
     <button id="payStripe">Pay with card, Apple Pay or Google Pay</button>
     <button id="payPaypal" class="paypal">PayPal</button>
     <p class="muted">You'll be redirected to a secure Stripe or PayPal page to pay.</p>
@@ -58,6 +61,7 @@
     const fmt = (n) => new Intl.NumberFormat(undefined, { style: "currency", currency: "USD" }).format(n);
     const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
     let catalog = [];
+    let applied = null; // { code, amount }
 
     function notice(text, isError) { $("notice").innerHTML = `<div class="msg ${isError ? "err" : ""}">${esc(text)}</div>`; }
 
@@ -73,13 +77,16 @@
           <span><button class="alt" data-dec="${p.$id}">−</button> ${quantity} <button class="alt" data-inc="${p.$id}">+</button></span>
           <span>${fmt(p.price * quantity)}</span></div>`;
       }).join("") || '<p class="muted">Your cart is empty.</p>';
+      if (applied && !items.length) applied = null;
+      $("discountLine").hidden = !applied;
+      if (applied) { $("discountLabel").textContent = `Discount (${applied.code})`; $("discountAmt").textContent = `−${fmt(applied.amount)}`; total -= applied.amount; }
       $("total").textContent = fmt(total);
       $("payStripe").disabled = $("payPaypal").disabled = !items.length;
     }
 
     async function pay(provider, btn) {
       btn.disabled = true;
-      try { await Sellify.checkout(provider, { successUrl: location.pathname }); } catch (e) { notice(e.message, true); $("cart").classList.remove("open"); btn.disabled = false; }
+      try { await Sellify.checkout(provider, { successUrl: location.pathname, discountCode: applied?.code, acceptsMarketing: $("optin").checked }); } catch (e) { notice(e.message, true); $("cart").classList.remove("open"); btn.disabled = false; }
     }
 
     async function init() {
@@ -114,7 +121,14 @@
       if (t.dataset.inc) Sellify.cart.add(t.dataset.inc);
       if (t.dataset.dec) Sellify.cart.add(t.dataset.dec, -1);
     });
-    window.addEventListener("sellify:cart", renderCart);
+    window.addEventListener("sellify:cart", () => { if (applied) applyCode(applied.code, true); else renderCart(); });
+    async function applyCode(code, quiet) {
+      if (!code) { applied = null; return renderCart(); }
+      try { const r = await Sellify.discount(code); applied = r.discount; }
+      catch (e) { applied = null; if (!quiet) notice(e.message, true); }
+      renderCart();
+    }
+    $("applyCode").onclick = () => applyCode($("code").value.trim());
     $("cartBtn").onclick = () => $("cart").classList.add("open");
     $("closeCart").onclick = () => $("cart").classList.remove("open");
     $("payStripe").onclick = (e) => pay("stripe", e.currentTarget);

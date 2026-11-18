@@ -11,7 +11,11 @@
  *   Sellify.cart.add(productId, qty) / .remove(productId) / .setQuantity(id, n) / .items() / .count() / .clear()
  *   window.addEventListener("sellify:cart", e => e.detail)   // fires on every cart change
  *   await Sellify.config()                       -> { stripe: bool, paypal: bool }
- *   await Sellify.checkout("stripe" | "paypal", { email })   // redirects to Stripe (card, Apple Pay, Google Pay) or PayPal
+ *   await Sellify.collection("best-sellers")     -> { title, description, products }
+ *   await Sellify.discount("WELCOME10")          -> { subtotal, discount: { code, amount }, total } or throws
+ *   await Sellify.checkout("stripe" | "paypal", { email, discountCode, acceptsMarketing })
+ *                                                // redirects to Stripe (card, Apple Pay, Google Pay) or PayPal
+ *   Cart-recovery emails link back with ?sellify_cart=…; the cart is restored automatically.
  *   await Sellify.handleReturn()                 -> call on your success page; confirms PayPal payments, clears the cart
  */
 (function () {
@@ -67,17 +71,47 @@
     return data;
   }
 
-  async function products() {
-    var q = [
-      JSON.stringify({ method: "equal", attribute: "siteId", values: [cfg.site] }),
-      JSON.stringify({ method: "equal", attribute: "status", values: ["active"] }),
-      JSON.stringify({ method: "limit", values: [100] }),
-    ].map(function (s, i) { return "queries[" + i + "]=" + encodeURIComponent(s); }).join("&");
-    var res = await fetch(cfg.endpoint + "/tablesdb/" + cfg.database + "/tables/products/rows?" + q, { headers: { "X-Appwrite-Project": cfg.project } });
+  async function rows(table, queries) {
+    var q = queries.map(function (s, i) { return "queries[" + i + "]=" + encodeURIComponent(JSON.stringify(s)); }).join("&");
+    var res = await fetch(cfg.endpoint + "/tablesdb/" + cfg.database + "/tables/" + table + "/rows?" + q, { headers: { "X-Appwrite-Project": cfg.project } });
     var json = await res.json();
-    if (!res.ok) throw new Error(json.message || "Could not load products");
+    if (!res.ok) throw new Error(json.message || "Could not load " + table);
     return json.rows;
   }
+
+  function products(ids) {
+    var q = [{ method: "equal", attribute: "siteId", values: [cfg.site] }, { method: "equal", attribute: "status", values: ["active"] }, { method: "limit", values: [100] }];
+    if (ids) q.push({ method: "equal", attribute: "$id", values: ids.length ? ids : ["-"] });
+    return rows("products", q);
+  }
+
+  async function collection(handle) {
+    var found = await rows("collections", [{ method: "equal", attribute: "siteId", values: [cfg.site] }, { method: "equal", attribute: "handle", values: [handle] }, { method: "limit", values: [1] }]);
+    if (!found.length) throw new Error("Collection not found: " + handle);
+    var c = found[0];
+    var list = await products(c.productIds || []);
+    var order = c.productIds || [];
+    list.sort(function (a, b) { return order.indexOf(a.$id) - order.indexOf(b.$id); });
+    return { title: c.title, description: c.description, handle: c.handle, products: list };
+  }
+
+  function discount(code, items) {
+    return call("/discount", { siteId: cfg.site, items: items || cart.items(), code: code });
+  }
+
+  // Restore a cart from a recovery-email link (?sellify_cart=<base64url JSON>).
+  (function restoreCart() {
+    try {
+      var p = new URLSearchParams(location.search), raw = p.get("sellify_cart");
+      if (!raw) return;
+      var json = atob(raw.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((raw.length + 3) % 4));
+      var items = JSON.parse(json).filter(function (i) { return i && typeof i.productId === "string" && i.quantity > 0; })
+        .map(function (i) { return { productId: i.productId, quantity: Math.min(100, Math.floor(i.quantity)) }; });
+      store(false, items); setTimeout(function () { emit(items); });
+      p.delete("sellify_cart");
+      history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : "") + location.hash);
+    } catch (e) { /* ignore bad links */ }
+  })();
 
   async function checkout(provider, opts) {
     opts = opts || {};
@@ -85,9 +119,10 @@
     if (!items.length) throw new Error("Your cart is empty");
     var success = abs(opts.successUrl || cfg.successUrl);
     var cancel = abs(opts.cancelUrl || location.href);
+    var extra = { email: opts.email, discountCode: opts.discountCode || undefined, acceptsMarketing: !!opts.acceptsMarketing };
     var res = provider === "paypal"
-      ? await call("/paypal/create", { siteId: cfg.site, items: items, returnUrl: success, cancelUrl: cancel, email: opts.email })
-      : await call("/stripe/session", { siteId: cfg.site, items: items, successUrl: success, cancelUrl: cancel, email: opts.email });
+      ? await call("/paypal/create", Object.assign({ siteId: cfg.site, items: items, returnUrl: success, cancelUrl: cancel }, extra))
+      : await call("/stripe/session", Object.assign({ siteId: cfg.site, items: items, successUrl: success, cancelUrl: cancel }, extra));
     location.href = res.url;
   }
 
@@ -103,5 +138,5 @@
     return null;
   }
 
-  window.Sellify = { cart: cart, products: products, checkout: checkout, handleReturn: handleReturn, config: function () { return call("/config", {}); }, settings: cfg };
+  window.Sellify = { cart: cart, products: function () { return products(); }, collection: collection, discount: discount, checkout: checkout, handleReturn: handleReturn, config: function () { return call("/config", {}); }, settings: cfg };
 })();

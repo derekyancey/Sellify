@@ -40,6 +40,7 @@ export interface Customer extends Base {
   phone?: string;
   ordersCount: number;
   totalSpent: number;
+  acceptsMarketing?: boolean;   // only these customers receive campaigns
 }
 
 export type FinancialStatus = "pending" | "paid" | "refunded";
@@ -58,8 +59,74 @@ export interface Order extends Base {
   fulfillmentStatus: FulfillmentStatus;
   paymentProvider?: PaymentProvider;
   paymentRef?: string;              // Stripe PaymentIntent id or PayPal capture id
+  discountCode?: string;
+  discountAmount?: number;
 }
 
-export type TableName = "sites" | "products" | "orders" | "customers";
-export type RowOf<T extends TableName> =
-  T extends "sites" ? Site : T extends "products" ? Product : T extends "orders" ? Order : Customer;
+export interface Collection extends Base {
+  siteId: string;
+  title: string;
+  handle: string;
+  description?: string;
+  productIds: string[];
+}
+
+export type DiscountType = "percent" | "fixed";
+export interface Discount extends Base {
+  siteId: string;
+  code: string;                 // stored uppercase
+  type: DiscountType;
+  value: number;                // 10 = 10% or $10
+  minSubtotal?: number;
+  usageLimit?: number;
+  usedCount: number;
+  startsAt?: string;
+  endsAt?: string;
+  active: boolean;
+}
+
+export type SegmentField = "totalSpent" | "ordersCount" | "acceptsMarketing" | "daysSinceCreated" | "email";
+export type SegmentOp = "gt" | "lt" | "eq" | "contains";
+export interface SegmentRule { field: SegmentField; op: SegmentOp; value: string }
+export interface Segment extends Base { siteId: string; name: string; rules: SegmentRule[] }
+
+export interface EmailTemplate extends Base {
+  siteId: string;
+  name: string;
+  subject: string;
+  html: string;                 // final, inlined HTML
+  design?: string;              // GrapesJS project JSON, for re-editing
+}
+
+export type CampaignStatus = "draft" | "sending" | "sent" | "failed";
+export interface Campaign extends Base {
+  siteId: string;
+  name: string;
+  subject: string;
+  templateId: string;
+  segmentId: string;            // a saved segment id or a built-in key
+  status: CampaignStatus;
+  sentCount: number;
+  sentAt?: string;
+  error?: string;
+}
+
+export interface Checkout extends Base {
+  siteId: string;
+  provider: "stripe" | "paypal";
+  providerRef?: string;
+  items: { productId: string; title: string; quantity: number; price: number }[];
+  total: number;
+  currency?: string;
+  status: "open" | "completed" | "expired";
+  email?: string;
+  discountCode?: string;
+  recoveryEmailedAt?: string;
+}
+
+export type TableName = "sites" | "products" | "orders" | "customers" | "collections" | "discounts" | "segments" | "templates" | "campaigns" | "checkouts";
+interface TableMap {
+  sites: Site; products: Product; orders: Order; customers: Customer; collections: Collection; discounts: Discount;
+  segments: Segment; templates: EmailTemplate; campaigns: Campaign; checkouts: Checkout;
+}
+export type RowOf<T extends TableName> = TableMap[T];

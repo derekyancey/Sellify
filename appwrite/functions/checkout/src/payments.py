@@ -31,7 +31,7 @@ def stripe(method, path, data=None):
     return body
 
 
-def stripe_session(checkout_id, lines, currency, success_url, cancel_url, email=None, store_name=None):
+def stripe_session(checkout_id, lines, currency, success_url, cancel_url, email=None, store_name=None, discount=None):
     """Hosted Stripe Checkout. Apple Pay / Google Pay appear automatically when enabled in the Stripe dashboard."""
     data = {
         "mode": "payment",
@@ -58,6 +58,10 @@ def stripe_session(checkout_id, lines, currency, success_url, cancel_url, email=
         data[f"{p}[price_data][product_data][name]"] = l["title"]
         if l.get("imageUrl", "") and str(l["imageUrl"]).startswith("https://"):
             data[f"{p}[price_data][product_data][images][0]"] = l["imageUrl"]
+    if discount:  # one-off coupon for exactly the amount Sellify calculated
+        coupon = stripe("POST", "/coupons", {"amount_off": cents(discount["amount"]), "currency": currency.lower(),
+                                             "duration": "once", "max_redemptions": 1, "name": discount["code"][:40]})
+        data["discounts[0][coupon]"] = coupon["id"]
     s = stripe("POST", "/checkout/sessions", data)
     return s["id"], s["url"]
 
@@ -112,13 +116,14 @@ def money(v, currency):
     return {"currency_code": currency.upper(), "value": f"{float(v):.2f}"}
 
 
-def paypal_create(checkout_id, lines, total, currency, return_url, cancel_url, store_name=None):
+def paypal_create(checkout_id, lines, total, currency, return_url, cancel_url, store_name=None, subtotal=None, discount=None):
     order = paypal("POST", "/v2/checkout/orders", idempotency_key=f"create-{checkout_id}", json={
         "intent": "CAPTURE",
         "purchase_units": [{
             "reference_id": checkout_id,
             "custom_id": checkout_id,
-            "amount": {**money(total, currency), "breakdown": {"item_total": money(total, currency)}},
+            "amount": {**money(total, currency), "breakdown": {"item_total": money(subtotal if subtotal is not None else total, currency),
+                                                               **({"discount": money(discount["amount"], currency)} if discount else {})}},
             "items": [{"name": l["title"][:127], "quantity": str(l["quantity"]), "unit_amount": money(l["price"], currency)} for l in lines],
         }],
         "payment_source": {"paypal": {"experience_context": {

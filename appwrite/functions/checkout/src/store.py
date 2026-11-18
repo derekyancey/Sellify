@@ -1,4 +1,5 @@
 """Appwrite database access for the checkout function (uses the function's dynamic API key)."""
+import datetime as dt
 import json
 import os
 
@@ -47,7 +48,7 @@ class Store:
             raise HttpError("Unknown checkout", 404)
 
     # ------------------------------------------------------------- cart -> priced line items (never trust client prices)
-    def price_cart(self, site_id, items):
+    def price_cart(self, site_id, items, code=None):
         if not isinstance(items, list) or not items or len(items) > 50:
             raise HttpError("Cart is empty")
         qty = {}
@@ -66,20 +67,62 @@ class Store:
                 raise HttpError(f"Only {a(p, 'inventory')} of {a(p, 'title')} left in stock", 409)
             lines.append({"productId": pid, "title": a(p, "title"), "quantity": q, "price": round(float(a(p, "price")), 2),
                           "imageUrl": a(p, "imageUrl") or None})
-        total = round(sum(l["price"] * l["quantity"] for l in lines), 2)
+        subtotal = round(sum(l["price"] * l["quantity"] for l in lines), 2)
+        discount = self.discount(site_id, code, subtotal) if code else None
+        total = round(subtotal - (discount["amount"] if discount else 0), 2)
         if total <= 0:
             raise HttpError("Cart total must be above zero")
-        return lines, total
+        return {"lines": lines, "subtotal": subtotal, "discount": discount, "total": total}
+
+    def discount(self, site_id, code, subtotal):
+        """Validate a discount code server-side. Returns {id, code, amount} or raises a friendly error."""
+        code = str(code).strip().upper()
+        rows = self.db.list_rows(DB, "discounts", queries=[Query.equal("siteId", site_id), Query.equal("code", code), Query.limit(1)]).rows
+        d = rows[0] if rows else None
+        now = dt.datetime.now(dt.timezone.utc)
+        when = lambda v: dt.datetime.fromisoformat(str(v).replace("Z", "+00:00")) if v else None
+        if not d or not a(d, "active"):
+            raise HttpError(f"{code} isn't a valid discount code", 404)
+        starts, ends = when(a(d, "startsAt")), when(a(d, "endsAt"))
+        if (starts and starts > now) or (ends and ends < now):
+            raise HttpError(f"{code} isn't active right now", 409)
+        if a(d, "usageLimit") and (a(d, "usedCount") or 0) >= a(d, "usageLimit"):
+            raise HttpError(f"{code} has been fully used", 409)
+        if a(d, "minSubtotal") and subtotal < float(a(d, "minSubtotal")):
+            raise HttpError(f"{code} needs an order of at least {float(a(d, 'minSubtotal')):.2f}", 409)
+        value = float(a(d, "value"))
+        amount = round(subtotal * value / 100, 2) if a(d, "type") == "percent" else min(value, subtotal)
+        return {"id": a(d, "$id"), "code": code, "amount": round(amount, 2)}
 
     # ------------------------------------------------------------- writes
-    def create_checkout(self, site_id, provider, lines, total, currency, email=None):
+    def create_checkout(self, site_id, provider, cart, currency, email=None, accepts_marketing=False):
+        d = cart["discount"] or {}
         row = self.db.create_row(DB, "checkouts", ID.unique(), {
-            "siteId": site_id, "provider": provider, "items": json.dumps(lines), "total": total,
-            "currency": currency, "status": "open", "email": email or None})
+            "siteId": site_id, "provider": provider, "items": json.dumps(cart["lines"]), "total": cart["total"],
+            "currency": currency, "status": "open", "email": email or None, "acceptsMarketing": bool(accepts_marketing),
+            "discountCode": d.get("code"), "discountId": d.get("id"), "discountAmount": d.get("amount")})
         return a(row, "$id")
 
     def set_checkout_ref(self, checkout_id, ref):
         self.db.update_row(DB, "checkouts", checkout_id, {"providerRef": ref})
+
+    def expire_checkout(self, checkout_id, email=None):
+        co = self.checkout(checkout_id)
+        if a(co, "status") == "open":
+            patch = {"status": "expired"}
+            if email and not a(co, "email"):
+                patch["email"] = email.strip().lower()
+            self.db.update_row(DB, "checkouts", checkout_id, patch)
+
+    def unsubscribe(self, site_id, customer_id):
+        try:
+            c = self.db.get_row(DB, "customers", customer_id)
+        except AppwriteException:
+            return False
+        if a(c, "siteId") != site_id:
+            return False
+        self.db.update_row(DB, "customers", customer_id, {"acceptsMarketing": False})
+        return True
 
     def finalize(self, checkout_id, provider, payment_ref, email, name, amount_paid):
         """Turn a paid checkout into an order. Idempotent: the order's row ID *is* the checkout ID."""
@@ -93,13 +136,14 @@ class Store:
         email = (email or a(co, "email") or "").strip().lower()
         name = name or email.split("@")[0] or "Customer"
 
-        customer_id = self._upsert_customer(site_id, email, name, float(a(co, "total"))) if email else None
+        customer_id = self._upsert_customer(site_id, email, name, float(a(co, "total")), bool(a(co, "acceptsMarketing"))) if email else None
         last = self.db.list_rows(DB, "orders", queries=[Query.equal("siteId", site_id), Query.order_desc("number"), Query.limit(1)])
         number = (a(last.rows[0], "number") if last.rows else 1000) + 1
         items = [{k: l[k] for k in ("productId", "title", "quantity", "price")} for l in lines]
         order = {"siteId": site_id, "number": number, "customerId": customer_id, "customerName": name, "customerEmail": email,
                  "items": json.dumps(items), "total": float(a(co, "total")), "financialStatus": "paid",
-                 "fulfillmentStatus": "unfulfilled", "paymentProvider": provider, "paymentRef": payment_ref}
+                 "fulfillmentStatus": "unfulfilled", "paymentProvider": provider, "paymentRef": payment_ref,
+                 "discountCode": a(co, "discountCode"), "discountAmount": a(co, "discountAmount")}
         try:
             self.db.create_row(DB, "orders", checkout_id, order)
         except AppwriteException as e:
@@ -111,16 +155,23 @@ class Store:
                 self.db.decrement_row_column(DB, "products", l["productId"], "inventory", l["quantity"], min=0)
             except AppwriteException:
                 pass  # product deleted since checkout; the order still stands
+        if a(co, "discountId"):
+            try:
+                self.db.increment_row_column(DB, "discounts", a(co, "discountId"), "usedCount", 1)
+            except AppwriteException:
+                pass  # discount deleted since checkout
         self.db.update_row(DB, "checkouts", checkout_id, {"status": "completed", "providerRef": payment_ref})
         return {"orderId": checkout_id, "number": number, "_order": {**order, "$id": checkout_id, "items": items}}
 
-    def _upsert_customer(self, site_id, email, name, total):
+    def _upsert_customer(self, site_id, email, name, total, opted_in=False):
         found = self.db.list_rows(DB, "customers", queries=[Query.equal("siteId", site_id), Query.equal("email", email), Query.limit(1)])
         if found.rows:
             c = found.rows[0]
-            self.db.update_row(DB, "customers", a(c, "$id"), {
-                "ordersCount": (a(c, "ordersCount") or 0) + 1, "totalSpent": round((a(c, "totalSpent") or 0) + total, 2)})
+            patch = {"ordersCount": (a(c, "ordersCount") or 0) + 1, "totalSpent": round((a(c, "totalSpent") or 0) + total, 2)}
+            if opted_in:  # opting in at checkout subscribes; not ticking the box never unsubscribes
+                patch["acceptsMarketing"] = True
+            self.db.update_row(DB, "customers", a(c, "$id"), patch)
             return a(c, "$id")
         c = self.db.create_row(DB, "customers", ID.unique(), {
-            "siteId": site_id, "name": name, "email": email, "ordersCount": 1, "totalSpent": total})
+            "siteId": site_id, "name": name, "email": email, "ordersCount": 1, "totalSpent": total, "acceptsMarketing": opted_in})
         return a(c, "$id")

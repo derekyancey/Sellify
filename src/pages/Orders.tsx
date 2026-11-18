@@ -36,14 +36,17 @@ export function downloadCsv(name: string, rows: Record<string, unknown>[]) {
   a.download = name; a.click();
 }
 
-export default function Orders() {
+const isDraft = (o: Order) => o.financialStatus === "pending" && (o.paymentProvider ?? "manual") === "manual";
+
+export default function Orders({ drafts = false }: { drafts?: boolean }) {
   const { site } = useSite(); const s = site!;
   const [params, setParams] = useSearchParams();
-  const filter = (params.get("filter") as FilterKey) || "all";
+  const filter = drafts ? "all" : (params.get("filter") as FilterKey) || "all";
   const [q, setQ] = useState("");
   const [selected, setSelected] = useState<Order | null>(null);
   const [creating, setCreating] = useState(false);
-  const { data, loading, error, reload } = useAsync(() => list("orders", s.$id), [s.$id]);
+  const { data: all, loading, error, reload } = useAsync(() => list("orders", s.$id), [s.$id]);
+  const data = useMemo(() => all && (drafts ? all.filter(isDraft) : all), [all, drafts]);
 
   const rows = useMemo(() => (data ?? []).filter(filters[filter]).filter(o =>
     !q || `#${o.number} ${o.customerName} ${o.customerEmail}`.toLowerCase().includes(q.toLowerCase())), [data, filter, q]);
@@ -81,18 +84,18 @@ export default function Orders() {
 
   return (
     <>
-      <PageHeader title="Orders" subtitle={`${data?.length ?? 0} total`} actions={<>
+      <PageHeader title={drafts ? "Draft orders" : "Orders"} subtitle={drafts ? "Manual orders waiting for payment. Mark them paid once you've been paid." : `${data?.length ?? 0} total`} actions={<>
         <Button onClick={() => downloadCsv(`${s.domain}-orders.csv`, rows.map(o => ({ order: o.number, date: o.$createdAt, customer: o.customerName, email: o.customerEmail, total: o.total, payment: o.financialStatus, provider: o.paymentProvider ?? "manual", paymentRef: o.paymentRef ?? "", fulfillment: o.fulfillmentStatus, items: o.items.map(i => `${i.quantity}x ${i.title}`).join("; ") })))}><Download className="size-4" />Export</Button>
-        <Button variant="primary" onClick={() => setCreating(true)}><Plus className="size-4" />Create order</Button>
+        <Button variant="primary" onClick={() => setCreating(true)}><Plus className="size-4" />{drafts ? "Create draft" : "Create order"}</Button>
       </>} />
       <Card>
         <div className="mb-3 flex flex-wrap items-center gap-2">
-          <div className="flex rounded-lg bg-zinc-100 p-0.5 text-sm">
+          {!drafts && <div className="flex rounded-lg bg-zinc-100 p-0.5 text-sm">
             {(Object.keys(filters) as FilterKey[]).map(k => (
               <button key={k} onClick={() => setParams(k === "all" ? {} : { filter: k })}
                 className={cx("rounded-md px-3 py-1 capitalize", filter === k ? "bg-white shadow-sm font-medium" : "text-zinc-600")}>{k}</button>
             ))}
-          </div>
+          </div>}
           <Input placeholder="Search orders" value={q} onChange={e => setQ(e.target.value)} className="sm:ml-auto sm:max-w-xs" />
         </div>
         {error && <ErrorBox error={error} />}
@@ -135,17 +138,17 @@ export default function Orders() {
         </>}
       </Modal>
 
-      {creating && <CreateOrder onClose={() => setCreating(false)} onCreated={() => { setCreating(false); reload(); }} />}
+      {creating && <CreateOrder draft={drafts} onClose={() => setCreating(false)} onCreated={() => { setCreating(false); reload(); }} />}
     </>
   );
 }
 
-function CreateOrder({ onClose, onCreated }: { onClose(): void; onCreated(): void }) {
+function CreateOrder({ onClose, onCreated, draft }: { onClose(): void; onCreated(): void; draft?: boolean }) {
   const { site } = useSite(); const s = site!;
   const refs = useAsync(async () => ({ products: await list("products", s.$id), customers: await list("customers", s.$id) }), [s.$id]);
   const [customerId, setCustomerId] = useState("");
   const [items, setItems] = useState<LineItem[]>([]);
-  const [paid, setPaid] = useState(true);
+  const [paid, setPaid] = useState(!draft);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const total = items.reduce((t, i) => t + i.price * i.quantity, 0);

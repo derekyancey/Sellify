@@ -1,4 +1,5 @@
-import type { Customer, Order, Product, Site } from "./types";
+import type { Campaign, Checkout, Collection, Customer, Discount, EmailTemplate, Order, Product, Site } from "./types";
+import { starterTemplate } from "./emailStarter";
 
 // Deterministic pseudo-random so demo numbers stay stable between reloads.
 let seed = 42;
@@ -23,6 +24,7 @@ export function buildDemo() {
   const last = ["Park", "Diaz", "Chen", "Patel", "Brooks", "Nguyen", "Reed", "Kim", "Lopez", "Shaw"];
 
   const products: Product[] = [], customers: Customer[] = [], orders: Order[] = [];
+  const collections: Collection[] = [], discounts: Discount[] = [], templates: EmailTemplate[] = [], campaigns: Campaign[] = [], checkouts: Checkout[] = [];
   for (const s of sites) {
     for (const [title, price] of catalog[s.$id]) {
       products.push({ $id: id(), $createdAt: ago(150), siteId: s.$id, title, price, compareAtPrice: rand() > 0.7 ? price + 6 : undefined,
@@ -32,7 +34,7 @@ export function buildDemo() {
     const siteProducts = products.filter(p => p.siteId === s.$id);
     const siteCustomers: Customer[] = Array.from({ length: 18 }, () => {
       const name = `${pick(first)} ${pick(last)}`;
-      return { $id: id(), $createdAt: ago(90), siteId: s.$id, name, email: name.toLowerCase().replace(" ", ".") + "@example.com", ordersCount: 0, totalSpent: 0 };
+      return { $id: id(), $createdAt: ago(90), siteId: s.$id, name, email: name.toLowerCase().replace(" ", ".") + "@example.com", ordersCount: 0, totalSpent: 0, acceptsMarketing: rand() > 0.4 };
     });
     customers.push(...siteCustomers);
     let number = 1001;
@@ -55,7 +57,25 @@ export function buildDemo() {
       }
     }
   }
-  return { sites, products, customers, orders };
+  for (const s of sites) {
+    const sp = products.filter(p => p.siteId === s.$id);
+    collections.push(
+      { $id: id(), $createdAt: ago(60), siteId: s.$id, title: "Best sellers", handle: "best-sellers", description: "", productIds: sp.slice(0, 3).map(p => p.$id) },
+      { $id: id(), $createdAt: ago(30), siteId: s.$id, title: "Gifts under $30", handle: "gifts-under-30", description: "", productIds: sp.filter(p => p.price < 30).map(p => p.$id) });
+    discounts.push(
+      { $id: id(), $createdAt: ago(40), siteId: s.$id, code: "WELCOME10", type: "percent", value: 10, usedCount: 14, active: true },
+      { $id: id(), $createdAt: ago(20), siteId: s.$id, code: "SAVE5", type: "fixed", value: 5, minSubtotal: 40, usageLimit: 100, usedCount: 100, active: true });
+    const tpl = { $id: id(), $createdAt: ago(15), siteId: s.$id, name: "New arrivals", subject: "Fresh from the shop 🎉", html: starterTemplate(s.name, `https://${s.domain}`) };
+    templates.push(tpl);
+    campaigns.push({ $id: id(), $createdAt: ago(10), siteId: s.$id, name: "October newsletter", subject: tpl.subject, templateId: tpl.$id, segmentId: "subscribers", status: "sent", sentCount: 11, sentAt: ago(10) });
+    const cs = customers.filter(c => c.siteId === s.$id);
+    for (let i = 0; i < 4; i++) {
+      const p = pick(sp), q = 1 + Math.floor(rand() * 2);
+      checkouts.push({ $id: id(), $createdAt: ago(i + 0.2), siteId: s.$id, provider: rand() > 0.5 ? "stripe" : "paypal", items: [{ productId: p.$id, title: p.title, quantity: q, price: p.price }],
+        total: p.price * q, currency: s.currency, status: i % 2 ? "expired" : "open", email: i === 3 ? undefined : pick(cs).email });
+    }
+  }
+  return { sites, products, customers, orders, collections, discounts, templates, campaigns, checkouts, segments: [] };
 }
 
 /* ---------- Mock responses for the Python "site-ops" function in demo mode ---------- */
@@ -72,6 +92,8 @@ export function demoOps(path: string, body: any): any {
     case "/email/status": return { status: "verified", records: demoEmailRecords(domain, "verified") };
     case "/email/test": return { ok: true, id: "em_demo", to: body.site?.ownerEmail };
     case "/email/order": return { ok: true, id: "em_demo" };
+    case "/email/campaign": return { ok: true, sent: (body.recipients ?? []).length, failed: 0 };
+    case "/email/recovery": return { ok: true, id: "em_demo" };
     case "/payments/refund": return { ok: true, refundId: "re_demo", status: "succeeded" };
     case "/health": return { ok: true, integrations: { cloudflare: true, netlify: true, google: true, stripe: true, paypal: true, email: true }, serviceAccountEmail: "sellify@your-project.iam.gserviceaccount.com" };
     case "/cloudflare/zone": return { id: body.zoneId, name: domain, status: "active", name_servers: ["ada.ns.cloudflare.com", "rob.ns.cloudflare.com"], original_name_servers: ["dns1.registrar-servers.com", "dns2.registrar-servers.com"], plan: { name: "Free Website" } };

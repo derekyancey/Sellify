@@ -7,7 +7,11 @@ Edit one, then copy it over the other.
 
 Nothing is sent unless the site's email setup is complete (see can_send).
 """
+import base64
+import hashlib
+import hmac
 import html
+import json
 import os
 
 import requests
@@ -126,3 +130,41 @@ def test_email(site):
     cur = get(site, "currency") or "USD"
     return ("Sellify test email", _layout(site, heading, intro, sample, 10, cur, "Sent by Sellify for"),
             _text(heading, intro, sample, 10, cur))
+
+
+# --------------------------------------------------------------------------- abandoned cart
+def cart_link(site, items):
+    """Link back to the store with the cart encoded; sellify.js restores it from ?sellify_cart=."""
+    raw = json.dumps([{"productId": i["productId"], "quantity": i["quantity"]} for i in items], separators=(",", ":"))
+    return f"https://{get(site, 'domain')}/?sellify_cart=" + base64.urlsafe_b64encode(raw.encode()).decode().rstrip("=")
+
+
+def abandoned_cart(site, checkout):
+    cur = get(site, "currency") or "USD"
+    link = cart_link(site, checkout["items"])
+    heading = "You left something in your cart"
+    intro = (f'Your items are still waiting. <a href="{html.escape(link)}" style="color:#18181b;font-weight:bold">Complete your order →</a>')
+    return ("Did you forget something?",
+            _layout(site, heading, intro, checkout["items"], checkout["total"], cur, "Questions? Just reply to this email."),
+            _text(heading, f"Your items are still waiting: {link}", checkout["items"], checkout["total"], cur))
+
+
+# --------------------------------------------------------------------------- marketing + unsubscribe
+def unsubscribe_token(customer_id):
+    secret = os.environ.get("UNSUBSCRIBE_SECRET")
+    if not secret:
+        raise HttpError("UNSUBSCRIBE_SECRET is not set (needed on both functions for marketing email)", 500)
+    return hmac.new(secret.encode(), str(customer_id).encode(), hashlib.sha256).hexdigest()[:32]
+
+
+def check_unsubscribe_token(customer_id, token):
+    return hmac.compare_digest(unsubscribe_token(customer_id), str(token or ""))
+
+
+def personalize(body, site, recipient, unsubscribe_url):
+    first = (recipient.get("name") or "").split(" ")[0] or "there"
+    tags = {"{{first_name}}": html.escape(first), "{{store_name}}": html.escape(get(site, "senderName") or get(site, "name") or ""),
+            "{{store_url}}": f"https://{get(site, 'domain')}", "{{unsubscribe_url}}": html.escape(unsubscribe_url)}
+    for k, v in tags.items():
+        body = body.replace(k, v)
+    return body

@@ -2,16 +2,34 @@
 
 A Shopify-style admin for **all of your websites** in one place. Switch between sites from the top bar; each one gets:
 
-| Area | What you can do | Powered by (free tier) |
+| Section | Pages | Powered by (free tier) |
 | --- | --- | --- |
-| **Home** | Revenue, orders, AOV, sessions, to-do alerts (unfulfilled orders, low stock) | Appwrite, GA4 |
-| **Orders / Products / Customers** | Full CRUD, draft orders, fulfil, one-click refunds, CSV export | Appwrite Database |
-| **Email** | Guided setup, order receipts, new-order alerts, shipping emails | Resend, Cloudflare DNS |
-| **Checkout** | Cart + payments on your own sites: cards, Apple Pay, Google Pay, PayPal | Stripe Checkout, PayPal |
-| **Analytics** | Sessions, users, sources, top pages; Google clicks, impressions, CTR, position, top queries | Google Analytics 4, Google Search Console |
-| **SEO** | Site crawler (broken links, redirects, titles, metas, H1s, canonicals, noindex, alt text, thin/slow pages), Lighthouse scores, sitemap submit | Python crawler, PageSpeed Insights, Search Console |
-| **Domain & DNS** | Nameserver status with Namecheap instructions, DNS record editor, cache purge, one-click "point to Netlify" | Cloudflare |
-| **Deploys** | Deploy history, trigger / clear-cache deploys, SSL status | Netlify |
+| **Home** | KPIs, setup checklist, to-dos | Appwrite, GA4 |
+| **Orders** | All orders, Drafts, Abandoned checkouts (one-click recovery email) | Appwrite, Resend |
+| **Products** | All products, Collections, Inventory (bulk stock) | Appwrite |
+| **Customers** | All customers (marketing opt-in), Segments (rule builder) | Appwrite |
+| **Marketing** | Campaigns (send to a segment), Email designer (drag-and-drop) | [GrapesJS](https://github.com/GrapesJS/grapesjs) (BSD), Resend |
+| **Discounts** | Percent/fixed codes with minimums, limits, dates, applied at checkout | Stripe coupons, PayPal |
+| **Content** | Files (images for products and emails) | Appwrite Storage |
+| **Analytics / SEO** | GA4, Search Console, crawler, PageSpeed, sitemaps | Google, Python crawler |
+| **Sales channels** | Online store (embed snippet) | sellify.js |
+| **Infrastructure** | Domain & DNS, Deploys | Cloudflare, Netlify |
+| **Checkout** | Cards, Apple Pay, Google Pay, PayPal | Stripe Checkout, PayPal |
+
+### Roadmap (shown in-app as "soon")
+
+Each planned page already describes its free approach. In brief:
+
+| Planned | Free approach |
+| --- | --- |
+| Shipping labels | Shippo / EasyPost APIs: pay per label, no monthly fee |
+| Gift cards, Purchase orders, Transfers, Companies, Menus | Custom tables in Appwrite, no third-party cost |
+| Automations | Appwrite scheduled functions (cron) reusing the recovery and campaign senders |
+| Attribution | UTM tags + GA4 source/medium joined with orders |
+| Blog & pages | [Decap CMS](https://decapcms.org) (open source, Git-based, made for Netlify) |
+| Finance | Stripe Balance/Payouts + PayPal Reporting APIs (read-only) |
+| Google & YouTube, TikTok | Free Merchant Center listings from a product feed served by the checkout function |
+| Point of sale | Stripe Terminal / Tap to Pay (per transaction) |
 
 ```
  Browser (React + Vite + Tailwind, hosted on Netlify)
@@ -89,8 +107,9 @@ Import this repo into Netlify (build settings come from `netlify.toml`) and add 
 
    | Variable | Where to get it |
    | --- | --- |
+   | `UNSUBSCRIBE_SECRET` | Any long random string (same value on `site-ops`) |
    | `STRIPE_SECRET_KEY` | Stripe → Developers → API keys (start with `sk_test_…`) |
-   | `STRIPE_WEBHOOK_SECRET` | Stripe → Developers → Webhooks → Add endpoint `https://<checkout function domain>/stripe/webhook`, events `checkout.session.completed` and `checkout.session.async_payment_succeeded`. Copy the `whsec_…` value. |
+   | `STRIPE_WEBHOOK_SECRET` | Stripe → Developers → Webhooks → Add endpoint `https://<checkout function domain>/stripe/webhook`, events `checkout.session.completed`, `checkout.session.async_payment_succeeded` and `checkout.session.expired`. Copy the `whsec_…` value. |
    | `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET` | [developer.paypal.com](https://developer.paypal.com) → Apps & Credentials |
    | `PAYPAL_ENV` | `sandbox` while testing, `live` when you launch |
    | `SHIP_TO_COUNTRIES` | Optional, e.g. `US,CA`. Asks buyers for a shipping address. |
@@ -121,9 +140,24 @@ Setup: create a Resend account, make an API key with **Full access** (it needs t
 
 `emails.py` exists in both function folders because each Appwrite function deploys on its own. Keep the two copies identical.
 
+## Marketing email, discounts, files
+
+- **Who gets marketing email:** only customers with **Subscribed** ticked, either opted in at checkout (`acceptsMarketing`) or set by you on the Customers page. Every campaign must include an `{{unsubscribe_url}}` link. Each recipient gets a signed one-click unsubscribe link plus a `List-Unsubscribe` header.
+- **Function settings:**
+  - Set `UNSUBSCRIBE_SECRET` (any long random string) on **both** functions.
+  - Set `CHECKOUT_PUBLIC_URL` (the checkout function's domain) on `site-ops`.
+  - Resend's free plan sends **100 emails a day**; the campaign screen warns you above that.
+- **Discounts:** checked server-side at checkout. Stripe receives a one-off coupon for the exact amount, and PayPal gets a discount breakdown. Storefronts can preview codes with `Sellify.discount(code)`.
+- **Files:** `setup.py` creates a public-read `files` bucket. Uploads appear in the email designer's image picker.
+- **Cart recovery:** abandoned carts come from expired Stripe sessions (enable the `checkout.session.expired` webhook event) and from unpaid carts older than an hour. The reminder email links back with `?sellify_cart=…`, and `sellify.js` restores the cart from it.
+
+Re-run `python appwrite/setup.py` after pulling: it adds the new tables (collections, discounts, segments, templates, campaigns), the new columns and the bucket.
+
 ## Project layout
 ```
 src/                       React dashboard
+  lib/nav.ts               sidebar sections, sub-pages and the "planned" roadmap
+  lib/segments.ts          segment rules engine
   lib/data.ts              data layer (Appwrite or demo) + calls to the Python function
   lib/demo.ts              sample data and mocked integration responses
   pages/                   one file per screen

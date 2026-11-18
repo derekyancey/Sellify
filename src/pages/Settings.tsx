@@ -153,7 +153,7 @@ function IntegrationStatus() {
   );
 }
 
-function SellOnSite({ site }: { site: Site }) {
+export function SellOnSite({ site }: { site: Site }) {
   const [copied, setCopied] = useState(false);
   const snippet = `<script src="${location.origin}/sellify.js"
         data-endpoint="${config.endpoint}"

@@ -10,16 +10,17 @@ Routes (all POST with a JSON body, called via functions.createExecution from the
   /google/ga4 | /google/gsc | /google/gsc/sitemaps | /google/gsc/submit-sitemap
   /seo/crawl
   /payments/refund
-  /email/setup | /email/status | /email/test | /email/order
+  /email/setup | /email/status | /email/test | /email/order | /email/recovery | /email/campaign
 
 Secrets are function environment variables, never sent to the browser:
   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID (only for "add zone"),
   NETLIFY_AUTH_TOKEN, GOOGLE_SERVICE_ACCOUNT_JSON, ADMIN_TEAM_ID,
   STRIPE_SECRET_KEY, PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_ENV (for refunds),
-  RESEND_API_KEY (email)
+  RESEND_API_KEY (email), UNSUBSCRIBE_SECRET + CHECKOUT_PUBLIC_URL (campaign unsubscribe links)
 """
 import json
 import os
+from urllib.parse import quote
 
 import sys
 
@@ -362,6 +363,54 @@ def email_order(b):
     return {"ok": True, "id": res.get("id")}
 
 
+def email_recovery(b):
+    site, checkout = need(b, "site", "checkout")
+    if not emails.can_send(site):
+        raise HttpError("Finish email setup for this site first (Settings → Email)", 409)
+    if not checkout.get("email"):
+        raise HttpError("This checkout has no email address")
+    subject, body_html, text = emails.abandoned_cart(site, checkout)
+    res = emails.send(site, checkout["email"], subject, body_html, text, idempotency_key=f"recovery-{checkout.get('$id')}")
+    return {"ok": True, "id": res.get("id")}
+
+
+def email_campaign(b):
+    """Send a campaign through Resend's batch API (100 per request). Each email gets its own unsubscribe link."""
+    site, subject, body, recipients = need(b, "site", "subject", "html", "recipients")
+    test = bool(b.get("test"))
+    if not emails.can_send(site):
+        raise HttpError("Finish email setup for this site first (Settings → Email)", 409)
+    if not test and "{{unsubscribe_url}}" not in body:
+        raise HttpError("Campaign emails must include an {{unsubscribe_url}} link")
+    if len(recipients) > 5000:
+        raise HttpError("Send at most 5,000 recipients per campaign")
+    base = (os.environ.get("CHECKOUT_PUBLIC_URL") or "").rstrip("/")
+    if not test and not base:
+        raise HttpError("CHECKOUT_PUBLIC_URL is not set on site-ops (the checkout function's public domain)", 500)
+    site_id = site.get("$id", "")
+
+    def one(r):
+        cid = r.get("customerId", "")
+        url = f"{base}/unsubscribe?s={quote(site_id)}&c={quote(cid)}&t={emails.unsubscribe_token(cid)}" if base and not test else "#"
+        msg = {"from": emails.sender(site), "to": [r["email"]], "subject": subject,
+               "html": emails.personalize(body, site, r, url), "reply_to": site.get("ownerEmail")}
+        if url != "#":
+            msg["headers"] = {"List-Unsubscribe": f"<{url}>", "List-Unsubscribe-Post": "List-Unsubscribe=One-Click"}
+        return msg
+
+    sent, failed, last_error = 0, 0, None
+    batch_key = b.get("campaignId") or "test"
+    for i in range(0, len(recipients), 100):
+        chunk = [r for r in recipients[i:i + 100] if r.get("email")]
+        try:
+            emails.resend("POST", "/emails/batch", [one(r) for r in chunk], idempotency_key=f"campaign-{batch_key}-{i}")
+            sent += len(chunk)
+        except HttpError as e:  # keep going; report partial failures
+            failed += len(chunk)
+            last_error = str(e)
+    return {"ok": failed == 0, "sent": sent, "failed": failed, "error": last_error}
+
+
 ROUTES = {
     "/health": health,
     "/cloudflare/zone": cf_zone,
@@ -387,6 +436,8 @@ ROUTES = {
     "/email/status": email_status,
     "/email/test": email_test,
     "/email/order": email_order,
+    "/email/recovery": email_recovery,
+    "/email/campaign": email_campaign,
 }
 
 

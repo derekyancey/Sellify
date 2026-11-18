@@ -55,10 +55,12 @@ export function Field({ label, hint, children }: { label: string; hint?: ReactNo
     </label>
   );
 }
-const inputCls = "w-full rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm outline-none focus:border-zinc-500 focus:ring-2 focus:ring-zinc-200";
-export const Input = (p: InputHTMLAttributes<HTMLInputElement>) => <input {...p} className={cx(inputCls, p.className)} />;
-export const Select = (p: SelectHTMLAttributes<HTMLSelectElement>) => <select {...p} className={cx(inputCls, p.className)} />;
-export const Textarea = (p: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => <textarea {...p} className={cx(inputCls, p.className)} />;
+const inputCls = "rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm outline-none focus:border-zinc-500 focus:ring-2 focus:ring-zinc-200";
+// Full width unless the caller sets its own width (w-*, flex-1), so size hints aren't overridden.
+const field = (className?: string) => cx(inputCls, !/(^|\s)(w-|flex-1)/.test(className ?? "") && "w-full", className);
+export const Input = (p: InputHTMLAttributes<HTMLInputElement>) => <input {...p} className={field(p.className)} />;
+export const Select = (p: SelectHTMLAttributes<HTMLSelectElement>) => <select {...p} className={field(p.className)} />;
+export const Textarea = (p: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => <textarea {...p} className={field(p.className)} />;
 
 const tones = {
   green: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",

@@ -22,11 +22,13 @@ from appwrite.id import ID
 from appwrite.permission import Permission
 from appwrite.query import Query
 from appwrite.role import Role
+from appwrite.services.storage import Storage
 from appwrite.services.tables_db import TablesDB
 from appwrite.services.teams import Teams
 from appwrite.services.users import Users
 
 DB_ID = os.environ.get("APPWRITE_DATABASE_ID", "sellify")
+BUCKET_ID = os.environ.get("APPWRITE_BUCKET_ID", "files")
 TEAM_ID = os.environ.get("ADMIN_TEAM_ID", "admins")
 
 # column helpers: (kind, key, required, extra kwargs)
@@ -35,6 +37,8 @@ LT = lambda key, req=False: ("longtext", key, req, {})
 F = lambda key, req=False, **kw: ("float", key, req, kw)
 I = lambda key, req=False, **kw: ("integer", key, req, kw)
 B = lambda key, req=False, **kw: ("boolean", key, req, kw)
+D = lambda key, req=False: ("datetime", key, req, {})
+SA = lambda key, size=36: ("varchar", key, False, {"size": size, "array": True})
 E = lambda key, elements, default: ("enum", key, False, {"elements": elements, "default": default})
 
 SCHEMA = {
@@ -57,7 +61,7 @@ SCHEMA = {
     "customers": {
         "public_read": False,
         "columns": [S("siteId", 36, True), S("name", 128, True), S("email", 255, True), S("phone", 32),
-                    I("ordersCount", min=0, default=0), F("totalSpent", min=0, default=0)],
+                    I("ordersCount", min=0, default=0), F("totalSpent", min=0, default=0), B("acceptsMarketing", default=False)],
         "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"]), ("by_email", TablesDBIndexType.KEY, ["email"])],
     },
     "orders": {
@@ -65,15 +69,44 @@ SCHEMA = {
         "columns": [S("siteId", 36, True), I("number", True, min=0), S("customerId", 36), S("customerName", 128), S("customerEmail", 255),
                     LT("items"), F("total", True, min=0), E("financialStatus", ["pending", "paid", "refunded"], "pending"),
                     E("fulfillmentStatus", ["unfulfilled", "fulfilled", "cancelled"], "unfulfilled"),
-                    E("paymentProvider", ["manual", "stripe", "paypal"], "manual"), S("paymentRef", 128)],
+                    E("paymentProvider", ["manual", "stripe", "paypal"], "manual"), S("paymentRef", 128),
+                    S("discountCode", 32), F("discountAmount", min=0)],
         "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"]), ("by_number", TablesDBIndexType.KEY, ["siteId", "number"])],
     },
     # Carts that were sent to Stripe/PayPal. Only the checkout function (server key) touches these.
     "checkouts": {
         "public_read": False,
         "columns": [S("siteId", 36, True), E("provider", ["stripe", "paypal"], "stripe"), S("providerRef", 128), LT("items"),
-                    F("total", True, min=0), S("currency", 8), E("status", ["open", "completed", "expired"], "open"), S("email", 255)],
-        "indexes": [("by_ref", TablesDBIndexType.KEY, ["providerRef"])],
+                    F("total", True, min=0), S("currency", 8), E("status", ["open", "completed", "expired"], "open"), S("email", 255),
+                    S("discountCode", 32), S("discountId", 36), F("discountAmount", min=0), B("acceptsMarketing", default=False), D("recoveryEmailedAt")],
+        "indexes": [("by_ref", TablesDBIndexType.KEY, ["providerRef"]), ("by_site", TablesDBIndexType.KEY, ["siteId"])],
+    },
+    "collections": {
+        "public_read": True,  # storefronts read these with Sellify.collection()
+        "columns": [S("siteId", 36, True), S("title", 255, True), S("handle", 128, True), LT("description"), SA("productIds")],
+        "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"]), ("by_handle", TablesDBIndexType.UNIQUE, ["siteId", "handle"])],
+    },
+    "discounts": {
+        "public_read": False,  # validated server-side by the checkout function
+        "columns": [S("siteId", 36, True), S("code", 32, True), E("type", ["percent", "fixed"], "percent"), F("value", True, min=0),
+                    F("minSubtotal", min=0), I("usageLimit", min=1), I("usedCount", min=0, default=0), D("startsAt"), D("endsAt"), B("active", default=True)],
+        "indexes": [("by_code", TablesDBIndexType.UNIQUE, ["siteId", "code"])],
+    },
+    "segments": {
+        "public_read": False,
+        "columns": [S("siteId", 36, True), S("name", 128, True), LT("rules")],
+        "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"])],
+    },
+    "templates": {
+        "public_read": False,
+        "columns": [S("siteId", 36, True), S("name", 128, True), S("subject", 255), LT("html"), LT("design")],
+        "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"])],
+    },
+    "campaigns": {
+        "public_read": False,
+        "columns": [S("siteId", 36, True), S("name", 128, True), S("subject", 255), S("templateId", 36), S("segmentId", 64),
+                    E("status", ["draft", "sending", "sent", "failed"], "draft"), I("sentCount", min=0, default=0), D("sentAt"), S("error", 1024)],
+        "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"])],
     },
 }
 
@@ -120,10 +153,16 @@ def main():
             if req:
                 kw = {k: v for k, v in kw.items() if k != "default"}  # Appwrite forbids defaults on required columns
             ensure(f"column {key}", lambda: fn(DB_ID, table, key, required=req, **kw) if kind != "varchar"
-                   else fn(DB_ID, table, key, kw["size"], req))
+                   else fn(DB_ID, table, key, kw["size"], req, array=kw.get("array")))
         wait_for_columns(db, table, [c[1] for c in spec["columns"]])
         for key, kind, cols in spec["indexes"]:
             ensure(f"index {key}", lambda: db.create_index(DB_ID, table, key, kind, cols))
+
+    print("Storage")
+    ensure(f"bucket '{BUCKET_ID}' (public read, for product and email images)", lambda: Storage(client).create_bucket(
+        BUCKET_ID, "Files", permissions=[Permission.read(Role.any()), Permission.create(admin), Permission.update(admin), Permission.delete(admin)],
+        file_security=False, maximum_file_size=10_000_000,
+        allowed_file_extensions=["jpg", "jpeg", "png", "gif", "webp", "svg", "avif", "pdf", "mp4", "csv", "txt"]))
 
     email, password = os.environ.get("ADMIN_EMAIL"), os.environ.get("ADMIN_PASSWORD")
     if email:

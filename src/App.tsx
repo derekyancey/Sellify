@@ -13,6 +13,17 @@ import Seo from "./pages/Seo";
 import Domains from "./pages/Domains";
 import Deploys from "./pages/Deploys";
 import SettingsPage from "./pages/Settings";
+import Planned from "./pages/Planned";
+import Abandoned from "./pages/orders/Abandoned";
+import Collections from "./pages/products/Collections";
+import Inventory from "./pages/products/Inventory";
+import Segments from "./pages/customers/Segments";
+import Discounts from "./pages/Discounts";
+import Files from "./pages/content/Files";
+import Designer from "./pages/marketing/Designer";
+import Campaigns from "./pages/marketing/Campaigns";
+import OnlineStore from "./pages/channels/OnlineStore";
+import { plannedPages } from "./lib/nav";
 
 function Guarded() {
   const { user, loading } = useAuth();
@@ -32,6 +43,20 @@ function SiteGate() {
           <>
             <Route index element={<HomePage />} />
             <Route path="orders" element={<Orders />} />
+            <Route path="orders/drafts" element={<Orders key="drafts" drafts />} />
+            <Route path="orders/abandoned" element={<Abandoned />} />
+            <Route path="products/collections" element={<Collections />} />
+            <Route path="products/inventory" element={<Inventory />} />
+            <Route path="customers/segments" element={<Segments />} />
+            <Route path="marketing" element={<Navigate to="/marketing/campaigns" replace />} />
+            <Route path="marketing/campaigns" element={<Campaigns />} />
+            <Route path="marketing/designer" element={<Designer />} />
+            <Route path="marketing/designer/:id" element={<Designer />} />
+            <Route path="discounts" element={<Discounts />} />
+            <Route path="content" element={<Navigate to="/content/files" replace />} />
+            <Route path="content/files" element={<Files />} />
+            <Route path="channels/online-store" element={<OnlineStore />} />
+            {plannedPages.map(p => <Route key={p.to} path={p.to.slice(1)} element={<Planned label={p.label} planned={p.planned} />} />)}
             <Route path="products" element={<Products />} />
             <Route path="customers" element={<Customers />} />
             <Route path="analytics" element={<Analytics />} />

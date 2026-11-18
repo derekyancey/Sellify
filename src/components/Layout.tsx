@@ -1,49 +1,52 @@
 import { useState } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { BarChart3, Box, ExternalLink, Globe, Home, LogOut, Menu, Rocket, Search, Settings, ShoppingCart, Users, X } from "lucide-react";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { ExternalLink, LogOut, Menu, Settings, X } from "lucide-react";
+import { NAV } from "../lib/nav";
 import { useAuth } from "../context/Auth";
 import { useSite } from "../context/Site";
 import { isDemo } from "../lib/appwrite";
 import { cx } from "./ui";
-
-const nav = [
-  { group: "Store", items: [
-    { to: "/", label: "Home", icon: Home, end: true },
-    { to: "/orders", label: "Orders", icon: ShoppingCart },
-    { to: "/products", label: "Products", icon: Box },
-    { to: "/customers", label: "Customers", icon: Users },
-  ] },
-  { group: "Growth", items: [
-    { to: "/analytics", label: "Analytics", icon: BarChart3 },
-    { to: "/seo", label: "SEO", icon: Search },
-  ] },
-  { group: "Infrastructure", items: [
-    { to: "/domains", label: "Domain & DNS", icon: Globe },
-    { to: "/deploys", label: "Deploys", icon: Rocket },
-  ] },
-];
 
 export default function Layout() {
   const { user, logout } = useAuth();
   const { sites, site, select } = useSite();
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const sidebar = (
-    <nav className="flex h-full flex-col gap-5 overflow-y-auto p-3">
+    <nav className="flex h-full flex-col gap-4 overflow-y-auto p-3">
       <div className="flex items-center gap-2 px-2 pt-1 text-lg font-bold text-white">
         <span className="grid size-7 place-items-center rounded-lg bg-brand-500 text-sm">S</span> Sellify
       </div>
-      {nav.map(g => (
-        <div key={g.group}>
-          <div className="mb-1 px-2 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">{g.group}</div>
-          {g.items.map(({ to, label, icon: Icon, end }) => (
-            <NavLink key={to} to={to} end={end} onClick={() => setOpen(false)}
-              className={({ isActive }) => cx("flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm",
-                isActive ? "bg-zinc-800 text-white" : "text-zinc-300 hover:bg-zinc-800/60 hover:text-white")}>
-              <Icon className="size-4" />{label}
-            </NavLink>
-          ))}
+      {NAV.map((g, gi) => (
+        <div key={gi}>
+          {g.group && <div className="mb-1 px-2 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">{g.group}</div>}
+          {g.items.map(({ to, label, icon: Icon, end, children, planned }) => {
+            const section = "/" + to.split("/")[1];
+            const inSection = to === "/" ? pathname === "/" : pathname === section || pathname.startsWith(section + "/");
+            return (
+              <div key={to}>
+                <NavLink to={to} end={end ?? !!children} onClick={() => setOpen(false)}
+                  className={({ isActive }) => cx("flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm",
+                    isActive || (inSection && !children) ? "bg-zinc-800 text-white" : inSection ? "text-white" : "text-zinc-300 hover:bg-zinc-800/60 hover:text-white")}>
+                  <Icon className="size-4" /><span className="flex-1">{label}</span>
+                  {planned && <span className="rounded bg-zinc-800 px-1 text-[10px] text-zinc-400">soon</span>}
+                </NavLink>
+                {children && inSection && (
+                  <div className="mb-1 ml-[1.1rem] mt-0.5 border-l border-zinc-700 pl-3">
+                    {children.map(c => (
+                      <NavLink key={c.to} to={c.to} end onClick={() => setOpen(false)}
+                        className={({ isActive }) => cx("flex items-center justify-between rounded-md px-2 py-1 text-[13px]",
+                          isActive ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-white")}>
+                        {c.label}{c.planned && <span className="text-[10px] text-zinc-500">soon</span>}
+                      </NavLink>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       ))}
       <div className="mt-auto">

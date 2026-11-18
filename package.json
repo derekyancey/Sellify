@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "appwrite": "29.3.1",
+    "grapesjs": "^0.23.9",
+    "grapesjs-preset-newsletter": "^1.0.2",
     "lucide-react": "1.74.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",

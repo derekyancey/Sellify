@@ -6,27 +6,31 @@ import type { Order, RowOf, TableName } from "./types";
 /* ------------------------------------------------------------------ */
 /* Rows: Appwrite TablesDB in production, localStorage in demo mode    */
 /* ------------------------------------------------------------------ */
-const DEMO_KEY = "sellify-demo-v3";
+const DEMO_KEY = "sellify-demo-v4";
 type DemoDB = { [K in TableName]: RowOf<K>[] };
 
 function demoDb(): DemoDB {
   try {
     const raw = localStorage.getItem(DEMO_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) return { ...emptyDb(), ...JSON.parse(raw) };
   } catch { /* ignore */ }
-  const db = buildDemo() as DemoDB;
+  const db = { ...emptyDb(), ...buildDemo() } as DemoDB;
   saveDemo(db);
   return db;
 }
+const emptyDb = () => ({ collections: [], discounts: [], segments: [], templates: [], campaigns: [], checkouts: [] });
 function saveDemo(db: DemoDB) { try { localStorage.setItem(DEMO_KEY, JSON.stringify(db)); } catch { /* ignore */ } }
 export function resetDemo() { try { localStorage.removeItem(DEMO_KEY); } catch { /* ignore */ } }
 
-// Orders keep line items as a JSON string column ("items") in Appwrite.
-const toRow = (t: TableName, data: any) => (t === "orders" && data.items ? { ...data, items: JSON.stringify(data.items) } : data);
+// Some columns hold JSON in Appwrite (longtext); (de)serialize them here.
+const JSON_COLS: Partial<Record<TableName, string[]>> = { orders: ["items"], checkouts: ["items"], segments: ["rules"] };
+const toRow = (t: TableName, data: any) => {
+  const out = { ...data };
+  for (const c of JSON_COLS[t] ?? []) if (out[c] !== undefined && typeof out[c] !== "string") out[c] = JSON.stringify(out[c]);
+  return out;
+};
 const fromRow = (t: TableName, row: any) => {
-  if (t === "orders" && typeof row.items === "string") {
-    try { row.items = JSON.parse(row.items); } catch { row.items = []; }
-  }
+  for (const c of JSON_COLS[t] ?? []) if (typeof row[c] === "string") { try { row[c] = JSON.parse(row[c]); } catch { row[c] = []; } }
   return row;
 };
 const strip = (data: any) => {

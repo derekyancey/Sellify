@@ -1,4 +1,4 @@
-import { Account, Client, Functions, TablesDB } from "appwrite";
+import { Account, Client, Functions, Storage, TablesDB } from "appwrite";
 
 const env = import.meta.env;
 export const config = {
@@ -6,6 +6,7 @@ export const config = {
   projectId: env.VITE_APPWRITE_PROJECT_ID || "",
   databaseId: env.VITE_APPWRITE_DATABASE_ID || "sellify",
   functionId: env.VITE_APPWRITE_FUNCTION_ID || "site-ops",
+  bucketId: env.VITE_APPWRITE_BUCKET_ID || "files",
   pagespeedKey: env.VITE_PAGESPEED_API_KEY || "",
 };
 
@@ -18,3 +19,4 @@ if (!isDemo) client.setProject(config.projectId);
 export const account = new Account(client);
 export const tables = new TablesDB(client);
 export const functions = new Functions(client);
+export const storage = new Storage(client);
