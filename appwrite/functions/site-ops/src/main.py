@@ -11,7 +11,7 @@ Routes (all POST with a JSON body, called via functions.createExecution from the
   /seo/crawl
   /payments/refund
   /email/setup | /email/status | /email/test | /email/order | /email/recovery | /email/campaign
-  /automations/preview | /automations/run   (also runs on this function's 30-minute schedule)
+  /automations/preview | /automations/run   (also runs on this function's hourly schedule)
 
 Secrets are function environment variables, never sent to the browser:
   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID (only for "add zone"),

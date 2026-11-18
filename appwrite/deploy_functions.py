@@ -52,9 +52,13 @@ def main():
         if only and f["$id"] not in only:
             continue
         cfg = dict(name=f["name"], runtime=Runtime(f["runtime"]), execute=f.get("execute", []), events=f.get("events", []),
-                   schedule=f.get("schedule") or "", timeout=f.get("timeout", 15), enabled=f.get("enabled", True),
+                   timeout=f.get("timeout", 15), enabled=f.get("enabled", True),
                    logging=f.get("logging", True), entrypoint=f["entrypoint"], commands=f.get("commands", ""),
                    scopes=[ProjectKeyScopes(s) for s in f.get("scopes", [])])
+        if f.get("schedule"):  # cron needs a paid plan; "interval" (minutes) works on free
+            cfg["schedule"] = f["schedule"]
+        elif f.get("interval"):
+            cfg["interval"] = f["interval"]
         if all(git.values()):
             cfg.update(git, provider_branch=branch, provider_root_directory=f["path"], provider_silent_mode=False)
         try:

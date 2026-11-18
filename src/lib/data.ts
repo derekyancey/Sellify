@@ -143,5 +143,5 @@ export async function pagespeed(url: string, strategy: "mobile" | "desktop") {
   };
 }
 
-/** Automations (run by site-ops every 30 minutes): preview (dry run) or run now. */
+/** Automations (run by site-ops every hour): preview (dry run) or run now. */
 export const automations = (mode: "preview" | "run", siteId: string) => ops(`/automations/${mode}`, { siteId });

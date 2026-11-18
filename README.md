@@ -171,7 +171,7 @@ Re-run `python appwrite/setup.py` after pulling: it adds the new tables (collect
 
 ## Automations and product feeds
 
-- **Automations** (`appwrite/functions/site-ops/src/automations.py`): the `site-ops` function runs on a 30-minute schedule (`appwrite.json`), and scheduled runs send due automation emails. This keeps Yancey within Appwrite's free plan of 2 functions.
+- **Automations** (`appwrite/functions/site-ops/src/automations.py`): the `site-ops` function runs every hour (`"interval": 60` in `appwrite.json`; the free plan allows hourly or longer, and cron needs a paid plan), and those scheduled runs send due automation emails. This keeps Yancey within Appwrite's free plan of 2 functions.
   - **Abandoned-cart reminder:** unpaid checkouts with an email, after N hours, within 7 days. Sent once, and skipped if the customer has bought since.
   - **Welcome email:** new subscribers, sent once.
   - **Win-back email:** subscribers whose last order is older than N days; once per gap between orders.

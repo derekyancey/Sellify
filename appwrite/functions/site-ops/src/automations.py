@@ -1,5 +1,5 @@
 """
-Automations: run by the site-ops function's 30-minute schedule (and from the dashboard), sending automatic emails per site.
+Automations: run by the site-ops function's hourly schedule (and from the dashboard), sending automatic emails per site.
 
   abandoned_cart  unpaid checkout with an email, older than delayHours (≤ 7 days) -> cart-recovery email (once)
   welcome         new subscriber (opted in within 14 days, after delayHours)       -> chosen template (once)
