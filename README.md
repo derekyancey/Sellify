@@ -48,6 +48,27 @@ npm run dev
 
 With no `VITE_APPWRITE_PROJECT_ID` set, the app runs on sample data for two stores, saved in your browser. Reset it under **Sites & settings**.
 
+## Your setup: realniggafoods.com
+
+The plan for the first store (a Namecheap domain, with DNS on Cloudflare and hosting on Netlify):
+
+| Address | What it is | How |
+| --- | --- | --- |
+| `realniggafoods.com` and `www.` | The storefront | Its own Netlify site. Click **Domain & DNS → Point to Netlify** in Yancey. |
+| `admin.realniggafoods.com` | The Yancey dashboard (this repo) | Netlify custom domain + a DNS-only `CNAME admin → <dashboard>.netlify.app` in Cloudflare |
+| `orders@realniggafoods.com` | Sender for receipts, alerts and campaigns | Email setup step. Resend's records go on `send.` and `resend._domainkey`, so a mailbox at the root still works. |
+
+1. Run setup with your store included:
+   ```bash
+   APPWRITE_ENDPOINT=https://<region>.cloud.appwrite.io/v1 APPWRITE_PROJECT_ID=... APPWRITE_API_KEY=... \
+   ADMIN_EMAIL=you@example.com ADMIN_PASSWORD='...' STORE_DOMAIN=realniggafoods.com STORE_NAME='Your store name' \
+   python appwrite/setup.py
+   ```
+2. In Appwrite, add **Web platforms** for `localhost`, `admin.realniggafoods.com`, `realniggafoods.com` and `www.realniggafoods.com`.
+3. In Yancey: **Sites & settings → edit the store → Add to Cloudflare**. Then at Namecheap set **Custom DNS** to the two Cloudflare nameservers it shows.
+4. Once Cloudflare shows *active*: pick the storefront's Netlify site, then **Domain & DNS → Point to Netlify**.
+5. Add the `admin` CNAME for the dashboard, then do the email setup step and send a test.
+
 ## Going live
 
 ### 1. Appwrite (database + login)
