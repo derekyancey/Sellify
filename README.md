@@ -73,7 +73,7 @@ Store emails (receipts, campaigns) are sent from each store's own domain, never 
 | Functions | `site-ops` (admin-only, runs automations hourly) and `checkout` (public, at `https://checkout.realniggafoods.com`), both deploying from `main` |
 | DNS (Cloudflare) | `@`, `www` and `checkout` are `CNAME appwrite.network` (DNS only); a CAA record lets Appwrite issue certificates; DMARC, SPF and Google verification are kept |
 | Already set | site `VITE_*` variables, `ADMIN_TEAM_ID`, `APPWRITE_SITES_CNAME_TARGET`, `UNSUBSCRIBE_SECRET` (both functions), `CHECKOUT_PUBLIC_URL` |
-| Still to add | `CLOUDFLARE_API_TOKEN` and `GOOGLE_SERVICE_ACCOUNT_JSON` (site-ops); `RESEND_API_KEY`, Stripe and PayPal keys (both); `STRIPE_WEBHOOK_SECRET` (checkout) |
+| Still to add | `CLOUDFLARE_API_TOKEN`, `GOOGLE_OAUTH_CLIENT_ID` and `GOOGLE_OAUTH_CLIENT_SECRET` (site-ops); `RESEND_API_KEY`, Stripe and PayPal keys (both); `STRIPE_WEBHOOK_SECRET` (checkout) |
 
 Free-plan limits that shaped this: 2 functions, no cron (hourly interval instead), and 3 web platforms.
 
@@ -103,9 +103,16 @@ Set these function environment variables:
 | `CLOUDFLARE_API_TOKEN` | Cloudflare → My Profile → API Tokens → custom token with **Zone:Read, DNS:Edit, Cache Purge:Purge** for all zones (add **Zone:Edit** if you want "Add to Cloudflare") |
 | `CLOUDFLARE_ACCOUNT_ID` | Only needed for "Add to Cloudflare"; shown on your Cloudflare dashboard sidebar |
 | `APPWRITE_SITES_CNAME_TARGET` | The CNAME value Appwrite shows under *Sites → (site) → Domains → Add domain* |
-| `GOOGLE_SERVICE_ACCOUNT_JSON` | See below. Paste the whole JSON key file. |
+| `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET` | See below: lets each store connect its own Google account |
 
-**Google (free):** in [Google Cloud console](https://console.cloud.google.com) create a project, enable the **Google Search Console API** and **Google Analytics Data API**, create a service account and download a JSON key. Then add the service account's email (shown in **Account → Integration status**) as a user in each **Search Console property** (Full) and each **GA4 property** (Viewer).
+**Google (free): each store connects its own Google account.** Set this up once:
+1. In [Google Cloud console](https://console.cloud.google.com), create a project and enable the **Google Search Console API**, **Google Analytics Data API** and **Google Analytics Admin API**.
+2. Under **OAuth consent screen**, choose *External* and add yourself as the contact. Then click **Publish app** ("In production"). In *Testing* mode Google expires the connection every 7 days. For your own stores, the "unverified app" notice Google shows is fine; just click *Continue*.
+3. Under **Credentials → Create credentials → OAuth client ID**, choose *Web application* and add the authorized redirect URI `https://realniggafoods.com/oauth/google` (plus `http://localhost:5173/oauth/google` for local development).
+4. Put the client ID and secret on the `site-ops` function as `GOOGLE_OAUTH_CLIENT_ID` and `GOOGLE_OAUTH_CLIENT_SECRET` (mark the secret as *secret*), then redeploy it.
+5. In Yancey, open each store's **Store settings → Connections → Connect Google account**, sign in with the account that owns that site's Analytics and Search Console, then pick its GA4 property and Search Console site from the lists.
+
+Refresh tokens live in the `connections` table, which has no client permissions, so only `site-ops` can read them. Disconnecting revokes access at Google. Optionally, `GOOGLE_SERVICE_ACCOUNT_JSON` still works as a shared fallback for stores that don't connect an account.
 
 ### 3. Each store's domain → Cloudflare → Appwrite Sites
 1. In Yancey, **Your stores → Add store**, then under **Store settings → Store URL** add the domain and click **Add to Cloudflare** (or **Find by domain** if it's already there).

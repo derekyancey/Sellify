@@ -34,7 +34,7 @@ export function IntegrationStatus() {
   const items = [
     ["cloudflare", "Cloudflare", "CLOUDFLARE_API_TOKEN"],
     ["hosting", "Hosting (Appwrite Sites) custom domains", "APPWRITE_SITES_CNAME_TARGET"],
-    ["google", "Google (Search Console + GA4)", "GOOGLE_SERVICE_ACCOUNT_JSON"],
+    ["googleOAuth", "Google sign-in for stores (Analytics + Search Console)", "GOOGLE_OAUTH_CLIENT_ID and GOOGLE_OAUTH_CLIENT_SECRET on site-ops"],
     ["stripe", "Stripe (cards, Apple Pay, Google Pay)", "STRIPE_SECRET_KEY on both functions, and STRIPE_WEBHOOK_SECRET on checkout"],
     ["paypal", "PayPal", "PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET and PAYPAL_ENV on both functions"],
     ["email", "Email (Resend)", "RESEND_API_KEY on both functions"],
@@ -46,7 +46,7 @@ export function IntegrationStatus() {
           {items.map(([k, label, env]) => (
             <li key={k} className="flex items-start gap-2">
               {data.integrations[k] ? <CheckCircle2 className="mt-0.5 size-4 text-emerald-600" /> : <XCircle className="mt-0.5 size-4 text-red-500" />}
-              <div><div className="font-medium">{label}</div>{!data.integrations[k] && <div className="text-zinc-500">Set <code>{env}</code>{k === "stripe" || k === "paypal" || k === "email" ? "" : " on the site-ops function"}.</div>}</div>
+              <div><div className="font-medium">{label}</div>{!data.integrations[k] && <div className="text-zinc-500">Set <code>{env}</code>{["stripe", "paypal", "email", "googleOAuth"].includes(k) ? "" : " on the site-ops function"}.</div>}</div>
             </li>
           ))}
           {data.serviceAccountEmail && <li className="rounded-lg bg-zinc-50 p-2 text-zinc-600">Add <code className="font-semibold text-zinc-900">{data.serviceAccountEmail}</code> as a user in each GA4 property (Viewer) and Search Console property (Full).</li>}

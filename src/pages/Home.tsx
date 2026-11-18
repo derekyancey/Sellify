@@ -19,8 +19,8 @@ export default function HomePage() {
   }, [s.$id]);
   const traffic = useAsync(async () => {
     const [ga, gsc] = await Promise.all([
-      s.ga4PropertyId ? ops("/google/ga4", { propertyId: s.ga4PropertyId, days: 28 }).catch(() => null) : null,
-      s.gscProperty ? ops("/google/gsc", { property: s.gscProperty, days: 28 }).catch(() => null) : null,
+      s.ga4PropertyId ? ops("/google/ga4", { propertyId: s.ga4PropertyId, days: 28, siteId: s.$id }).catch(() => null) : null,
+      s.gscProperty ? ops("/google/gsc", { property: s.gscProperty, days: 28, siteId: s.$id }).catch(() => null) : null,
     ]);
     return { ga, gsc };
   }, [s.$id]);

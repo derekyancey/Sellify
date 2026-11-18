@@ -110,6 +110,14 @@ SCHEMA = {
                     I("delayHours", min=0), S("templateId", 36), S("subject", 255), D("lastRunAt"), I("sentCount", min=0, default=0)],
         "indexes": [("by_site_type", TablesDBIndexType.UNIQUE, ["siteId", "type"])],
     },
+    # OAuth tokens for each store's connected accounts. No client permissions at all: only the
+    # site-ops function's server key can read it, so tokens never reach a browser.
+    "connections": {
+        "server_only": True,
+        "columns": [S("siteId", 36, True), E("provider", ["google"], "google"), S("accountEmail", 255),
+                    ("varchar", "refreshToken", True, {"size": 1024, "encrypt": True})],
+        "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"])],
+    },
     "campaigns": {
         "public_read": False,
         "columns": [S("siteId", 36, True), S("name", 128, True), S("subject", 255), S("templateId", 36), S("segmentId", 64),
@@ -123,8 +131,17 @@ def attr(obj, key):
     return obj.get(key) if isinstance(obj, dict) else getattr(obj, key, None)
 
 
-def ensure(label, fn):
-    """Run a create call; treat 'already exists' (409) as success so the script can be re-run."""
+def ensure(label, fn, exists=None):
+    """Run a create call; treat 'already exists' (409) as success so the script can be re-run.
+    `exists` checks first, because Appwrite enforces plan limits before it notices a duplicate."""
+    if exists:
+        try:
+            exists()
+            print(f"  = {label} (exists)")
+            return
+        except AppwriteException as e:
+            if e.code != 404:
+                raise
     try:
         fn()
         print(f"  + {label}")
@@ -144,22 +161,29 @@ def main():
     db, teams, users = TablesDB(client), Teams(client), Users(client)
 
     print("Team")
-    ensure(f"team '{TEAM_ID}'", lambda: teams.create(TEAM_ID, "Yancey admins"))
+    ensure(f"team '{TEAM_ID}'", lambda: teams.create(TEAM_ID, "Yancey admins"), lambda: teams.get(TEAM_ID))
     admin = Role.team(TEAM_ID)
 
     print("Database")
-    ensure(f"database '{DB_ID}'", lambda: db.create(DB_ID, "Yancey"))
+    ensure(f"database '{DB_ID}'", lambda: db.create(DB_ID, "Yancey"), lambda: db.get(DB_ID))
 
     for table, spec in SCHEMA.items():
         print(f"Table {table}")
-        perms = [Permission.read(admin), Permission.create(admin), Permission.update(admin), Permission.delete(admin)]
-        if spec["public_read"]:
+        perms = [] if spec.get("server_only") else [Permission.read(admin), Permission.create(admin), Permission.update(admin), Permission.delete(admin)]
+        if spec.get("public_read"):
             perms.append(Permission.read(Role.any()))
-        ensure(table, lambda: db.create_table(DB_ID, table, table.capitalize(), permissions=perms, row_security=False))
+        ensure(table, lambda: db.create_table(DB_ID, table, table.capitalize(), permissions=perms, row_security=False),
+               lambda: db.get_table(DB_ID, table))
         for kind, key, req, kw in spec["columns"]:
             fn = getattr(db, f"create_{kind}_column")
             if req:
                 kw = {k: v for k, v in kw.items() if k != "default"}  # Appwrite forbids defaults on required columns
+            if kind == "varchar" and kw.get("encrypt"):
+                try:  # encrypted columns are a paid-plan feature; fall back to plain (the table is server-only anyway)
+                    ensure(f"column {key} (encrypted)", lambda: fn(DB_ID, table, key, kw["size"], req, encrypt=True))
+                    continue
+                except AppwriteException as e:
+                    print(f"  ! encryption unavailable ({e.message[:60]}); creating {key} unencrypted")
             ensure(f"column {key}", lambda: fn(DB_ID, table, key, required=req, **kw) if kind != "varchar"
                    else fn(DB_ID, table, key, kw["size"], req, array=kw.get("array")))
         wait_for_columns(db, table, [c[1] for c in spec["columns"]])
@@ -170,7 +194,8 @@ def main():
     ensure(f"bucket '{BUCKET_ID}' (public read, for product and email images)", lambda: Storage(client).create_bucket(
         BUCKET_ID, "Files", permissions=[Permission.read(Role.any()), Permission.create(admin), Permission.update(admin), Permission.delete(admin)],
         file_security=False, maximum_file_size=10_000_000,
-        allowed_file_extensions=["jpg", "jpeg", "png", "gif", "webp", "svg", "avif", "pdf", "mp4", "csv", "txt"]))
+        allowed_file_extensions=["jpg", "jpeg", "png", "gif", "webp", "svg", "avif", "pdf", "mp4", "csv", "txt"]),
+        lambda: Storage(client).get_bucket(BUCKET_ID))
 
     email, password = os.environ.get("ADMIN_EMAIL"), os.environ.get("ADMIN_PASSWORD")
     if email:

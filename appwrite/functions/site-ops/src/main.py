@@ -7,7 +7,8 @@ Routes (all POST with a JSON body, called via functions.createExecution from the
   /cloudflare/dns/list | /cloudflare/dns/create | /cloudflare/dns/update | /cloudflare/dns/delete
   /cloudflare/purge | /cloudflare/connect-hosting
   /hosting/sites | /hosting/site | /hosting/deployments | /hosting/redeploy      (Appwrite Sites)
-  /google/ga4 | /google/gsc | /google/gsc/sitemaps | /google/gsc/submit-sitemap
+  /google/ga4 | /google/gsc | /google/gsc/sitemaps | /google/gsc/submit-sitemap   (pass siteId to use that store's Google account)
+  /google/oauth/start | /google/oauth/finish | /google/connection | /google/disconnect | /google/properties
   /seo/crawl
   /payments/refund
   /email/setup | /email/status | /email/test | /email/order | /email/recovery | /email/campaign
@@ -15,7 +16,8 @@ Routes (all POST with a JSON body, called via functions.createExecution from the
 
 Secrets are function environment variables, never sent to the browser:
   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID (only for "add zone"),
-  APPWRITE_SITES_CNAME_TARGET (the CNAME target Appwrite shows when you add a domain), GOOGLE_SERVICE_ACCOUNT_JSON, ADMIN_TEAM_ID,
+  APPWRITE_SITES_CNAME_TARGET (the CNAME target Appwrite shows when you add a domain), ADMIN_TEAM_ID,
+  GOOGLE_OAUTH_CLIENT_ID + GOOGLE_OAUTH_CLIENT_SECRET (per-store "Connect Google"), GOOGLE_SERVICE_ACCOUNT_JSON (optional fallback),
   STRIPE_SECRET_KEY, PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_ENV (for refunds),
   RESEND_API_KEY (email), UNSUBSCRIBE_SECRET + CHECKOUT_PUBLIC_URL (campaign unsubscribe links),
   AUTOMATION_MAX_PER_RUN (default 50)
@@ -33,6 +35,7 @@ import automations  # noqa: E402
 import crawler  # noqa: E402
 import emails  # noqa: E402
 import google_apis  # noqa: E402
+import google_oauth  # noqa: E402
 from errors import HttpError  # noqa: E402
 
 CF = "https://api.cloudflare.com/client/v4"
@@ -59,9 +62,10 @@ def require_admin(context):
     members = res.memberships if hasattr(res, "memberships") else res["memberships"]
     if not any(_get(m, "confirm") for m in members):
         raise HttpError("Your account isn't on the admin team", 403)
+    _REQUEST["user"] = user_id
 
 
-_REQUEST = {"key": None}
+_REQUEST = {"key": None, "user": None}
 
 
 def appwrite_client():
@@ -128,7 +132,8 @@ def health(_):
         "integrations": {
             "cloudflare": bool(os.environ.get("CLOUDFLARE_API_TOKEN")),
             "hosting": bool(os.environ.get("APPWRITE_SITES_CNAME_TARGET")),
-            "google": bool(email),
+            "google": bool(email) or google_oauth.configured(),
+            "googleOAuth": google_oauth.configured(),
             "stripe": bool(os.environ.get("STRIPE_SECRET_KEY")),
             "paypal": bool(os.environ.get("PAYPAL_CLIENT_ID") and os.environ.get("PAYPAL_CLIENT_SECRET")),
             "email": bool(os.environ.get("RESEND_API_KEY")),
@@ -292,25 +297,71 @@ def hosting_redeploy(b):
     return {"ok": True, "deploymentId": _get(d, "id")}
 
 
+def _db():
+    from appwrite.services.tables_db import TablesDB
+    return TablesDB(appwrite_client())
+
+
+def _use_store_google(b):
+    """Run this request's Google calls as the store's connected account, if it has one."""
+    row = google_oauth.load(_db(), b["siteId"]) if b.get("siteId") else None
+    google_apis.use_refresh_token(google_oauth._a(row, "refreshToken") if row else None)
+
+
 def ga4(b):
     (prop,) = need(b, "propertyId")
+    _use_store_google(b)
     return google_apis.ga4_report(str(prop), int(b.get("days") or 28))
 
 
 def gsc(b):
     (prop,) = need(b, "property")
+    _use_store_google(b)
     return google_apis.gsc_report(prop, int(b.get("days") or 28))
 
 
 def gsc_sitemaps(b):
     (prop,) = need(b, "property")
+    _use_store_google(b)
     return google_apis.gsc_sitemaps(prop)
 
 
 def gsc_submit(b):
     prop, sitemap = need(b, "property", "sitemap")
+    _use_store_google(b)
     google_apis.gsc_submit_sitemap(prop, sitemap)
     return {"ok": True}
+
+
+def google_oauth_start(b):
+    site_id, redirect = need(b, "siteId", "redirectUri")
+    return {"url": google_oauth.start_url(site_id, _REQUEST["user"], redirect, b.get("loginHint"))}
+
+
+def google_oauth_finish(b):
+    code, state, redirect = need(b, "code", "state", "redirectUri")
+    site_id = google_oauth.read_state(state, _REQUEST["user"])
+    refresh_token, email = google_oauth.exchange(code, redirect)
+    google_oauth.save(_db(), site_id, refresh_token, email)
+    return {"siteId": site_id, "email": email}
+
+
+def google_connection(b):
+    (site_id,) = need(b, "siteId")
+    row = google_oauth.load(_db(), site_id)
+    return {"connected": bool(row), "email": google_oauth._a(row, "accountEmail") if row else None,
+            "connectedAt": google_oauth._a(row, "$updatedAt") if row else None, "available": google_oauth.configured()}
+
+
+def google_disconnect(b):
+    (site_id,) = need(b, "siteId")
+    return {"ok": google_oauth.delete(_db(), site_id)}
+
+
+def google_properties(b):
+    need(b, "siteId")
+    _use_store_google(b)
+    return google_apis.list_properties()
 
 
 def seo_crawl(b):
@@ -488,6 +539,11 @@ ROUTES = {
     "/google/gsc": gsc,
     "/google/gsc/sitemaps": gsc_sitemaps,
     "/google/gsc/submit-sitemap": gsc_submit,
+    "/google/oauth/start": google_oauth_start,
+    "/google/oauth/finish": google_oauth_finish,
+    "/google/connection": google_connection,
+    "/google/disconnect": google_disconnect,
+    "/google/properties": google_properties,
     "/seo/crawl": seo_crawl,
     "/payments/refund": payments_refund,
     "/email/setup": email_setup,

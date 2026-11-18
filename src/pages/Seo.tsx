@@ -15,7 +15,7 @@ export default function Seo() {
       <div className="space-y-6">
         <Crawler key={s.$id} domain={s.domain!} />
         <PageSpeed key={s.$id + "ps"} domain={s.domain!} />
-        {s.gscProperty && <Sitemaps property={s.gscProperty} domain={s.domain!} />}
+        {s.gscProperty && <Sitemaps property={s.gscProperty} domain={s.domain!} siteId={s.$id} />}
       </div>
     </>
   );
@@ -122,11 +122,11 @@ function PageSpeed({ domain }: { domain: string }) {
   );
 }
 
-function Sitemaps({ property, domain }: { property: string; domain: string }) {
-  const { data, error, loading, reload } = useAsync(() => ops("/google/gsc/sitemaps", { property }), [property]);
+function Sitemaps({ property, domain, siteId }: { property: string; domain: string; siteId: string }) {
+  const { data, error, loading, reload } = useAsync(() => ops("/google/gsc/sitemaps", { property, siteId }), [property]);
   const [path, setPath] = useState(`https://${domain}/sitemap.xml`);
   const [busy, setBusy] = useState(false);
-  const submit = async () => { setBusy(true); try { await ops("/google/gsc/submit-sitemap", { property, sitemap: path }); await reload(); } finally { setBusy(false); } };
+  const submit = async () => { setBusy(true); try { await ops("/google/gsc/submit-sitemap", { property, sitemap: path, siteId }); await reload(); } finally { setBusy(false); } };
   return (
     <Card title="Sitemaps (Search Console)">
       {loading ? <Loading /> : error ? <ErrorBox error={error} /> : (

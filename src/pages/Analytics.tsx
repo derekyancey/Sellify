@@ -6,7 +6,7 @@ import { useAsync } from "../lib/useAsync";
 import { num, pct } from "../lib/format";
 import { Card, ErrorBox, Loading, NeedsSetup, PageHeader, Stat, Table, Td, cx } from "../components/ui";
 
-const ACCESS_HINT = "Make sure the service account email (shown in Settings → Integration status) is added as a user on this GA4 property / Search Console property.";
+const ACCESS_HINT = "Check Store settings → Connections: the connected Google account (or the shared service account) needs access to this property.";
 const axis = { tick: { fontSize: 11, fill: "#71717a" }, tickLine: false, axisLine: false } as const;
 
 export default function Analytics() {
@@ -27,7 +27,8 @@ export default function Analytics() {
 }
 
 function Ga4({ propertyId, days }: { propertyId: string; days: number }) {
-  const { data, error, loading } = useAsync(() => ops("/google/ga4", { propertyId, days }), [propertyId, days]);
+  const { site } = useSite();
+  const { data, error, loading } = useAsync(() => ops("/google/ga4", { propertyId, days, siteId: site!.$id }), [propertyId, days]);
   if (loading) return <Loading label="Loading Google Analytics…" />;
   if (error) return <ErrorBox error={`Google Analytics: ${error}`} hint={ACCESS_HINT} />;
   const t = data.totals;
@@ -67,7 +68,8 @@ function Ga4({ propertyId, days }: { propertyId: string; days: number }) {
 }
 
 function Gsc({ property, days }: { property: string; days: number }) {
-  const { data, error, loading } = useAsync(() => ops("/google/gsc", { property, days }), [property, days]);
+  const { site } = useSite();
+  const { data, error, loading } = useAsync(() => ops("/google/gsc", { property, days, siteId: site!.$id }), [property, days]);
   const [tab, setTab] = useState<"queries" | "pages">("queries");
   if (loading) return <Loading label="Loading Search Console…" />;
   if (error) return <ErrorBox error={`Search Console: ${error}`} hint={ACCESS_HINT} />;

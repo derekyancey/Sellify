@@ -5,6 +5,7 @@ import AppShell from "./components/AppShell";
 import StoresHome from "./pages/StoresHome";
 import StoreSettings from "./pages/StoreSettings";
 import Account from "./pages/Account";
+import GoogleCallback from "./pages/GoogleCallback";
 import Layout from "./components/Layout";
 import { Loading } from "./components/ui";
 import Login from "./pages/Login";
@@ -39,6 +40,7 @@ function Guarded() {
       <Routes>
         <Route path="stores" element={<Shell><StoresHome /></Shell>} />
         <Route path="account" element={<Shell><Account /></Shell>} />
+        <Route path="oauth/google" element={<Shell><GoogleCallback /></Shell>} />
         <Route path="stores/:storeId/*" element={<StoreRoutes />} />
         <Route path="*" element={<Navigate to="/stores" replace />} />
       </Routes>

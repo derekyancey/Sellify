@@ -103,7 +103,7 @@ export function demoOps(path: string, body: any): any {
     case "/email/campaign": return { ok: true, sent: (body.recipients ?? []).length, failed: 0 };
     case "/email/recovery": return { ok: true, id: "em_demo" };
     case "/payments/refund": return { ok: true, refundId: "re_demo", status: "succeeded" };
-    case "/health": return { ok: true, integrations: { cloudflare: true, hosting: true, google: true, stripe: true, paypal: true, email: true }, serviceAccountEmail: "yancey@your-project.iam.gserviceaccount.com" };
+    case "/health": return { ok: true, integrations: { cloudflare: true, hosting: true, google: true, googleOAuth: true, stripe: true, paypal: true, email: true }, serviceAccountEmail: "yancey@your-project.iam.gserviceaccount.com" };
     case "/cloudflare/zone": return { id: body.zoneId, name: domain, status: "active", name_servers: ["ada.ns.cloudflare.com", "rob.ns.cloudflare.com"], original_name_servers: ["dns1.registrar-servers.com", "dns2.registrar-servers.com"], plan: { name: "Free Website" } };
     case "/cloudflare/zones/find": return { zones: [] };
     case "/cloudflare/zones/create": return { zone: { id: "demo-zone-" + id().slice(0, 6), status: "pending", name_servers: ["ada.ns.cloudflare.com", "rob.ns.cloudflare.com"] } };
@@ -123,6 +123,12 @@ export function demoOps(path: string, body: any): any {
     case "/hosting/deployments": return { deployments: Array.from({ length: 8 }, (_, i) => ({ id: "d" + i, status: i === 2 ? "failed" : "ready", active: i === 0, branch: "main",
       message: pick(["Update homepage copy", "Add holiday collection", "Fix checkout button", "Bump deps", "New product photos"]), commit: id().slice(0, 7), createdAt: ago(i * 2), buildSeconds: 20 + Math.floor(rand() * 60), type: "vcs" })) };
     case "/hosting/redeploy": return { ok: true, deploymentId: "dnew" };
+    case "/google/connection": return body.siteId === "site_coffee" ? { connected: true, email: "owner@example.com", available: true } : { connected: false, available: true };
+    case "/google/oauth/start": return { url: `/oauth/google?code=demo&state=${body.siteId}` };
+    case "/google/oauth/finish": return { siteId: body.state, email: "owner@example.com" };
+    case "/google/disconnect": return { ok: true };
+    case "/google/properties": return { ga4: [{ id: "123456789", name: "Northline Coffee", account: "Northline" }, { id: "987654321", name: "Ember & Wick", account: "Ember" }],
+      gsc: [{ id: "sc-domain:northlinecoffee.com", permission: "siteOwner" }, { id: "sc-domain:emberandwick.shop", permission: "siteOwner" }] };
     case "/google/ga4": return {
       totals: { sessions: 8421, activeUsers: 6110, screenPageViews: 21950, conversions: 312, bounceRate: 0.41 },
       daily: series(28, 280, 60).map(r => ({ date: r.date, sessions: r.value, users: Math.round(r.value * 0.72) })),

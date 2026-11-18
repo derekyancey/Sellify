@@ -1,10 +1,16 @@
-"""Google Search Console + GA4 Data API via a service account (both free)."""
+"""
+Google Search Console + GA4 Data API (both free).
+
+Credentials, per request: the store's own connected Google account (OAuth refresh token, see google_oauth.py)
+when it has one, otherwise the shared service account in GOOGLE_SERVICE_ACCOUNT_JSON.
+"""
 import datetime as dt
 import json
 import os
 from urllib.parse import quote
 
 from google.auth.transport.requests import AuthorizedSession
+from google.oauth2 import credentials as user_credentials
 from google.oauth2 import service_account
 
 from errors import HttpError
@@ -13,18 +19,61 @@ SCOPES = [
     "https://www.googleapis.com/auth/webmasters",
     "https://www.googleapis.com/auth/analytics.readonly",
 ]
-_session = None
+_service_session = None
+_active = {"session": None}
+
+
+def use_refresh_token(refresh_token):
+    """Make this request's Google calls run as a store's connected account (None = service account)."""
+    if not refresh_token:
+        _active["session"] = None
+        return
+    creds = user_credentials.Credentials(
+        None, refresh_token=refresh_token, token_uri="https://oauth2.googleapis.com/token",
+        client_id=os.environ.get("GOOGLE_OAUTH_CLIENT_ID"), client_secret=os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET"), scopes=SCOPES)
+    _active["session"] = AuthorizedSession(creds)
 
 
 def session():
-    global _session
-    if _session is None:
+    global _service_session
+    if _active["session"] is not None:
+        return _active["session"]
+    if _service_session is None:
         raw = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON")
         if not raw:
-            raise HttpError("GOOGLE_SERVICE_ACCOUNT_JSON is not set on the site-ops function", 500)
+            raise HttpError("Connect this store's Google account in Store settings → Connections "
+                            "(or set GOOGLE_SERVICE_ACCOUNT_JSON on site-ops)", 409)
         creds = service_account.Credentials.from_service_account_info(json.loads(raw), scopes=SCOPES)
-        _session = AuthorizedSession(creds)
-    return _session
+        _service_session = AuthorizedSession(creds)
+    return _service_session
+
+
+def _get(url, params=None):
+    r = session().get(url, params=params, timeout=20)
+    if not r.ok:
+        try:
+            msg = r.json()["error"]["message"]
+        except Exception:
+            msg = r.text[:200]
+        raise HttpError(msg, 502)
+    return r.json()
+
+
+def list_properties():
+    """GA4 properties and Search Console sites the connected account can see (for pick lists)."""
+    ga4 = []
+    page = None
+    while True:
+        d = _get("https://analyticsadmin.googleapis.com/v1beta/accountSummaries", {"pageSize": 200, **({"pageToken": page} if page else {})})
+        for acc in d.get("accountSummaries", []):
+            for p in acc.get("propertySummaries", []):
+                ga4.append({"id": p["property"].split("/")[-1], "name": p.get("displayName", ""), "account": acc.get("displayName", "")})
+        page = d.get("nextPageToken")
+        if not page:
+            break
+    sites = _get("https://www.googleapis.com/webmasters/v3/sites").get("siteEntry", [])
+    gsc = [{"id": x["siteUrl"], "permission": x.get("permissionLevel")} for x in sites if x.get("permissionLevel") != "siteUnverifiedUser"]
+    return {"ga4": ga4, "gsc": gsc}
 
 
 def _post(url, body):

@@ -7,6 +7,7 @@ import { config } from "../lib/appwrite";
 import { useAsync } from "../lib/useAsync";
 import type { Site } from "../lib/types";
 import EmailSetup from "./EmailSetup";
+import GoogleConnect from "./GoogleConnect";
 import { Badge, Button, Card, ErrorBox, Field, Input, Loading, PageHeader, Select } from "../components/ui";
 
 export const cleanDomain = (v: string) => v.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/[/?#].*$/, "");
@@ -144,8 +145,8 @@ function StoreUrl({ site, others, save, sp }: { site: Site; others: Site[]; save
 }
 
 function Connections({ site, save }: { site: Site; save(p: Partial<Site>): Promise<void> }) {
-  const [d, setD] = useState({ cloudflareZoneId: site.cloudflareZoneId ?? "", hostingSiteId: site.hostingSiteId ?? "", gscProperty: site.gscProperty ?? "", ga4PropertyId: site.ga4PropertyId ?? "" });
-  useEffect(() => setD({ cloudflareZoneId: site.cloudflareZoneId ?? "", hostingSiteId: site.hostingSiteId ?? "", gscProperty: site.gscProperty ?? "", ga4PropertyId: site.ga4PropertyId ?? "" }), [site]);
+  const [d, setD] = useState({ cloudflareZoneId: site.cloudflareZoneId ?? "", hostingSiteId: site.hostingSiteId ?? "" });
+  useEffect(() => setD({ cloudflareZoneId: site.cloudflareZoneId ?? "", hostingSiteId: site.hostingSiteId ?? "" }), [site]);
   const [err, setErr] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -178,14 +179,13 @@ function Connections({ site, save }: { site: Site; save(p: Partial<Site>): Promi
             </Select>
           ) : <Input value={d.hostingSiteId} onChange={e => set("hostingSiteId", e.target.value)} placeholder="Appwrite site ID" />}
         </Field>
-        <Field label="Search Console property" hint="Usually sc-domain:yourdomain."><Input value={d.gscProperty} onChange={e => set("gscProperty", e.target.value)} placeholder={`sc-domain:${site.domain}`} /></Field>
-        <Field label="GA4 property ID" hint="Numbers only: GA → Admin → Property details."><Input value={d.ga4PropertyId} onChange={e => set("ga4PropertyId", e.target.value.replace(/\D/g, ""))} placeholder="123456789" /></Field>
       </div>
       <Button variant="primary" disabled={!dirty} loading={busy} onClick={async () => {
         setBusy(true); setErr(null);
-        try { await save({ cloudflareZoneId: d.cloudflareZoneId || undefined, hostingSiteId: d.hostingSiteId || undefined, gscProperty: d.gscProperty || undefined, ga4PropertyId: d.ga4PropertyId || undefined }); setNote("Connections saved."); }
+        try { await save({ cloudflareZoneId: d.cloudflareZoneId || undefined, hostingSiteId: d.hostingSiteId || undefined }); setNote("Connections saved."); }
         catch (e: any) { setErr(e.message); } finally { setBusy(false); }
       }}>Save connections</Button>
+      <GoogleConnect site={site} save={save} />
     </div>
   );
 }
