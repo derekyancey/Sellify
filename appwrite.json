@@ -1,0 +1,21 @@
+{
+  "projectId": "YOUR_APPWRITE_PROJECT_ID",
+  "projectName": "Sellify",
+  "functions": [
+    {
+      "$id": "site-ops",
+      "name": "site-ops",
+      "runtime": "python-3.12",
+      "path": "appwrite/functions/site-ops",
+      "entrypoint": "src/main.py",
+      "commands": "pip install -r requirements.txt",
+      "execute": ["team:admins"],
+      "events": [],
+      "schedule": "",
+      "timeout": 30,
+      "enabled": true,
+      "logging": true,
+      "scopes": ["teams.read"]
+    }
+  ]
+}

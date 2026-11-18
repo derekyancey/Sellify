@@ -1,0 +1,4 @@
+appwrite==27.3.0
+requests==2.34.2
+google-auth==2.62.2
+beautifulsoup4==4.15.0
