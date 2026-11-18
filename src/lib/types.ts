@@ -34,6 +34,7 @@ export interface Customer extends Base {
 
 export type FinancialStatus = "pending" | "paid" | "refunded";
 export type FulfillmentStatus = "unfulfilled" | "fulfilled" | "cancelled";
+export type PaymentProvider = "manual" | "stripe" | "paypal";
 export interface LineItem { productId: string; title: string; quantity: number; price: number }
 export interface Order extends Base {
   siteId: string;
@@ -45,6 +46,8 @@ export interface Order extends Base {
   total: number;
   financialStatus: FinancialStatus;
   fulfillmentStatus: FulfillmentStatus;
+  paymentProvider?: PaymentProvider;
+  paymentRef?: string;              // Stripe PaymentIntent id or PayPal capture id
 }
 
 export type TableName = "sites" | "products" | "orders" | "customers";

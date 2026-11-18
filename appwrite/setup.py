@@ -59,8 +59,16 @@ SCHEMA = {
         "public_read": False,
         "columns": [S("siteId", 36, True), I("number", True, min=0), S("customerId", 36), S("customerName", 128), S("customerEmail", 255),
                     LT("items"), F("total", True, min=0), E("financialStatus", ["pending", "paid", "refunded"], "pending"),
-                    E("fulfillmentStatus", ["unfulfilled", "fulfilled", "cancelled"], "unfulfilled")],
+                    E("fulfillmentStatus", ["unfulfilled", "fulfilled", "cancelled"], "unfulfilled"),
+                    E("paymentProvider", ["manual", "stripe", "paypal"], "manual"), S("paymentRef", 128)],
         "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"]), ("by_number", TablesDBIndexType.KEY, ["siteId", "number"])],
+    },
+    # Carts that were sent to Stripe/PayPal. Only the checkout function (server key) touches these.
+    "checkouts": {
+        "public_read": False,
+        "columns": [S("siteId", 36, True), E("provider", ["stripe", "paypal"], "stripe"), S("providerRef", 128), LT("items"),
+                    F("total", True, min=0), S("currency", 8), E("status", ["open", "completed", "expired"], "open"), S("email", 255)],
+        "indexes": [("by_ref", TablesDBIndexType.KEY, ["providerRef"])],
     },
 }
 

@@ -46,7 +46,9 @@ export function buildDemo() {
         const financialStatus = rand() > 0.94 ? "refunded" : rand() > 0.1 ? "paid" : "pending";
         const fulfillmentStatus = d > 3 ? "fulfilled" : rand() > 0.5 ? "fulfilled" : "unfulfilled";
         orders.push({ $id: id(), $createdAt: ago(d), siteId: s.$id, number: number++, customerId: c.$id, customerName: c.name, customerEmail: c.email,
-          items, total, financialStatus, fulfillmentStatus });
+          items, total, financialStatus, fulfillmentStatus, ...(rand() > 0.35
+            ? { paymentProvider: "stripe" as const, paymentRef: "pi_demo" + id().slice(0, 10) }
+            : { paymentProvider: "paypal" as const, paymentRef: "CAPDEMO" + id().slice(0, 8).toUpperCase() }) });
         if (financialStatus === "paid") { c.ordersCount++; c.totalSpent += total; }
       }
     }
@@ -64,7 +66,8 @@ const series = (days: number, base: number, spread: number) =>
 export function demoOps(path: string, body: any): any {
   const domain = body?.domain || String(body?.property || "").replace(/^sc-domain:/, "").replace(/^https?:\/\//, "").replace(/\/$/, "") || "example.com";
   switch (path) {
-    case "/health": return { ok: true, integrations: { cloudflare: true, netlify: true, google: true }, serviceAccountEmail: "sellify@your-project.iam.gserviceaccount.com" };
+    case "/payments/refund": return { ok: true, refundId: "re_demo", status: "succeeded" };
+    case "/health": return { ok: true, integrations: { cloudflare: true, netlify: true, google: true, stripe: true, paypal: true }, serviceAccountEmail: "sellify@your-project.iam.gserviceaccount.com" };
     case "/cloudflare/zone": return { id: body.zoneId, name: domain, status: "active", name_servers: ["ada.ns.cloudflare.com", "rob.ns.cloudflare.com"], original_name_servers: ["dns1.registrar-servers.com", "dns2.registrar-servers.com"], plan: { name: "Free Website" } };
     case "/cloudflare/zones/find": return { zones: [] };
     case "/cloudflare/zones/create": return { zone: { id: "demo-zone-" + id().slice(0, 6), status: "pending", name_servers: ["ada.ns.cloudflare.com", "rob.ns.cloudflare.com"] } };

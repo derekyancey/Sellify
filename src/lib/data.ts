@@ -6,7 +6,7 @@ import type { Order, RowOf, TableName } from "./types";
 /* ------------------------------------------------------------------ */
 /* Rows: Appwrite TablesDB in production, localStorage in demo mode    */
 /* ------------------------------------------------------------------ */
-const DEMO_KEY = "sellify-demo-v1";
+const DEMO_KEY = "sellify-demo-v2";
 type DemoDB = { [K in TableName]: RowOf<K>[] };
 
 function demoDb(): DemoDB {

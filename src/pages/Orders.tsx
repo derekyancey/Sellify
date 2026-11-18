@@ -2,16 +2,21 @@ import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Download, Plus, Trash2 } from "lucide-react";
 import { useSite } from "../context/Site";
-import { createOrder, list, update } from "../lib/data";
+import { createOrder, list, ops, update } from "../lib/data";
 import { useAsync } from "../lib/useAsync";
 import { date, dateTime, money } from "../lib/format";
-import type { FinancialStatus, FulfillmentStatus, LineItem, Order } from "../lib/types";
+import type { FinancialStatus, FulfillmentStatus, LineItem, Order, PaymentProvider } from "../lib/types";
 import { Badge, Button, Card, ErrorBox, Field, Input, Loading, Modal, PageHeader, Select, Table, Td, cx } from "../components/ui";
 
 export const FinStatus = ({ s }: { s: FinancialStatus }) =>
   <Badge tone={s === "paid" ? "green" : s === "pending" ? "yellow" : "gray"}>{s[0].toUpperCase() + s.slice(1)}</Badge>;
 export const FulStatus = ({ s }: { s: FulfillmentStatus }) =>
   <Badge tone={s === "fulfilled" ? "gray" : s === "unfulfilled" ? "yellow" : "red"}>{s[0].toUpperCase() + s.slice(1)}</Badge>;
+
+const providerLabel: Record<PaymentProvider, string> = { stripe: "Stripe", paypal: "PayPal", manual: "Manual" };
+export const paymentLink = (o: Order) =>
+  o.paymentProvider === "stripe" && o.paymentRef ? `https://dashboard.stripe.com/payments/${o.paymentRef}`
+  : o.paymentProvider === "paypal" && o.paymentRef ? `https://www.paypal.com/activity/payment/${o.paymentRef}` : null;
 
 const filters = {
   all: () => true,
@@ -43,15 +48,30 @@ export default function Orders() {
   const rows = useMemo(() => (data ?? []).filter(filters[filter]).filter(o =>
     !q || `#${o.number} ${o.customerName} ${o.customerEmail}`.toLowerCase().includes(q.toLowerCase())), [data, filter, q]);
 
+  const [busy, setBusy] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
   const setStatus = async (o: Order, patch: Partial<Order>) => {
-    const next = await update("orders", o.$id, patch);
-    setSelected(next); reload();
+    setBusy(true); setActionError(null);
+    try { const next = await update("orders", o.$id, patch); setSelected(next); reload(); }
+    catch (e: any) { setActionError(e.message); } finally { setBusy(false); }
+  };
+  const refund = async (o: Order) => {
+    const auto = (o.paymentProvider === "stripe" || o.paymentProvider === "paypal") && o.paymentRef;
+    const msg = auto ? `Refund ${money(o.total, s.currency)} to ${o.customerName} through ${providerLabel[o.paymentProvider!]}?`
+      : "Mark this order refunded? Issue the refund yourself — it wasn't paid through Stripe or PayPal.";
+    if (!confirm(msg)) return;
+    if (auto) {
+      setBusy(true); setActionError(null);
+      try { await ops("/payments/refund", { provider: o.paymentProvider, paymentRef: o.paymentRef, currency: s.currency }); }
+      catch (e: any) { setActionError(e.message); setBusy(false); return; }
+    }
+    await setStatus(o, { financialStatus: "refunded" });
   };
 
   return (
     <>
       <PageHeader title="Orders" subtitle={`${data?.length ?? 0} total`} actions={<>
-        <Button onClick={() => downloadCsv(`${s.domain}-orders.csv`, rows.map(o => ({ order: o.number, date: o.$createdAt, customer: o.customerName, email: o.customerEmail, total: o.total, payment: o.financialStatus, fulfillment: o.fulfillmentStatus, items: o.items.map(i => `${i.quantity}x ${i.title}`).join("; ") })))}><Download className="size-4" />Export</Button>
+        <Button onClick={() => downloadCsv(`${s.domain}-orders.csv`, rows.map(o => ({ order: o.number, date: o.$createdAt, customer: o.customerName, email: o.customerEmail, total: o.total, payment: o.financialStatus, provider: o.paymentProvider ?? "manual", paymentRef: o.paymentRef ?? "", fulfillment: o.fulfillmentStatus, items: o.items.map(i => `${i.quantity}x ${i.title}`).join("; ") })))}><Download className="size-4" />Export</Button>
         <Button variant="primary" onClick={() => setCreating(true)}><Plus className="size-4" />Create order</Button>
       </>} />
       <Card>
@@ -70,7 +90,7 @@ export default function Orders() {
             {rows.map(o => (
               <tr key={o.$id} onClick={() => setSelected(o)} className="cursor-pointer hover:bg-zinc-50">
                 <Td className="font-medium">#{o.number}</Td><Td>{date(o.$createdAt)}</Td><Td>{o.customerName}</Td>
-                <Td><FinStatus s={o.financialStatus} /></Td><Td><FulStatus s={o.fulfillmentStatus} /></Td>
+                <Td><FinStatus s={o.financialStatus} /> <span className="ml-1 text-xs text-zinc-500">{providerLabel[o.paymentProvider ?? "manual"]}</span></Td><Td><FulStatus s={o.fulfillmentStatus} /></Td>
                 <Td>{o.items.reduce((t, i) => t + i.quantity, 0)}</Td><Td className="tabular-nums">{money(o.total, s.currency)}</Td>
               </tr>
             ))}
@@ -78,15 +98,18 @@ export default function Orders() {
         )}
       </Card>
 
-      <Modal open={!!selected} onClose={() => setSelected(null)} title={selected ? `Order #${selected.number}` : ""}
+      <Modal open={!!selected} onClose={() => { setSelected(null); setActionError(null); }} title={selected ? `Order #${selected.number}` : ""}
         footer={selected && <>
-          {selected.financialStatus === "pending" && <Button onClick={() => setStatus(selected, { financialStatus: "paid" })}>Mark as paid</Button>}
-          {selected.financialStatus === "paid" && <Button variant="ghost" onClick={() => confirm("Mark this order refunded? (Issue the refund in your payment provider too.)") && setStatus(selected, { financialStatus: "refunded" })}>Refund</Button>}
+          {selected.financialStatus === "pending" && <Button disabled={busy} onClick={() => setStatus(selected, { financialStatus: "paid" })}>Mark as paid</Button>}
+          {selected.financialStatus === "paid" && <Button variant="ghost" disabled={busy} onClick={() => refund(selected)}>Refund</Button>}
           {selected.fulfillmentStatus === "unfulfilled" && <Button variant="ghost" onClick={() => setStatus(selected, { fulfillmentStatus: "cancelled" })}>Cancel</Button>}
-          {selected.fulfillmentStatus === "unfulfilled" && <Button variant="primary" onClick={() => setStatus(selected, { fulfillmentStatus: "fulfilled" })}>Mark fulfilled</Button>}
+          {selected.fulfillmentStatus === "unfulfilled" && <Button variant="primary" loading={busy} onClick={() => setStatus(selected, { fulfillmentStatus: "fulfilled" })}>Mark fulfilled</Button>}
         </>}>
         {selected && <>
-          <div className="flex flex-wrap gap-2"><FinStatus s={selected.financialStatus} /><FulStatus s={selected.fulfillmentStatus} /><span className="text-sm text-zinc-500">{dateTime(selected.$createdAt)}</span></div>
+          {actionError && <ErrorBox error={actionError} />}
+          <div className="flex flex-wrap items-center gap-2"><FinStatus s={selected.financialStatus} /><FulStatus s={selected.fulfillmentStatus} /><span className="text-sm text-zinc-500">{dateTime(selected.$createdAt)}</span></div>
+          <div className="text-sm text-zinc-600">Paid via <strong>{providerLabel[selected.paymentProvider ?? "manual"]}</strong>
+            {paymentLink(selected) && <> · <a className="underline" href={paymentLink(selected)!} target="_blank" rel="noreferrer">view payment</a></>}</div>
           <div className="text-sm"><div className="font-medium">{selected.customerName}</div><div className="text-zinc-500">{selected.customerEmail}</div></div>
           <ul className="divide-y divide-zinc-100 rounded-lg border border-zinc-200 text-sm">
             {selected.items.map((li, i) => <li key={i} className="flex justify-between px-3 py-2"><span>{li.quantity} × {li.title}</span><span className="tabular-nums">{money(li.price * li.quantity, s.currency)}</span></li>)}
@@ -121,7 +144,7 @@ function CreateOrder({ onClose, onCreated }: { onClose(): void; onCreated(): voi
     setBusy(true);
     try {
       await createOrder(s.$id, { customerId: c.$id, customerName: c.name, customerEmail: c.email, items, total,
-        financialStatus: paid ? "paid" : "pending", fulfillmentStatus: "unfulfilled" });
+        financialStatus: paid ? "paid" : "pending", fulfillmentStatus: "unfulfilled", paymentProvider: "manual" });
       onCreated();
     } catch (e: any) { setErr(e.message); setBusy(false); }
   };

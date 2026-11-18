@@ -9,10 +9,12 @@ Routes (all POST with a JSON body, called via functions.createExecution from the
   /netlify/sites | /netlify/site | /netlify/deploys | /netlify/build
   /google/ga4 | /google/gsc | /google/gsc/sitemaps | /google/gsc/submit-sitemap
   /seo/crawl
+  /payments/refund
 
 Secrets are function environment variables, never sent to the browser:
   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID (only for "add zone"),
-  NETLIFY_AUTH_TOKEN, GOOGLE_SERVICE_ACCOUNT_JSON, ADMIN_TEAM_ID
+  NETLIFY_AUTH_TOKEN, GOOGLE_SERVICE_ACCOUNT_JSON, ADMIN_TEAM_ID,
+  STRIPE_SECRET_KEY, PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_ENV (for refunds)
 """
 import json
 import os
@@ -123,6 +125,8 @@ def health(_):
             "cloudflare": bool(os.environ.get("CLOUDFLARE_API_TOKEN")),
             "netlify": bool(os.environ.get("NETLIFY_AUTH_TOKEN")),
             "google": bool(email),
+            "stripe": bool(os.environ.get("STRIPE_SECRET_KEY")),
+            "paypal": bool(os.environ.get("PAYPAL_CLIENT_ID") and os.environ.get("PAYPAL_CLIENT_SECRET")),
         },
         "serviceAccountEmail": email,
     }
@@ -250,6 +254,36 @@ def seo_crawl(b):
     return crawler.crawl(url, max_pages=min(int(b.get("maxPages") or 50), 200))
 
 
+def payments_refund(b):
+    """Refund a Stripe PaymentIntent or PayPal capture. Omit amount for a full refund."""
+    provider, ref = need(b, "provider", "paymentRef")
+    amount = b.get("amount")
+    if provider == "stripe":
+        data = {"payment_intent": ref, "reason": "requested_by_customer"}
+        if amount:
+            data["amount"] = int(round(float(amount) * 100))
+        r = requests.post("https://api.stripe.com/v1/refunds", auth=(env("STRIPE_SECRET_KEY"), ""), data=data,
+                          headers={"Idempotency-Key": f"refund-{ref}-{amount or 'full'}"}, timeout=TIMEOUT)
+        body = r.json()
+        if not r.ok:
+            raise HttpError(f"Stripe: {body.get('error', {}).get('message', r.text[:200])}", 502)
+        return {"ok": True, "refundId": body["id"], "status": body["status"]}
+    if provider == "paypal":
+        base = "https://api-m.paypal.com" if os.environ.get("PAYPAL_ENV", "sandbox") == "live" else "https://api-m.sandbox.paypal.com"
+        tok = requests.post(f"{base}/v1/oauth2/token", auth=(env("PAYPAL_CLIENT_ID"), env("PAYPAL_CLIENT_SECRET")),
+                            data={"grant_type": "client_credentials"}, timeout=TIMEOUT)
+        if not tok.ok:
+            raise HttpError("PayPal: could not authenticate", 502)
+        payload = {"amount": {"value": f"{float(amount):.2f}", "currency_code": b.get("currency", "USD")}} if amount else {}
+        r = requests.post(f"{base}/v2/payments/captures/{ref}/refund", json=payload, timeout=TIMEOUT,
+                          headers={"Authorization": f"Bearer {tok.json()['access_token']}", "PayPal-Request-Id": f"refund-{ref}-{amount or 'full'}"})
+        body = r.json() if r.content else {}
+        if not r.ok:
+            raise HttpError(f"PayPal: {(body.get('details') or [{}])[0].get('description') or body.get('message') or r.text[:200]}", 502)
+        return {"ok": True, "refundId": body.get("id"), "status": body.get("status")}
+    raise HttpError(f"Can't refund provider '{provider}' automatically")
+
+
 ROUTES = {
     "/health": health,
     "/cloudflare/zone": cf_zone,
@@ -270,6 +304,7 @@ ROUTES = {
     "/google/gsc/sitemaps": gsc_sitemaps,
     "/google/gsc/submit-sitemap": gsc_submit,
     "/seo/crawl": seo_crawl,
+    "/payments/refund": payments_refund,
 }
 
 

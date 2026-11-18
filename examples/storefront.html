@@ -1,0 +1,125 @@
+<!doctype html>
+<!--
+  Minimal storefront using sellify.js. Copy into any site you host on Netlify.
+  1. Replace the data-* values (Sellify → Sites & settings → "Sell on your site" shows them filled in).
+  2. Add this site's domain as a Web platform in your Appwrite project (needed for browser requests).
+  This page is also its own success page: it passes its own URL as successUrl, so Stripe and PayPal send buyers back here.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shop</title>
+  <style>
+    :root { --ink: #18181b; --muted: #71717a; --line: #e4e4e7; --bg: #fafafa; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 15px/1.5 system-ui, sans-serif; color: var(--ink); background: var(--bg); }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--line); background: #fff; }
+    main { max-width: 1000px; margin: 0 auto; padding: 16px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+    .card { background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+    .card img, .card .ph { width: 100%; aspect-ratio: 1; object-fit: cover; background: #f4f4f5; }
+    .card .body { padding: 12px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    .price s { color: var(--muted); margin-left: 6px; }
+    button { font: inherit; cursor: pointer; border-radius: 8px; border: 1px solid var(--ink); background: var(--ink); color: #fff; padding: 8px 12px; }
+    button.alt { background: #fff; color: var(--ink); }
+    button.paypal { background: #ffc439; border-color: #ffc439; color: #111; font-weight: 600; }
+    button:disabled { opacity: .5; cursor: default; }
+    #cart { position: fixed; inset: 0 0 0 auto; width: min(380px, 100%); background: #fff; border-left: 1px solid var(--line); padding: 16px; transform: translateX(100%); transition: transform .2s; display: flex; flex-direction: column; gap: 12px; }
+    #cart.open { transform: none; }
+    .line { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+    .msg { padding: 12px; border-radius: 8px; background: #ecfdf5; color: #065f46; margin-bottom: 16px; }
+    .err { background: #fef2f2; color: #991b1b; }
+    .muted { color: var(--muted); font-size: 13px; }
+  </style>
+</head>
+<body>
+  <header><strong>My Shop</strong><button class="alt" id="cartBtn">Cart (0)</button></header>
+  <main>
+    <div id="notice"></div>
+    <div class="grid" id="products">Loading…</div>
+  </main>
+
+  <aside id="cart" aria-label="Cart">
+    <div class="line"><strong>Your cart</strong><button class="alt" id="closeCart">Close</button></div>
+    <div id="lines"></div>
+    <div class="line"><strong>Total</strong><strong id="total">$0.00</strong></div>
+    <button id="payStripe">Pay with card, Apple Pay or Google Pay</button>
+    <button id="payPaypal" class="paypal">PayPal</button>
+    <p class="muted">You'll be redirected to a secure Stripe or PayPal page to pay.</p>
+  </aside>
+
+  <script src="https://YOUR-DASHBOARD.netlify.app/sellify.js"
+          data-endpoint="https://cloud.appwrite.io/v1"
+          data-project="YOUR_APPWRITE_PROJECT_ID"
+          data-site="YOUR_SITE_ID"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const fmt = (n) => new Intl.NumberFormat(undefined, { style: "currency", currency: "USD" }).format(n);
+    const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    let catalog = [];
+
+    function notice(text, isError) { $("notice").innerHTML = `<div class="msg ${isError ? "err" : ""}">${esc(text)}</div>`; }
+
+    function renderCart() {
+      const items = Sellify.cart.items();
+      $("cartBtn").textContent = `Cart (${Sellify.cart.count()})`;
+      let total = 0;
+      $("lines").innerHTML = items.map(({ productId, quantity }) => {
+        const p = catalog.find((x) => x.$id === productId);
+        if (!p) return "";
+        total += p.price * quantity;
+        return `<div class="line"><span>${esc(p.title)}</span>
+          <span><button class="alt" data-dec="${p.$id}">−</button> ${quantity} <button class="alt" data-inc="${p.$id}">+</button></span>
+          <span>${fmt(p.price * quantity)}</span></div>`;
+      }).join("") || '<p class="muted">Your cart is empty.</p>';
+      $("total").textContent = fmt(total);
+      $("payStripe").disabled = $("payPaypal").disabled = !items.length;
+    }
+
+    async function pay(provider, btn) {
+      btn.disabled = true;
+      try { await Sellify.checkout(provider, { successUrl: location.pathname }); } catch (e) { notice(e.message, true); $("cart").classList.remove("open"); btn.disabled = false; }
+    }
+
+    async function init() {
+      // Coming back from Stripe / PayPal?
+      try {
+        const result = await Sellify.handleReturn();
+        if (result) {
+          notice(result.number ? `Thank you! Your order #${result.number} is confirmed.` : "Thank you! Your payment went through and your order is confirmed.");
+          history.replaceState(null, "", location.pathname);
+        }
+      } catch (e) { notice(`We couldn't confirm your payment: ${e.message}`, true); }
+
+      const [products, providers] = await Promise.all([Sellify.products(), Sellify.config().catch(() => ({ stripe: true, paypal: true }))]);
+      catalog = products;
+      $("payStripe").hidden = !providers.stripe;
+      $("payPaypal").hidden = !providers.paypal;
+      $("products").innerHTML = products.map((p) => `
+        <div class="card">
+          ${p.imageUrl ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.title)}">` : '<div class="ph"></div>'}
+          <div class="body">
+            <strong>${esc(p.title)}</strong>
+            <span class="price">${fmt(p.price)}${p.compareAtPrice ? `<s>${fmt(p.compareAtPrice)}</s>` : ""}</span>
+            <button data-add="${p.$id}" ${p.inventory < 1 ? "disabled" : ""}>${p.inventory < 1 ? "Sold out" : "Add to cart"}</button>
+          </div>
+        </div>`).join("") || "No products yet.";
+      renderCart();
+    }
+
+    document.addEventListener("click", (e) => {
+      const t = e.target.closest("button"); if (!t) return;
+      if (t.dataset.add) { Sellify.cart.add(t.dataset.add); $("cart").classList.add("open"); }
+      if (t.dataset.inc) Sellify.cart.add(t.dataset.inc);
+      if (t.dataset.dec) Sellify.cart.add(t.dataset.dec, -1);
+    });
+    window.addEventListener("sellify:cart", renderCart);
+    $("cartBtn").onclick = () => $("cart").classList.add("open");
+    $("closeCart").onclick = () => $("cart").classList.remove("open");
+    $("payStripe").onclick = (e) => pay("stripe", e.currentTarget);
+    $("payPaypal").onclick = (e) => pay("paypal", e.currentTarget);
+    init().catch((e) => notice(e.message, true));
+  </script>
+</body>
+</html>

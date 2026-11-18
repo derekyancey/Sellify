@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { CheckCircle2, Plus, XCircle } from "lucide-react";
 import { useSite } from "../context/Site";
 import { create, ops, remove, resetDemo, update } from "../lib/data";
-import { isDemo } from "../lib/appwrite";
+import { config, isDemo } from "../lib/appwrite";
 import { useAsync } from "../lib/useAsync";
 import type { Site } from "../lib/types";
 import { Button, Card, ErrorBox, Field, Input, Loading, PageHeader, Select, Table, Td } from "../components/ui";
@@ -38,6 +38,7 @@ export default function SettingsPage() {
             ))}
           </Table>
         </Card>
+        {site && <SellOnSite site={site} />}
         <IntegrationStatus />
         {isDemo && (
           <Card title="Demo mode">
@@ -126,6 +127,8 @@ function IntegrationStatus() {
     ["cloudflare", "Cloudflare", "CLOUDFLARE_API_TOKEN"],
     ["netlify", "Netlify", "NETLIFY_AUTH_TOKEN"],
     ["google", "Google (Search Console + GA4)", "GOOGLE_SERVICE_ACCOUNT_JSON"],
+    ["stripe", "Stripe (cards, Apple Pay, Google Pay)", "STRIPE_SECRET_KEY on both functions, and STRIPE_WEBHOOK_SECRET on checkout"],
+    ["paypal", "PayPal", "PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET and PAYPAL_ENV on both functions"],
   ] as const;
   return (
     <Card title="Integration status">
@@ -134,12 +137,29 @@ function IntegrationStatus() {
           {items.map(([k, label, env]) => (
             <li key={k} className="flex items-start gap-2">
               {data.integrations[k] ? <CheckCircle2 className="mt-0.5 size-4 text-emerald-600" /> : <XCircle className="mt-0.5 size-4 text-red-500" />}
-              <div><div className="font-medium">{label}</div>{!data.integrations[k] && <div className="text-zinc-500">Set <code>{env}</code> on the site-ops function.</div>}</div>
+              <div><div className="font-medium">{label}</div>{!data.integrations[k] && <div className="text-zinc-500">Set <code>{env}</code>{k === "stripe" || k === "paypal" ? "" : " on the site-ops function"}.</div>}</div>
             </li>
           ))}
           {data.serviceAccountEmail && <li className="rounded-lg bg-zinc-50 p-2 text-zinc-600">Add <code className="font-semibold text-zinc-900">{data.serviceAccountEmail}</code> as a user in each GA4 property (Viewer) and Search Console property (Full).</li>}
         </ul>
       )}
+    </Card>
+  );
+}
+
+function SellOnSite({ site }: { site: Site }) {
+  const [copied, setCopied] = useState(false);
+  const snippet = `<script src="${location.origin}/sellify.js"
+        data-endpoint="${config.endpoint}"
+        data-project="${config.projectId || "YOUR_APPWRITE_PROJECT_ID"}"
+        data-site="${site.$id}"
+        data-success-url="/thank-you"></script>`;
+  const copy = async () => { try { await navigator.clipboard.writeText(snippet); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch { /* ignore */ } };
+  return (
+    <Card title={`Sell on ${site.domain}`} actions={<Button onClick={copy}>{copied ? "Copied!" : "Copy snippet"}</Button>}>
+      <p className="mb-2 text-sm text-zinc-600">Paste this into your site's HTML, then use <code>Sellify.cart.add(id)</code> and <code>Sellify.checkout("stripe" | "paypal")</code>. Stripe shows card, Apple Pay and Google Pay on one page. Paid orders appear under Orders automatically.</p>
+      <pre className="overflow-x-auto rounded-lg bg-zinc-900 p-3 text-xs text-zinc-100">{snippet}</pre>
+      <p className="mt-2 text-xs text-zinc-500">Also add <strong>{site.domain}</strong> as a Web platform in Appwrite. For a complete starter page, see <code>examples/storefront.html</code> in the repo.</p>
     </Card>
   );
 }
