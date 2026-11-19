@@ -145,10 +145,10 @@ export default function Preview(p: Props) {
       st.current.cache.clear();
       st.current.behaviors?.destroy();
       st.current.behaviors = installBehaviors(d, {
-        addToCart: (id, q) => props.current.api.addToCart(id, q),
-        setQuantity: (id, q) => props.current.api.setQuantity(id, q),
+        addToCart: (id, q, v) => props.current.api.addToCart(id, q, v),
+        setQuantity: (id, q, v) => props.current.api.setQuantity(id, q, v),
         checkout: (pr, o) => props.current.api.checkout(pr, o),
-        buyNow: (id, q) => props.current.api.buyNow(id, q),
+        buyNow: (id, q, v) => props.current.api.buyNow(id, q, v),
         discount: c => props.current.api.discount(c),
         subscribe: e => props.current.api.subscribe(e),
         navigate: u => props.current.onNavigate(u),
@@ -181,7 +181,7 @@ export default function Preview(p: Props) {
         if (t.closest("[contenteditable=true]")) return;
         const a = t.closest<HTMLAnchorElement>("a[href]");
         if (props.current.inspector) {
-          const allowed = t.closest("summary, [data-prev], [data-next], [data-dot], [data-qty-minus], [data-qty-plus], [data-close-cart], [data-close-details], [data-close-search]");
+          const allowed = t.closest("summary, .pill, [data-option], [data-prev], [data-next], [data-dot], [data-qty-minus], [data-qty-plus], [data-close-cart], [data-close-details], [data-close-search]");
           const sel = targetOf(t);
           if (sel) props.current.onSelect(sel);
           if (!allowed) { e.preventDefault(); e.stopPropagation(); }

@@ -24,7 +24,7 @@ interface YanceyApi {
   collections(): Promise<Collection[]>;
   theme(): Promise<{ data: ThemeDoc | null } | null>;
   config(): Promise<{ stripe: boolean; paypal: boolean }>;
-  cart: { items(): { productId: string; quantity: number }[]; add(id: string, q?: number): void; setQuantity(id: string, q: number): void };
+  cart: { items(): { productId: string; variantId?: string; quantity: number }[]; add(id: string, q?: number, variantId?: string): void; setQuantity(id: string, q: number, variantId?: string): void };
   checkout(provider: "stripe" | "paypal", opts?: Record<string, unknown>): Promise<void>;
   discount(code: string): Promise<{ subtotal: number; discount: { code: string; amount: number }; total: number }>;
   subscribe(email: string): Promise<unknown>;
@@ -49,10 +49,10 @@ async function start() {
   }
 
   const behaviors = installBehaviors(document, {
-    addToCart: (id, q) => Y.cart.add(id, q),
-    setQuantity: (id, q) => Y.cart.setQuantity(id, q),
+    addToCart: (id, q, v) => Y.cart.add(id, q, v),
+    setQuantity: (id, q, v) => Y.cart.setQuantity(id, q, v),
     checkout: (provider, o) => Y.checkout(provider, { discountCode: o.discountCode }),
-    buyNow: (id, q) => Y.checkout("stripe", { items: [{ productId: id, quantity: q }] }),
+    buyNow: (id, q, v) => Y.checkout("stripe", { items: [{ productId: id, quantity: q, ...(v ? { variantId: v } : {}) }] }),
     discount: async code => {
       const r = await Y.discount(code);
       return `${r.discount.code} applied: −${money(r.discount.amount, site.currency)}. New total ${money(r.total, site.currency)} (applied again at checkout).`;
@@ -65,7 +65,10 @@ async function start() {
   const cache = new Map<string, string>();
   const render = () => {
     const route = routeFor(location.pathname + location.search, theme!, products, collections, site.id);
-    const cart: CartLine[] = Y.cart.items().map(i => ({ product: products.find(p => p.$id === i.productId)!, quantity: i.quantity })).filter(l => l.product);
+    const cart: CartLine[] = Y.cart.items().map(i => {
+      const product = products.find(p => p.$id === i.productId);
+      return { product: product!, variant: product?.variants?.find(v => v.id === i.variantId), quantity: i.quantity };
+    }).filter(l => l.product && (!l.product.variants?.length || l.variant));
     const ctx: RenderCtx = { theme: theme!, editor: false, route, data: { site, products, collections, cart, payments } };
     if (!document.querySelector("[data-yt-group]")) {
       document.body.innerHTML = `<div data-yt-group="header"></div><main id="MainContent" data-yt-group="template"></main><div data-yt-group="footer"></div><div data-yt-group="overlay"></div>`;

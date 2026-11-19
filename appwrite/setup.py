@@ -56,7 +56,9 @@ SCHEMA = {
     "products": {
         "public_read": True,  # lets your storefront sites read the catalog with the public Web SDK
         "columns": [S("siteId", 36, True), S("title", 255, True), LT("description"), F("price", True, min=0), F("compareAtPrice", min=0),
-                    S("sku", 64), I("inventory", min=0, default=0), E("status", ["active", "draft", "archived"], "draft"), S("imageUrl", 2048)],
+                    S("sku", 64), I("inventory", min=0, default=0), E("status", ["active", "draft", "archived"], "draft"), S("imageUrl", 2048),
+                    # variants: JSON. options [{name, values}], variants [{id, options[], price, compareAtPrice, sku, inventory, imageUrl}]
+                    LT("options"), LT("variants")],
         "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"])],
     },
     "customers": {

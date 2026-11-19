@@ -225,6 +225,19 @@ main>.shopify-section+.shopify-section,main>[data-yt-section]+[data-yt-section]{
 .qty button svg{width:16px}
 .qty input{width:44px;text-align:center;border:0;background:none;-moz-appearance:textfield}
 .qty input::-webkit-inner-spin-button{-webkit-appearance:none}
+.variant-picker{display:flex;flex-direction:column;gap:14px}
+.variant-picker__group{border:0;margin:0;padding:0}
+.variant-picker__label{display:block;font-size:.85rem;margin-bottom:8px;opacity:.85}
+.variant-picker .select{width:auto;min-width:200px}
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{position:relative;cursor:pointer}
+.pill input{position:absolute;opacity:0;width:1px;height:1px}
+.pill span{display:inline-flex;align-items:center;min-height:40px;padding:0 18px;border:var(--input-border) solid color-mix(in srgb,var(--fg) 30%,transparent);border-radius:40px;font-size:.92rem;transition:background .15s,color .15s}
+.pill:hover span{border-color:var(--fg)}
+.pill input:checked+span{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.pill input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.pill--soldout span{text-decoration:line-through;opacity:.5}
+.cart-line__variant{font-size:.85rem;opacity:.75}
 .buy-buttons{display:flex;flex-direction:column;gap:10px}
 .inventory-note{font-size:.9rem;display:flex;align-items:center;gap:8px}
 .inventory-note::before{content:"";width:8px;height:8px;border-radius:50%;background:#2e9e5b}

@@ -1,4 +1,5 @@
-import type { Product } from "../../lib/types";
+import type { Product, Variant } from "../../lib/types";
+import { defaultVariant, hasVariants, variantTitle } from "../../lib/variants";
 import type { RenderCtx, SectionCtx, SectionSchema } from "../types";
 import { ICONS, blockAttrs, bool, collectionCard, collectionProducts, collectionUrl, editable, esc, findCollection, findProduct, fmt, iconOptions, img, inline, num, pad, priceHtml, productCard, ratioFor, rich, schemeClass, str } from "../util";
 import { colorScheme, editorEmpty, headingSize, padding } from "./shared";
@@ -92,6 +93,9 @@ const productBlocks = [
   { type: "inventory", name: "Inventory status", limit: 1, settings: [
     { type: "range" as const, id: "threshold", label: "Low inventory threshold", min: 0, max: 100, step: 1, default: 10, info: "Show \"Low stock\" at or below this number." },
     { type: "checkbox" as const, id: "show_count", label: "Show inventory count", default: true }] },
+  { type: "variant_picker", name: "Variant picker", limit: 1, settings: [
+    { type: "select" as const, id: "picker_type", label: "Style", default: "button", options: [{ value: "button", label: "Pills" }, { value: "dropdown", label: "Dropdown" }] },
+    { type: "checkbox" as const, id: "show_sold_out", label: "Cross out sold-out options", default: true }] },
   { type: "quantity_selector", name: "Quantity selector", limit: 1, settings: [] },
   { type: "buy_buttons", name: "Buy buttons", limit: 1, settings: [
     { type: "checkbox" as const, id: "show_dynamic_checkout", label: "Show dynamic checkout button", default: true, info: "Lets customers pay straight away with Stripe (cards, Apple Pay, Google Pay)." }] },
@@ -115,24 +119,49 @@ function sampleProduct(s: RenderCtx): Product {
   };
 }
 
-function productInfo(s: SectionCtx, p: Product, linkTitle = false) {
+/** Option pickers. Behaviors read data-variants on the product to switch price, stock, image and the add-to-cart button. */
+function variantPicker(s: SectionCtx, p: Product, v: Variant | undefined, settings: Record<string, unknown>, attrs: string) {
+  if (!hasVariants(p) || !p.options?.length || (p.variants!.length === 1 && p.options.length === 1 && p.options[0].values.length <= 1)) return s.editor && !hasVariants(p) ? `<p class="subdued"${attrs} style="font-size:.85rem">Options appear here for products with variants.</p>` : "";
+  const crossOut = settings.show_sold_out !== false;
+  const available = (oi: number, value: string) => p.variants!.some(x => x.options[oi] === value && x.inventory > 0 && x.options.every((o, j) => j === oi || j > oi || o === v?.options[j]));
+  return `<div class="variant-picker"${attrs}>${p.options.map((o, oi) => {
+    const cur = v?.options[oi];
+    if (settings.picker_type === "dropdown") {
+      return `<label class="field"><span class="variant-picker__label">${esc(o.name)}</span><select class="select" data-option="${oi}">${o.values.map(val => `<option value="${esc(val)}"${val === cur ? " selected" : ""}>${esc(val)}${crossOut && !available(oi, val) ? " – sold out" : ""}</option>`).join("")}</select></label>`;
+    }
+    return `<fieldset class="variant-picker__group"><legend class="variant-picker__label">${esc(o.name)}: <span data-option-label="${oi}">${esc(cur ?? "")}</span></legend><div class="pills">${o.values.map(val =>
+      `<label class="pill${crossOut && !available(oi, val) ? " pill--soldout" : ""}"><input type="radio" name="opt-${esc(s.id)}-${oi}" value="${esc(val)}" data-option="${oi}"${val === cur ? " checked" : ""}><span>${esc(val)}</span></label>`).join("")}</div></fieldset>`;
+  }).join("")}</div>`;
+}
+
+/** The variant data the storefront needs to switch variants without a page load. */
+const variantData = (p: Product) => hasVariants(p)
+  ? ` data-variants="${esc(JSON.stringify(p.variants!.map(v => ({ id: v.id, options: v.options, price: v.price, compareAtPrice: v.compareAtPrice, inventory: v.inventory, imageUrl: v.imageUrl, title: variantTitle(v) }))))}"`
+  : "";
+
+function productInfo(s: SectionCtx, p: Product, linkTitle = false, v?: Variant) {
+  const hasPicker = s.blocks.some(b => b.type === "variant_picker");
   return s.blocks.map(b => {
     const a = blockAttrs(s, b.id), x = b.settings;
     switch (b.type) {
       case "text": { const cls = str(x.text_style) === "caption" ? "caption" : str(x.text_style) === "subtitle" ? "subdued" : ""; return `<p class="${cls}"${a}${editable(s, "text", b.id)}>${inline(x.text)}</p>`; }
       case "title": return `<h1 class="product__title h2"${a}>${linkTitle ? `<a href="/products/${esc(p.$id)}" style="text-decoration:none">${esc(p.title)}</a>` : esc(p.title)}</h1>`;
-      case "price": return `<div${a}>${priceHtml(s, p).replace('class="price', 'class="price price--large')}<small class="subdued">Taxes and shipping calculated at checkout.</small></div>`;
+      case "price": return `<div${a} data-price>${priceHtml(s, p, v).replace('class="price', 'class="price price--large')}<small class="subdued">Taxes and shipping calculated at checkout.</small></div>`;
+      case "variant_picker": return variantPicker(s, p, v, x, a);
       case "inventory": {
-        const t = num(x.threshold, 10), n = p.inventory;
+        const t = num(x.threshold, 10), n = v ? v.inventory : p.inventory;
         const cls = n <= 0 ? "out" : n <= t ? "low" : "";
         const label = n <= 0 ? "Out of stock" : n <= t ? (bool(x.show_count, true) ? `Low stock: ${n} left` : "Low stock") : (bool(x.show_count, true) ? `${n} in stock` : "In stock");
-        return `<p class="inventory-note ${cls}"${a}>${label}</p>`;
+        return `<p class="inventory-note ${cls}"${a} data-inventory data-threshold="${t}" data-show-count="${bool(x.show_count, true) ? 1 : 0}">${label}</p>`;
       }
       case "quantity_selector": return `<div${a}><label class="subdued" style="display:block;font-size:.85rem;margin-bottom:6px">Quantity</label><div class="qty" data-qty><button type="button" data-qty-minus aria-label="Decrease">${ICONS.minus}</button><input type="number" min="1" value="1" aria-label="Quantity" data-qty-input><button type="button" data-qty-plus aria-label="Increase">${ICONS.plus}</button></div></div>`;
       case "buy_buttons": {
-        const sold = p.inventory <= 0;
-        return `<div class="buy-buttons"${a}><button type="button" class="button button--full${bool(x.show_dynamic_checkout, true) ? " button--secondary" : ""}" data-add-to-cart="${esc(p.$id)}"${sold ? " disabled" : ""}>${sold ? "Sold out" : "Add to cart"}</button>
-${bool(x.show_dynamic_checkout, true) && !sold ? `<button type="button" class="button button--full" data-buy-now="${esc(p.$id)}">Buy it now</button>` : ""}<p class="cart-error" data-cart-error hidden></p></div>`;
+        const sold = (v ? v.inventory : p.inventory) <= 0;
+        const va = v ? ` data-variant="${esc(v.id)}"` : "";
+        // Saved themes from before variants have no picker block: show one above the buttons.
+        const picker = !hasPicker && hasVariants(p) ? variantPicker(s, p, v, {}, "") : "";
+        return `${picker}<div class="buy-buttons"${a}><button type="button" class="button button--full${bool(x.show_dynamic_checkout, true) ? " button--secondary" : ""}" data-add-to-cart="${esc(p.$id)}"${va}${sold ? " disabled" : ""}>${sold ? "Sold out" : "Add to cart"}</button>
+${bool(x.show_dynamic_checkout, true) ? `<button type="button" class="button button--full" data-buy-now="${esc(p.$id)}"${va}${sold ? " hidden" : ""}>Buy it now</button>` : ""}<p class="cart-error" data-cart-error hidden></p></div>`;
       }
       case "description": return p.description ? `<div class="rte"${a}>${/<[a-z]/i.test(p.description) ? rich(p.description) : esc(p.description).split(/\n{2,}/).map(t => `<p>${t.replace(/\n/g, "<br>")}</p>`).join("")}</div>` : (s.editor ? `<div class="rte subdued"${a}><p>The product description appears here.</p></div>` : "");
       case "collapsible_tab": return `<details class="accordion"${a}><summary>${str(x.icon, "none") !== "none" ? `<span class="ico">${ICONS[str(x.icon)] ?? ""}</span>` : ""}<span${editable(s, "heading", b.id)}>${esc(x.heading)}</span><span class="chev">${ICONS.chevron}</span></summary><div class="accordion__content rte">${rich(x.content)}</div></details>`;
@@ -149,7 +178,7 @@ const productSettings = [
   { type: "radio" as const, id: "media_position", label: "Desktop media position", default: "left", options: [{ value: "left", label: "Left" }, { value: "right", label: "Right" }] },
   { type: "select" as const, id: "image_ratio", label: "Image ratio", default: "square", options: [{ value: "adapt", label: "Adapt to image" }, { value: "portrait", label: "Portrait" }, { value: "square", label: "Square" }] },
 ];
-const defaultProductBlocks = [{ type: "title" }, { type: "price" }, { type: "inventory" }, { type: "quantity_selector" }, { type: "buy_buttons" }, { type: "description" }, { type: "trust" }, { type: "collapsible_tab", settings: { heading: "Shipping & returns", icon: "truck" } }, { type: "share" }];
+const defaultProductBlocks = [{ type: "title" }, { type: "price" }, { type: "variant_picker" }, { type: "inventory" }, { type: "quantity_selector" }, { type: "buy_buttons" }, { type: "description" }, { type: "trust" }, { type: "collapsible_tab", settings: { heading: "Shipping & returns", icon: "truck" } }, { type: "share" }];
 
 const mainProduct: SectionSchema = {
   type: "main-product", name: "Product information", category: "Template", templates: ["product"], limit: 1, static: true,
@@ -157,10 +186,10 @@ const mainProduct: SectionSchema = {
   blocks: productBlocks,
   presets: [{ name: "Product information", blocks: defaultProductBlocks }],
   render(s) {
-    const st = s.settings, p = s.route.product ?? sampleProduct(s);
-    return wrap(s, `<div class="page-width"><div class="product product--${esc(str(st.media_position, "left"))}" style="--media-w:${esc(str(st.media_size, "55%"))}" data-product="${esc(p.$id)}">
-<div class="product__media">${img(p.imageUrl, p.title, { ratio: ratioFor(st.image_ratio) === "adapt" ? undefined : ratioFor(st.image_ratio), placeholder: "product", eager: true })}</div>
-<div class="product__info${bool(st.sticky_info, true) ? " is-sticky" : ""}">${productInfo(s, p)}</div></div></div>`);
+    const st = s.settings, p = s.route.product ?? sampleProduct(s), v = defaultVariant(p, s.route.variant);
+    return wrap(s, `<div class="page-width"><div class="product product--${esc(str(st.media_position, "left"))}" style="--media-w:${esc(str(st.media_size, "55%"))}" data-product="${esc(p.$id)}" data-currency="${esc(s.data.site.currency || "USD")}" data-product-image="${esc(p.imageUrl ?? "")}" data-update-url${variantData(p)}>
+<div class="product__media" data-product-media>${img(v?.imageUrl || p.imageUrl, p.title, { ratio: ratioFor(st.image_ratio) === "adapt" ? undefined : ratioFor(st.image_ratio), placeholder: "product", eager: true })}</div>
+<div class="product__info${bool(st.sticky_info, true) ? " is-sticky" : ""}">${productInfo(s, p, false, v)}</div></div></div>`);
   },
 };
 
@@ -168,12 +197,12 @@ const featuredProduct: SectionSchema = {
   type: "featured-product", name: "Featured product", category: "Products",
   settings: [{ type: "product", id: "product", label: "Product" }, ...productSettings, colorScheme("scheme-2"), ...padding(36, 36)],
   blocks: productBlocks.filter(b => b.type !== "share"),
-  presets: [{ name: "Featured product", blocks: [{ type: "text", settings: { text: "Featured", text_style: "caption" } }, { type: "title" }, { type: "price" }, { type: "quantity_selector" }, { type: "buy_buttons" }, { type: "description" }] }],
+  presets: [{ name: "Featured product", blocks: [{ type: "text", settings: { text: "Featured", text_style: "caption" } }, { type: "title" }, { type: "price" }, { type: "variant_picker" }, { type: "quantity_selector" }, { type: "buy_buttons" }, { type: "description" }] }],
   render(s) {
-    const st = s.settings, p = findProduct(s, st.product) ?? sampleProduct(s);
-    return wrap(s, `<div class="page-width"><div class="product product--${esc(str(st.media_position, "left"))}" style="--media-w:${esc(str(st.media_size, "55%"))}" data-product="${esc(p.$id)}">
-<div class="product__media"><a href="/products/${esc(p.$id)}">${img(p.imageUrl, p.title, { ratio: ratioFor(st.image_ratio) === "adapt" ? undefined : ratioFor(st.image_ratio), placeholder: "product" })}</a></div>
-<div class="product__info">${productInfo(s, p, true)}</div></div></div>`);
+    const st = s.settings, p = findProduct(s, st.product) ?? sampleProduct(s), v = defaultVariant(p);
+    return wrap(s, `<div class="page-width"><div class="product product--${esc(str(st.media_position, "left"))}" style="--media-w:${esc(str(st.media_size, "55%"))}" data-product="${esc(p.$id)}" data-currency="${esc(s.data.site.currency || "USD")}" data-product-image="${esc(p.imageUrl ?? "")}"${variantData(p)}>
+<div class="product__media" data-product-media><a href="/products/${esc(p.$id)}">${img(v?.imageUrl || p.imageUrl, p.title, { ratio: ratioFor(st.image_ratio) === "adapt" ? undefined : ratioFor(st.image_ratio), placeholder: "product" })}</a></div>
+<div class="product__info">${productInfo(s, p, true, v)}</div></div></div>`);
   },
 };
 
@@ -254,18 +283,25 @@ const listCollections: SectionSchema = {
 };
 
 /* ---------------------------------------------------------------- cart */
+/** Cart lines are keyed "productId:variantId" so each variant is its own line. */
+export const lineKey = (l: { product: Product; variant?: Variant }) => `${l.product.$id}:${l.variant?.id ?? ""}`;
+const linePrice = (l: { product: Product; variant?: Variant }) => l.variant?.price ?? l.product.price;
+
 export function cartLines(ctx: RenderCtx) {
-  return ctx.data.cart.map(l => `<div class="cart-line" data-line="${esc(l.product.$id)}">
-<a href="/products/${esc(l.product.$id)}">${img(l.product.imageUrl, l.product.title, { ratio: "1/1", placeholder: "product" })}</a>
-<div><a class="cart-line__title" href="/products/${esc(l.product.$id)}">${esc(l.product.title)}</a><div class="subdued">${fmt(ctx, l.product.price)}</div>
-<div style="display:flex;gap:12px;align-items:center;margin-top:8px"><div class="qty" style="height:38px"><button type="button" data-line-qty="${esc(l.product.$id)}" data-delta="-1" aria-label="Decrease">${ICONS.minus}</button><input type="number" min="0" value="${l.quantity}" data-line-input="${esc(l.product.$id)}" aria-label="Quantity"><button type="button" data-line-qty="${esc(l.product.$id)}" data-delta="1" aria-label="Increase">${ICONS.plus}</button></div>
-<button type="button" class="cart-line__remove" data-line-remove="${esc(l.product.$id)}">Remove</button></div></div>
-<div style="font-weight:600">${fmt(ctx, l.product.price * l.quantity)}</div></div>`).join("");
+  return ctx.data.cart.map(l => {
+    const k = esc(lineKey(l)), url = `/products/${esc(l.product.$id)}${l.variant ? `?variant=${esc(l.variant.id)}` : ""}`;
+    return `<div class="cart-line" data-line="${k}">
+<a href="${url}">${img(l.variant?.imageUrl || l.product.imageUrl, l.product.title, { ratio: "1/1", placeholder: "product" })}</a>
+<div><a class="cart-line__title" href="${url}">${esc(l.product.title)}</a>${l.variant ? `<div class="cart-line__variant">${esc(variantTitle(l.variant))}</div>` : ""}<div class="subdued">${fmt(ctx, linePrice(l))}</div>
+<div style="display:flex;gap:12px;align-items:center;margin-top:8px"><div class="qty" style="height:38px"><button type="button" data-line-qty="${k}" data-delta="-1" aria-label="Decrease">${ICONS.minus}</button><input type="number" min="0" value="${l.quantity}" data-line-input="${k}" aria-label="Quantity"><button type="button" data-line-qty="${k}" data-delta="1" aria-label="Increase">${ICONS.plus}</button></div>
+<button type="button" class="cart-line__remove" data-line-remove="${k}">Remove</button></div></div>
+<div style="font-weight:600">${fmt(ctx, linePrice(l) * l.quantity)}</div></div>`;
+  }).join("");
 }
 
 export function cartSummary(ctx: RenderCtx) {
   const ts = ctx.theme.settings;
-  const subtotal = ctx.data.cart.reduce((t, l) => t + l.product.price * l.quantity, 0);
+  const subtotal = ctx.data.cart.reduce((t, l) => t + linePrice(l) * l.quantity, 0);
   const threshold = num(ts.free_shipping_threshold, 0);
   const ship = threshold > 0 ? `<div class="free-ship">${subtotal >= threshold ? "You've unlocked free shipping!" : `You're ${fmt(ctx, threshold - subtotal)} away from free shipping.`}<div class="free-ship__bar"><span style="width:${Math.min(100, (subtotal / threshold) * 100)}%"></span></div></div>` : "";
   const pay = ctx.data.payments ?? { stripe: true, paypal: true };

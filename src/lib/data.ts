@@ -1,12 +1,13 @@
 import { ID, Query } from "appwrite";
 import { config, functions, isDemo, tables } from "./appwrite";
 import { buildDemo, demoOps } from "./demo";
+import { withRollups } from "./variants";
 import type { Order, RowOf, TableName } from "./types";
 
 /* ------------------------------------------------------------------ */
 /* Rows: Appwrite TablesDB in production, localStorage in demo mode    */
 /* ------------------------------------------------------------------ */
-const DEMO_KEY = "yancey-demo-v7";
+const DEMO_KEY = "yancey-demo-v8";
 type DemoDB = { [K in TableName]: RowOf<K>[] };
 
 function demoDb(): DemoDB {
@@ -23,7 +24,7 @@ function saveDemo(db: DemoDB) { try { localStorage.setItem(DEMO_KEY, JSON.string
 export function resetDemo() { try { localStorage.removeItem(DEMO_KEY); } catch { /* ignore */ } }
 
 // Some columns hold JSON in Appwrite (longtext); (de)serialize them here.
-const JSON_COLS: Partial<Record<TableName, string[]>> = { orders: ["items"], checkouts: ["items"], segments: ["rules"], themes: ["data"] };
+const JSON_COLS: Partial<Record<TableName, string[]>> = { products: ["options", "variants"], orders: ["items"], checkouts: ["items"], segments: ["rules"], themes: ["data"] };
 const toRow = (t: TableName, data: any) => {
   const out = { ...data };
   for (const c of JSON_COLS[t] ?? []) if (out[c] !== undefined && typeof out[c] !== "string") out[c] = JSON.stringify(out[c]);
@@ -94,7 +95,14 @@ export async function createOrder(siteId: string, data: Omit<Order, "$id" | "$cr
   const products = await list("products", siteId);
   for (const li of data.items) {
     const p = products.find(p => p.$id === li.productId);
-    if (p) await update("products", p.$id, { inventory: Math.max(0, p.inventory - li.quantity) });
+    if (!p) continue;
+    if (li.variantId && p.variants?.some(v => v.id === li.variantId)) {
+      p.variants = p.variants.map(v => v.id === li.variantId ? { ...v, inventory: Math.max(0, v.inventory - li.quantity) } : v);
+      await update("products", p.$id, withRollups({ options: p.options, variants: p.variants }));
+    } else {
+      p.inventory = Math.max(0, p.inventory - li.quantity);
+      await update("products", p.$id, { inventory: p.inventory });
+    }
   }
   if (data.customerId && data.financialStatus === "paid") {
     const c = (await list("customers", siteId)).find(c => c.$id === data.customerId);

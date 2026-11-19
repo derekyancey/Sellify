@@ -11,7 +11,7 @@
  *
  * Every section type declares a schema (settings, blocks, presets) the editor builds its UI from.
  */
-import type { Collection, Product } from "../lib/types";
+import type { Collection, Product, Variant } from "../lib/types";
 
 export type SettingValue = string | number | boolean | string[] | null | undefined;
 export type Settings = Record<string, SettingValue>;
@@ -103,7 +103,7 @@ export interface SectionSchema {
 }
 
 /* ---------------------------------------------------------------- render */
-export interface CartLine { product: Product; quantity: number }
+export interface CartLine { product: Product; variant?: Variant; quantity: number }
 
 export interface RenderData {
   site: { id: string; name: string; currency: string; domain?: string };
@@ -116,6 +116,7 @@ export interface RenderData {
 export interface Route {
   template: string;            // template key, e.g. "index", "product", "page.about"
   product?: Product;
+  variant?: string;            // ?variant=<id> on product pages
   collection?: Collection;
   query?: string;              // search terms
   sort?: string;

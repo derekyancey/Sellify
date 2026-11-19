@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { Download, Plus, Trash2 } from "lucide-react";
 import { storeSlug, useSite, useStorePath } from "../context/Site";
 import { createOrder, list, ops, update } from "../lib/data";
+import { findVariant, hasVariants, lineTitle, variantTitle } from "../lib/variants";
 import { useAsync } from "../lib/useAsync";
 import { date, dateTime, money } from "../lib/format";
 import type { FinancialStatus, FulfillmentStatus, LineItem, Order, PaymentProvider } from "../lib/types";
@@ -154,10 +155,13 @@ function CreateOrder({ onClose, onCreated, draft }: { onClose(): void; onCreated
   const [err, setErr] = useState<string | null>(null);
   const total = items.reduce((t, i) => t + i.price * i.quantity, 0);
 
-  const add = (pid: string) => {
+  const keyOf = (i: { productId: string; variantId?: string }) => `${i.productId}:${i.variantId ?? ""}`;
+  const add = (key: string) => {
+    const [pid, vid] = key.split(":");
     const p = refs.data?.products.find(p => p.$id === pid); if (!p) return;
-    setItems(it => it.some(i => i.productId === pid) ? it.map(i => i.productId === pid ? { ...i, quantity: i.quantity + 1 } : i)
-      : [...it, { productId: p.$id, title: p.title, price: p.price, quantity: 1 }]);
+    const v = findVariant(p, vid);
+    setItems(it => it.some(i => keyOf(i) === key) ? it.map(i => keyOf(i) === key ? { ...i, quantity: i.quantity + 1 } : i)
+      : [...it, { productId: p.$id, ...(v ? { variantId: v.id } : {}), title: lineTitle(p, v), price: v?.price ?? p.price, quantity: 1 }]);
   };
   const save = async () => {
     const c = refs.data?.customers.find(c => c.$id === customerId);
@@ -183,17 +187,21 @@ function CreateOrder({ onClose, onCreated, draft }: { onClose(): void; onCreated
         <Field label="Add product">
           <Select value="" onChange={e => add(e.target.value)}>
             <option value="">Choose…</option>
-            {refs.data!.products.filter(p => p.status === "active").map(p => <option key={p.$id} value={p.$id}>{p.title} — {money(p.price, s.currency)} ({p.inventory} in stock)</option>)}
+            {refs.data!.products.filter(p => p.status === "active").map(p => hasVariants(p) ? (
+              <optgroup key={p.$id} label={p.title}>
+                {p.variants!.map(v => <option key={v.id} value={`${p.$id}:${v.id}`}>{variantTitle(v)} — {money(v.price, s.currency)} ({v.inventory} in stock)</option>)}
+              </optgroup>
+            ) : <option key={p.$id} value={`${p.$id}:`}>{p.title} — {money(p.price, s.currency)} ({p.inventory} in stock)</option>)}
           </Select>
         </Field>
         {items.length > 0 && (
           <ul className="divide-y divide-zinc-100 rounded-lg border border-zinc-200 text-sm">
             {items.map(li => (
-              <li key={li.productId} className="flex items-center gap-2 px-3 py-2">
+              <li key={keyOf(li)} className="flex items-center gap-2 px-3 py-2">
                 <span className="flex-1">{li.title}</span>
                 <Input type="number" min={1} value={li.quantity} className="w-16"
-                  onChange={e => setItems(it => it.map(i => i.productId === li.productId ? { ...i, quantity: Math.max(1, +e.target.value) } : i))} />
-                <button onClick={() => setItems(it => it.filter(i => i.productId !== li.productId))} className="p-1 text-zinc-400 hover:text-red-600" aria-label="Remove"><Trash2 className="size-4" /></button>
+                  onChange={e => setItems(it => it.map(i => keyOf(i) === keyOf(li) ? { ...i, quantity: Math.max(1, +e.target.value) } : i))} />
+                <button onClick={() => setItems(it => it.filter(i => keyOf(i) !== keyOf(li)))} className="p-1 text-zinc-400 hover:text-red-600" aria-label="Remove"><Trash2 className="size-4" /></button>
               </li>
             ))}
             <li className="flex justify-between px-3 py-2 font-semibold"><span>Total</span><span>{money(total, s.currency)}</span></li>

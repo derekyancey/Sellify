@@ -98,11 +98,11 @@ export function Table({ head, children, empty }: { head: ReactNode[]; children: 
 }
 export const Td = ({ children, className }: { children?: ReactNode; className?: string }) => <td className={cx("px-4 py-2.5", className)}>{children}</td>;
 
-export function Modal({ title, open, onClose, children, footer }: { title: string; open: boolean; onClose(): void; children: ReactNode; footer?: ReactNode }) {
+export function Modal({ title, open, onClose, children, footer, wide }: { title: string; open: boolean; onClose(): void; children: ReactNode; footer?: ReactNode; wide?: boolean }) {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4 sm:pt-20" onMouseDown={onClose}>
-      <div className="w-full max-w-lg rounded-xl bg-white shadow-xl" onMouseDown={e => e.stopPropagation()}>
+      <div className={cx("w-full rounded-xl bg-white shadow-xl", wide ? "max-w-4xl" : "max-w-lg")} onMouseDown={e => e.stopPropagation()}>
         <div className="flex items-center justify-between border-b border-zinc-100 px-4 py-3">
           <h3 className="font-semibold">{title}</h3>
           <button onClick={onClose} className="rounded p-1 text-zinc-500 hover:bg-zinc-100" aria-label="Close"><X className="size-4" /></button>

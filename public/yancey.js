@@ -8,7 +8,10 @@
  *         data-success-url="/thank-you"></script>
  *
  *   await Yancey.products()                     -> active products for this site
- *   Yancey.cart.add(productId, qty) / .remove(productId) / .setQuantity(id, n) / .items() / .count() / .clear()
+ *   Yancey.cart.add(productId, qty, variantId?) / .remove(productId, variantId?) / .setQuantity(id, n, variantId?)
+ *               .items() -> [{ productId, variantId?, quantity }] / .count() / .clear()
+ *   Products with variants have .options [{ name, values }] and .variants [{ id, options, price, inventory, … }];
+ *   pass the chosen variant's id to cart.add.
  *   window.addEventListener("yancey:cart", e => e.detail)   // fires on every cart change
  *   await Yancey.config()                       -> { stripe: bool, paypal: bool }
  *   await Yancey.collection("best-sellers")     -> { title, description, products }
@@ -44,19 +47,25 @@
 
   function emit(items) { window.dispatchEvent(new CustomEvent("yancey:cart", { detail: items })); }
 
+  // Lines are keyed by product + variant, so two sizes of one product are separate lines.
+  var same = function (i, productId, variantId) { return i.productId === productId && (i.variantId || "") === (variantId || ""); };
   var cart = {
     items: function () { return store(true); },
     count: function () { return cart.items().reduce(function (n, i) { return n + i.quantity; }, 0); },
-    setQuantity: function (productId, quantity) {
-      var items = cart.items().filter(function (i) { return i.productId !== productId; });
-      if (quantity > 0) items.push({ productId: productId, quantity: Math.min(100, Math.floor(quantity)) });
+    setQuantity: function (productId, quantity, variantId) {
+      var items = cart.items(), at = items.findIndex(function (i) { return same(i, productId, variantId); });
+      var line = { productId: productId, quantity: Math.min(100, Math.floor(quantity)) };
+      if (variantId) line.variantId = variantId;
+      if (at >= 0 && quantity > 0) items[at] = line;
+      else if (at >= 0) items.splice(at, 1);
+      else if (quantity > 0) items.push(line);
       store(false, items); emit(items); return items;
     },
-    add: function (productId, quantity) {
-      var cur = cart.items().find(function (i) { return i.productId === productId; });
-      return cart.setQuantity(productId, (cur ? cur.quantity : 0) + (quantity || 1));
+    add: function (productId, quantity, variantId) {
+      var cur = cart.items().find(function (i) { return same(i, productId, variantId); });
+      return cart.setQuantity(productId, (cur ? cur.quantity : 0) + (quantity || 1), variantId);
     },
-    remove: function (productId) { return cart.setQuantity(productId, 0); },
+    remove: function (productId, variantId) { return cart.setQuantity(productId, 0, variantId); },
     clear: function () { store(false, []); emit([]); },
   };
 
@@ -85,7 +94,16 @@
   function products(ids) {
     var q = [{ method: "equal", attribute: "siteId", values: [cfg.site] }, { method: "equal", attribute: "status", values: ["active"] }, { method: "limit", values: [100] }];
     if (ids) q.push({ method: "equal", attribute: "$id", values: ids.length ? ids : ["-"] });
-    return rows("products", q);
+    return rows("products", q).then(function (list) { return list.map(parseProduct); });
+  }
+
+  // options / variants are stored as JSON text.
+  function parseProduct(p) {
+    ["options", "variants"].forEach(function (k) {
+      if (typeof p[k] === "string") { try { p[k] = JSON.parse(p[k]); } catch (e) { p[k] = []; } }
+      if (!Array.isArray(p[k])) p[k] = [];
+    });
+    return p;
   }
 
   async function collection(handle) {
@@ -124,7 +142,11 @@
       if (!raw) return;
       var json = atob(raw.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((raw.length + 3) % 4));
       var items = JSON.parse(json).filter(function (i) { return i && typeof i.productId === "string" && i.quantity > 0; })
-        .map(function (i) { return { productId: i.productId, quantity: Math.min(100, Math.floor(i.quantity)) }; });
+        .map(function (i) {
+          var line = { productId: i.productId, quantity: Math.min(100, Math.floor(i.quantity)) };
+          if (typeof i.variantId === "string" && i.variantId) line.variantId = i.variantId;
+          return line;
+        });
       store(false, items); setTimeout(function () { emit(items); });
       p.delete("yancey_cart");
       history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : "") + location.hash);

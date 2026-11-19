@@ -1,5 +1,6 @@
 import type { Campaign, Checkout, Collection, Customer, Discount, EmailTemplate, Order, Product, Site } from "./types";
 import { starterTemplate } from "./emailStarter";
+import { generateVariants, withRollups } from "./variants";
 
 // Deterministic pseudo-random so demo numbers stay stable between reloads.
 let seed = 42;
@@ -7,6 +8,12 @@ const rand = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
 const pick = <T,>(a: T[]) => a[Math.floor(rand() * a.length)];
 const id = () => Math.floor(rand() * 1e12).toString(36) + Math.floor(rand() * 1e12).toString(36);
 const ago = (days: number) => new Date(Date.now() - days * 864e5 - rand() * 864e5).toISOString();
+
+const DEMO_VARIANTS: Record<string, { options: { name: string; values: string[] }[]; priceStep?: number }> = {
+  "House Blend": { options: [{ name: "Size", values: ["12oz", "2lb", "5lb"] }, { name: "Grind", values: ["Whole bean", "Ground"] }], priceStep: 14 },
+  "Ceramic Mug": { options: [{ name: "Color", values: ["Cream", "Charcoal", "Sage"] }] },
+  "Cedar & Smoke Candle": { options: [{ name: "Size", values: ["8oz", "14oz"] }], priceStep: 12 },
+};
 
 export function buildDemo() {
   seed = 42;
@@ -19,7 +26,7 @@ export function buildDemo() {
   sites.push({ $id: "site_bakery", $createdAt: ago(3), name: "Fern & Flour Bakery", currency: "USD", emailStatus: "none" });
   const catalog: Record<string, [string, number][]> = {
     site_bakery: [],
-    site_coffee: [["House Blend 12oz", 16], ["Ethiopia Yirgacheffe", 21], ["Cold Brew Pack", 24], ["Decaf Colombia", 18], ["Pour-Over Kit", 45], ["Ceramic Mug", 14]],
+    site_coffee: [["House Blend", 16], ["Ethiopia Yirgacheffe", 21], ["Cold Brew Pack", 24], ["Decaf Colombia", 18], ["Pour-Over Kit", 45], ["Ceramic Mug", 14]],
     site_candles: [["Cedar & Smoke Candle", 32], ["Fig Leaf Candle", 30], ["Travel Tin Set", 28], ["Wick Trimmer", 12], ["Matchbox Duo", 8]],
   };
   const first = ["Ava", "Liam", "Maya", "Noah", "Zoe", "Eli", "Iris", "Owen", "Nora", "Leo", "Ruby", "Jude"];
@@ -33,6 +40,17 @@ export function buildDemo() {
         sku: title.split(" ").map(w => w[0]).join("").toUpperCase() + "-" + Math.floor(rand() * 900 + 100),
         inventory: Math.floor(rand() * 120), status: rand() > 0.85 ? "draft" : "active", description: "",
         imageUrl: title.includes("Mug") || title.includes("Matchbox") ? undefined : `https://placehold.co/600x600/e7e5e4/44403c?text=${encodeURIComponent(title.split(" ")[0])}` });
+    }
+    // A few products with variants, like a real catalog.
+    for (const p of products.filter(p => p.siteId === s.$id)) {
+      const spec = DEMO_VARIANTS[p.title];
+      if (!spec) continue;
+      p.options = spec.options;
+      p.variants = generateVariants(spec.options, [], { price: p.price }).map((v, i) => ({
+        ...v, price: p.price + (spec.priceStep ?? 0) * Math.floor(i / (spec.options[1]?.values.length ?? 1)),
+        sku: `${p.sku}-${v.options.map(o => o.replace(/\W/g, "").slice(0, 3).toUpperCase()).join("-")}`, inventory: Math.floor(rand() * 40),
+      }));
+      Object.assign(p, withRollups(p));
     }
     const siteProducts = products.filter(p => p.siteId === s.$id);
     const siteCustomers: Customer[] = Array.from({ length: siteProducts.length ? 18 : 0 }, () => {

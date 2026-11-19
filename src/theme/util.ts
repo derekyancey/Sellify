@@ -1,4 +1,5 @@
-import type { Collection, Product } from "../lib/types";
+import type { Collection, Product, Variant } from "../lib/types";
+import { hasVariants, priceRange } from "../lib/variants";
 import type { RenderCtx, SectionCtx, Settings, SettingValue } from "./types";
 
 export const esc = (v: unknown) => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
@@ -99,9 +100,12 @@ export function button(label: string, url: string, style: "primary" | "secondary
   return url ? `<a class="${cls}" href="${esc(url)}"${attrs}>${esc(label)}</a>` : `<span class="${cls}"${attrs}>${esc(label)}</span>`;
 }
 
-export function priceHtml(ctx: RenderCtx, p: Product) {
-  const sale = p.compareAtPrice && p.compareAtPrice > p.price;
-  return `<div class="price${sale ? " price--sale" : ""}">${sale ? `<s class="price__compare">${fmt(ctx, p.compareAtPrice!)}</s>` : ""}<span class="price__current">${fmt(ctx, p.price)}</span></div>`;
+/** Price for a product or a chosen variant. On cards, products whose variants differ in price show "From $X". */
+export function priceHtml(ctx: RenderCtx, p: Product, v?: Variant, opts: { from?: boolean } = {}) {
+  const price = v?.price ?? p.price, compare = v ? v.compareAtPrice : p.compareAtPrice;
+  const sale = !!compare && compare > price;
+  const from = opts.from && !v && priceRange(p).varies;
+  return `<div class="price${sale ? " price--sale" : ""}">${sale ? `<s class="price__compare">${fmt(ctx, compare!)}</s>` : ""}<span class="price__current">${from ? "From " : ""}${fmt(ctx, price)}</span></div>`;
 }
 
 export function productCard(ctx: RenderCtx, p: Product, o: { ratio?: string; quickAdd?: boolean; showSecondary?: boolean } = {}) {
@@ -115,8 +119,10 @@ export function productCard(ctx: RenderCtx, p: Product, o: { ratio?: string; qui
   <div class="card__media">${img(p.imageUrl, p.title, { ratio: o.ratio ?? "1/1", placeholder: "product" })}${badge}</div>
   <div class="card__info">
     <h3 class="card__title">${esc(p.title)}</h3>
-    ${priceHtml(ctx, p)}
-    ${o.quickAdd ? `<button type="button" class="button button--secondary button--small card__quick" data-add-to-cart="${esc(p.$id)}"${sold ? " disabled" : ""}>${sold ? "Sold out" : "Add to cart"}</button>` : ""}
+    ${priceHtml(ctx, p, undefined, { from: true })}
+    ${!o.quickAdd ? "" : hasVariants(p) && p.variants!.length > 1
+      ? `<a class="button button--secondary button--small card__quick" href="${productUrl(p)}">${sold ? "Sold out" : "Choose options"}</a>`
+      : `<button type="button" class="button button--secondary button--small card__quick" data-add-to-cart="${esc(p.$id)}"${p.variants?.[0] ? ` data-variant="${esc(p.variants[0].id)}"` : ""}${sold ? " disabled" : ""}>${sold ? "Sold out" : "Add to cart"}</button>`}
   </div>
 </div>`;
 }

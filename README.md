@@ -6,7 +6,7 @@ A Shopify-style admin for **all of your websites** in one place. Switch between 
 | --- | --- | --- |
 | **Home** | KPIs, setup checklist, to-dos | Appwrite, GA4 |
 | **Orders** | All orders, Drafts, Abandoned checkouts (one-click recovery email) | Appwrite, Resend |
-| **Products** | All products, Collections, Inventory (bulk stock) | Appwrite |
+| **Products** | All products with **variants** (up to 3 options like Size / Color, price, stock, SKU and image per variant), Collections, Inventory (bulk stock per variant) | Appwrite |
 | **Customers** | All customers (marketing opt-in), Segments (rule builder) | Appwrite |
 | **Marketing** | Campaigns (send to a segment), Email designer (drag-and-drop), Automations (cart reminder, welcome, win-back) | [GrapesJS](https://github.com/GrapesJS/grapesjs) (BSD), Resend, Appwrite scheduled function |
 | **Discounts** | Percent/fixed codes with minimums, limits, dates, applied at checkout | Stripe coupons, PayPal |
@@ -199,6 +199,15 @@ Re-run `python appwrite/setup.py` after pulling: it adds the new tables (collect
   - **Settings:** each one is switched on per site under **Marketing → Automations**, which also has *Preview due emails* (a dry run) and *Run now*. These use `site-ops`' `RESEND_API_KEY`, `UNSUBSCRIBE_SECRET`, `CHECKOUT_PUBLIC_URL` and optionally `AUTOMATION_MAX_PER_RUN` (default 50).
 - **Product feed:** the checkout function serves `/feed.xml?site=<id>` in Google Merchant Center format, which TikTok, Pinterest and Meta also accept. Set `VITE_CHECKOUT_PUBLIC_URL` so the dashboard can show the URL. Set each site's product page path under **Sales channels → Google & YouTube**. Products without an image are left out, because Google requires one.
 - **Shared code:** `appwrite/shared/` is the single source for code used by several functions. Run `python appwrite/sync_shared.py` after editing it, and `--check` before deploying.
+
+## Product variants
+
+Open a product → **Variants → Add options like size or color**. Type values (Enter or comma between them) and Yancey creates one variant per combination, up to 3 options and 100 variants. Editing options keeps existing variants' prices and stock. Each variant has its own price, compare-at price, stock, SKU and image; *Set for all variants* fills price or stock in one go. The product's own price and stock become roll-ups (cheapest price, total stock), so lists and reports keep working.
+
+- **Checkout** prices and stock-checks every line by variant on the server, and paid orders decrement that variant's stock. Order lines, receipts, Stripe and PayPal show "House Blend — 2lb / Ground".
+- **Storefront:** the product page's *Variant picker* block (pills or dropdown, sold-out values crossed out) switches price, stock, image and the URL (`?variant=`) live. Product cards show "From $X" and *Choose options* instead of quick add. `yancey.js` cart lines carry `variantId`: `Yancey.cart.add(productId, qty, variantId)`.
+- **Inventory**, **Create order** and the **product feed** work per variant. The feed lists each variant with `item_group_id`, plus `size`/`color` when options use those names.
+- Setup: re-run `python appwrite/setup.py` (adds the `options` and `variants` columns to products) and redeploy both functions.
 
 ## Online store: themes and the theme editor
 

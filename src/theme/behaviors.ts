@@ -3,10 +3,10 @@
  * event delegation on the document, so it keeps working when sections are re-rendered.
  */
 export interface StoreApi {
-  addToCart(productId: string, quantity: number): Promise<void> | void;
-  setQuantity(productId: string, quantity: number): Promise<void> | void;
+  addToCart(productId: string, quantity: number, variantId?: string): Promise<void> | void;
+  setQuantity(productId: string, quantity: number, variantId?: string): Promise<void> | void;
   checkout(provider: "stripe" | "paypal", opts: { discountCode?: string; note?: string }): Promise<void>;
-  buyNow(productId: string, quantity: number): Promise<void>;
+  buyNow(productId: string, quantity: number, variantId?: string): Promise<void>;
   discount(code: string): Promise<string>;           // resolves to a message to show
   subscribe(email: string): Promise<void>;
   navigate(url: string): void;
@@ -46,11 +46,11 @@ export function installBehaviors(doc: Document, api: StoreApi) {
 
     if ((b = el("[data-add-to-cart]"))) {
       e.preventDefault();
-      const id = b.dataset.addToCart!;
-      busy(b as HTMLButtonElement, async () => { await api.addToCart(id, qtyFor(b!)); if ($("[data-cart-drawer]")) setCart(true); });
+      const id = b.dataset.addToCart!, vid = b.dataset.variant || undefined;
+      busy(b as HTMLButtonElement, async () => { await api.addToCart(id, qtyFor(b!), vid); if ($("[data-cart-drawer]")) setCart(true); });
       return;
     }
-    if ((b = el("[data-buy-now]"))) { e.preventDefault(); const id = b.dataset.buyNow!; busy(b as HTMLButtonElement, () => api.buyNow(id, qtyFor(b!))); return; }
+    if ((b = el("[data-buy-now]"))) { e.preventDefault(); const id = b.dataset.buyNow!, vid = b.dataset.variant || undefined; busy(b as HTMLButtonElement, () => api.buyNow(id, qtyFor(b!), vid)); return; }
     if ((b = el("[data-open-cart]")) && $("[data-cart-drawer]")) { e.preventDefault(); setCart(true); return; }
     if (el("[data-close-cart]")) { e.preventDefault(); setCart(false); return; }
     if ((b = el("[data-qty-minus],[data-qty-plus]"))) {
@@ -59,11 +59,11 @@ export function installBehaviors(doc: Document, api: StoreApi) {
       return;
     }
     if ((b = el("[data-line-qty]"))) {
-      const id = b.dataset.lineQty!, input = $<HTMLInputElement>(`[data-line-input="${CSS.escape(id)}"]`, b.closest(".cart-line")!);
-      api.setQuantity(id, Math.max(0, (Number(input?.value) || 0) + Number(b.dataset.delta)));
+      const key = b.dataset.lineQty!, input = $<HTMLInputElement>(`[data-line-input="${CSS.escape(key)}"]`, b.closest(".cart-line")!);
+      setLine(key, Math.max(0, (Number(input?.value) || 0) + Number(b.dataset.delta)));
       return;
     }
-    if ((b = el("[data-line-remove]"))) { api.setQuantity(b.dataset.lineRemove!, 0); return; }
+    if ((b = el("[data-line-remove]"))) { setLine(b.dataset.lineRemove!, 0); return; }
     if ((b = el("[data-checkout]"))) {
       const scope = b.closest(".cart-drawer, [data-cart-section]") ?? doc;
       const code = $<HTMLInputElement>("[data-discount-input]", scope)?.value.trim();
@@ -110,8 +110,51 @@ export function installBehaviors(doc: Document, api: StoreApi) {
       if (v === "manual") u.searchParams.delete("sort"); else u.searchParams.set("sort", v);
       api.navigate(u.pathname + u.search);
     }
-    if (t.matches("[data-line-input]")) api.setQuantity((t as HTMLInputElement).dataset.lineInput!, Math.max(0, Number((t as HTMLInputElement).value) || 0));
+    if (t.matches("[data-line-input]")) setLine((t as HTMLInputElement).dataset.lineInput!, Math.max(0, Number((t as HTMLInputElement).value) || 0));
+    if (t.matches("[data-option]")) selectVariant(t.closest<HTMLElement>("[data-product]"));
   });
+
+  /** Cart line keys are "productId:variantId". */
+  const setLine = (key: string, q: number) => { const [pid, vid] = key.split(":"); return api.setQuantity(pid, q, vid || undefined); };
+
+  /** After an option changes: find the matching variant and update price, stock, image, buttons and the URL. */
+  type V = { id: string; options: string[]; price: number; compareAtPrice?: number; inventory: number; imageUrl?: string };
+  function selectVariant(prod: HTMLElement | null) {
+    if (!prod?.dataset.variants) return;
+    const variants: V[] = JSON.parse(prod.dataset.variants);
+    const chosen: string[] = [];
+    for (const input of $$<HTMLInputElement | HTMLSelectElement>("[data-option]", prod)) {
+      const i = Number(input.dataset.option);
+      if (input instanceof HTMLSelectElement || (input as HTMLInputElement).checked) chosen[i] = input.value;
+    }
+    chosen.forEach((v, i) => { const l = $(`[data-option-label="${i}"]`, prod); if (l) l.textContent = v; });
+    const v = variants.find(x => x.options.every((o, i) => o === chosen[i]));
+    const cur = prod.dataset.currency || "USD";
+    const fmt = (n: number) => { try { return new Intl.NumberFormat(undefined, { style: "currency", currency: cur }).format(n); } catch { return n.toFixed(2); } };
+    const sold = !v || v.inventory <= 0;
+    const priceBox = $("[data-price] .price", prod);
+    if (priceBox && v) {
+      const sale = !!v.compareAtPrice && v.compareAtPrice > v.price;
+      priceBox.className = `price price--large${sale ? " price--sale" : ""}`;
+      priceBox.innerHTML = `${sale ? `<s class="price__compare">${fmt(v.compareAtPrice!)}</s>` : ""}<span class="price__current">${fmt(v.price)}</span>`;
+    }
+    const inv = $("[data-inventory]", prod);
+    if (inv) {
+      const t = Number(inv.dataset.threshold) || 0, n = v?.inventory ?? 0, count = inv.dataset.showCount === "1";
+      inv.className = `inventory-note ${!v ? "out" : n <= 0 ? "out" : n <= t ? "low" : ""}`;
+      inv.textContent = !v ? "Unavailable" : n <= 0 ? "Out of stock" : n <= t ? (count ? `Low stock: ${n} left` : "Low stock") : (count ? `${n} in stock` : "In stock");
+    }
+    for (const btn of $$<HTMLButtonElement>("[data-add-to-cart], [data-buy-now]", prod)) {
+      if (v) btn.dataset.variant = v.id;
+      if (btn.hasAttribute("data-add-to-cart")) { btn.disabled = sold; btn.textContent = !v ? "Unavailable" : sold ? "Sold out" : "Add to cart"; }
+      else btn.hidden = sold;
+    }
+    const image = $<HTMLImageElement>("[data-product-media] img", prod), src = v?.imageUrl || prod.dataset.productImage;
+    if (image && src && image.getAttribute("src") !== src) image.src = src;
+    if (v && prod.hasAttribute("data-update-url")) {
+      try { const u = new URL(win.location.href); u.searchParams.set("variant", v.id); win.history.replaceState(null, "", u.pathname + u.search + u.hash); } catch { /* preview iframe */ }
+    }
+  }
 
   doc.addEventListener("submit", e => {
     const f = e.target as HTMLFormElement;

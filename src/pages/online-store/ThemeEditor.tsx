@@ -70,7 +70,7 @@ export default function ThemeEditor() {
   const [draft, setDraft] = useState<ThemeDoc | null>(null);
 
   const [template, setTemplate] = useState(params.get("template") || "index");
-  const [pick, setPick] = useState<{ product?: string; collection?: string; query?: string }>({});
+  const [pick, setPick] = useState<{ product?: string; variant?: string; collection?: string; query?: string }>({});
   const [tab, setTab] = useState<"sections" | "settings">("sections");
   const [themeGroup, setThemeGroup] = useState<string | null>(null);
   const [selected, setSelected] = useState<Sel>(null);
@@ -80,7 +80,7 @@ export default function ThemeEditor() {
   const [device, setDevice] = useState<Device>("desktop");
   const [full, setFull] = useState(params.get("view") === "preview");
   const [inspector, setInspector] = useState(params.get("view") !== "preview");
-  const [cart, setCart] = useState<{ id: string; quantity: number }[]>([]);
+  const [cart, setCart] = useState<{ id: string; variantId?: string; quantity: number }[]>([]);
   const [cartOpenKey, setCartOpenKey] = useState(0);
   const [addSection, setAddSection] = useState<{ where: Where; index: number; anchor: DOMRect } | null>(null);
   const [addBlock, setAddBlock] = useState<{ where: Where; sectionId: string; anchor: DOMRect } | null>(null);
@@ -146,10 +146,13 @@ export default function ThemeEditor() {
     const product = type === "product" ? products.find(p => p.$id === pick.product) ?? products.find(p => p.status === "active") : undefined;
     const collection = type === "collection" ? (pick.collection === "all" ? allCollection(products, s.$id) : collections.find(c => c.handle === pick.collection) ?? collections[0] ?? allCollection(products, s.$id)) : undefined;
     const path = product ? `/products/${product.$id}` : collection ? `/collections/${collection.handle}` : template === "index" ? "/" : template.startsWith("page.") ? `/pages/${template.slice(5)}` : `/${template}`;
-    return { template, product, collection, query: type === "search" ? pick.query ?? "" : undefined, path };
+    return { template, product, variant: pick.variant, collection, query: type === "search" ? pick.query ?? "" : undefined, path };
   }, [template, pick, products, collections, s.$id]);
 
-  const cartLines: CartLine[] = useMemo(() => cart.map(l => ({ product: products.find(p => p.$id === l.id)!, quantity: l.quantity })).filter(l => l.product), [cart, products]);
+  const cartLines: CartLine[] = useMemo(() => cart.map(l => {
+    const product = products.find(p => p.$id === l.id);
+    return { product: product!, variant: product?.variants?.find(v => v.id === l.variantId), quantity: l.quantity };
+  }).filter(l => l.product), [cart, products]);
   const data: RenderData = useMemo(() => ({ site: { id: s.$id, name: s.name, currency: s.currency || "USD", domain: s.domain }, products, collections, cart: cartLines, payments: { stripe: true, paypal: true } }), [s, products, collections, cartLines]);
   const ctx: RenderCtx | null = useMemo(() => doc ? { theme: doc, data, route, editor: true } : null, [doc, data, route]);
   const sections = useMemo(() => ctx ? renderSections(ctx) : [], [ctx]);
@@ -197,7 +200,7 @@ export default function ThemeEditor() {
     if (!doc) return;
     const r = routeFor(url, doc, products, collections, s.$id);
     setTemplate(r.template); setSelected(null);
-    setPick({ product: r.product?.$id, collection: r.collection?.handle, query: r.query });
+    setPick({ product: r.product?.$id, variant: r.variant, collection: r.collection?.handle, query: r.query });
   };
 
   const changeTemplate = (k: string) => { setTemplate(k); setSelected(null); setPageMenu(false); setParams(p => { p.set("template", k); return p; }, { replace: true }); };
@@ -214,8 +217,14 @@ export default function ThemeEditor() {
   };
 
   const api = useMemo(() => ({
-    addToCart: (id: string, q: number) => setCart(c => { const cur = c.find(x => x.id === id); return cur ? c.map(x => x.id === id ? { ...x, quantity: x.quantity + q } : x) : [...c, { id, quantity: q }]; }),
-    setQuantity: (id: string, q: number) => setCart(c => q > 0 ? c.map(x => x.id === id ? { ...x, quantity: q } : x) : c.filter(x => x.id !== id)),
+    addToCart: (id: string, q: number, variantId?: string) => setCart(c => {
+      const same = (x: { id: string; variantId?: string }) => x.id === id && (x.variantId ?? "") === (variantId ?? "");
+      return c.some(same) ? c.map(x => same(x) ? { ...x, quantity: x.quantity + q } : x) : [...c, { id, variantId, quantity: q }];
+    }),
+    setQuantity: (id: string, q: number, variantId?: string) => setCart(c => {
+      const same = (x: { id: string; variantId?: string }) => x.id === id && (x.variantId ?? "") === (variantId ?? "");
+      return q > 0 ? c.map(x => same(x) ? { ...x, quantity: q } : x) : c.filter(x => !same(x));
+    }),
     checkout: async () => { throw new Error("Checkout is turned off in the editor preview."); },
     buyNow: async () => { throw new Error("Checkout is turned off in the editor preview."); },
     discount: async (code: string) => `Discount codes are checked at checkout (${code.toUpperCase()}).`,

@@ -24,6 +24,18 @@ export interface Site extends Base {
 export type EmailStatus = "none" | "pending" | "verified" | "failed";
 
 export type ProductStatus = "active" | "draft" | "archived";
+/** An option like Size with its values ["S", "M", "L"]. */
+export interface ProductOption { name: string; values: string[] }
+/** One purchasable combination of option values. */
+export interface Variant {
+  id: string;
+  options: string[];            // one value per product option, in order
+  price: number;
+  compareAtPrice?: number;
+  sku?: string;
+  inventory: number;
+  imageUrl?: string;
+}
 export interface Product extends Base {
   siteId: string;
   title: string;
@@ -34,6 +46,8 @@ export interface Product extends Base {
   inventory: number;
   status: ProductStatus;
   imageUrl?: string;
+  options?: ProductOption[];    // empty / missing = no variants
+  variants?: Variant[];         // price/compareAtPrice/inventory above are roll-ups when present
 }
 
 export interface Customer extends Base {
@@ -64,7 +78,7 @@ export interface Automation extends Base {
 export type FinancialStatus = "pending" | "paid" | "refunded";
 export type FulfillmentStatus = "unfulfilled" | "fulfilled" | "cancelled";
 export type PaymentProvider = "manual" | "stripe" | "paypal";
-export interface LineItem { productId: string; title: string; quantity: number; price: number }
+export interface LineItem { productId: string; variantId?: string; title: string; quantity: number; price: number }
 export interface Order extends Base {
   siteId: string;
   number: number;
@@ -133,7 +147,7 @@ export interface Checkout extends Base {
   siteId: string;
   provider: "stripe" | "paypal";
   providerRef?: string;
-  items: { productId: string; title: string; quantity: number; price: number }[];
+  items: { productId: string; variantId?: string; title: string; quantity: number; price: number }[];
   total: number;
   currency?: string;
   status: "open" | "completed" | "expired";
