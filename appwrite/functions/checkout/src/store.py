@@ -124,6 +124,17 @@ class Store:
         self.db.update_row(DB, "customers", customer_id, {"acceptsMarketing": False})
         return True
 
+    def subscribe(self, site_id, email):
+        """Newsletter signup from the storefront: opt an existing customer in, or create one with no orders."""
+        found = self.db.list_rows(DB, "customers", queries=[Query.equal("siteId", site_id), Query.equal("email", email), Query.limit(1)])
+        if found.rows:
+            if not a(found.rows[0], "acceptsMarketing"):
+                self.db.update_row(DB, "customers", a(found.rows[0], "$id"), {"acceptsMarketing": True})
+            return a(found.rows[0], "$id")
+        c = self.db.create_row(DB, "customers", ID.unique(), {
+            "siteId": site_id, "name": email.split("@")[0], "email": email, "ordersCount": 0, "totalSpent": 0, "acceptsMarketing": True})
+        return a(c, "$id")
+
     def finalize(self, checkout_id, provider, payment_ref, email, name, amount_paid):
         """Turn a paid checkout into an order. Idempotent: the order's row ID *is* the checkout ID."""
         co = self.checkout(checkout_id)

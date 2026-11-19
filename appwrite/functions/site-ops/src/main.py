@@ -299,6 +299,57 @@ def hosting_redeploy(b):
     return {"ok": True, "deploymentId": _get(d, "id")}
 
 
+def hosting_upload_storefront(b):
+    """Publish a theme: upload pre-rendered storefront pages as a new deployment of the store's Appwrite Site.
+
+    body: {siteId, files: {"index.html": "...", "products/abc/index.html": "...", "storefront.js": "..."}, force?}
+    """
+    import gzip
+    import io
+    import tarfile
+    from appwrite.input_file import InputFile
+    from appwrite.services.sites import Sites
+    (site_id,) = need(b, "siteId")
+    files = b.get("files")
+    if not isinstance(files, dict) or "index.html" not in files:
+        raise HttpError("files must include index.html")
+    if len(files) > 5000:
+        raise HttpError("Too many files in one publish", 413)
+    sites = Sites(appwrite_client())
+    try:
+        site = sites.get(site_id)
+    except Exception as e:  # noqa: BLE001
+        raise _aw_err(e)
+    if _get(site, "providerrepositoryid") and not b.get("force"):
+        raise HttpError("This store's site deploys from a Git repository. Publishing the theme replaces that build until the next push. Confirm to continue.", 409)
+    raw = io.BytesIO()
+    with tarfile.open(fileobj=raw, mode="w") as tar:
+        for path, content in files.items():
+            path = str(path).lstrip("/")
+            if not path or ".." in path.split("/") or not isinstance(content, str):
+                raise HttpError(f"Bad file path: {path!r}")
+            data = content.encode()
+            info = tarfile.TarInfo(path)
+            info.size = len(data)
+            info.mode = 0o644
+            tar.addfile(info, io.BytesIO(data))
+    code = gzip.compress(raw.getvalue())
+    try:
+        d = sites.create_deployment(site_id, InputFile.from_bytes(code, "storefront.tar.gz", "application/gzip"),
+                                    install_command="", build_command="", output_directory="./", activate=True)
+    except Exception as e:  # noqa: BLE001
+        raise _aw_err(e)
+    fallback = _get(site, "fallbackfile")
+    if fallback != "index.html":  # so URLs that weren't pre-rendered (new products) still load and render in the browser
+        try:
+            from appwrite.enums.framework import Framework
+            sites.update(site_id, _get(site, "name"), Framework(_get(site, "framework") or "other"), fallback_file="index.html")
+            fallback = "index.html"
+        except Exception:  # noqa: BLE001 - not fatal; the README explains how to set it by hand
+            pass
+    return {"ok": True, "deploymentId": _get(d, "id"), "files": len(files), "bytes": len(code), "fallback": fallback}
+
+
 def _db():
     from appwrite.services.tables_db import TablesDB
     return TablesDB(appwrite_client())
@@ -541,6 +592,7 @@ ROUTES = {
     "/hosting/site": hosting_site,
     "/hosting/deployments": hosting_deployments,
     "/hosting/redeploy": hosting_redeploy,
+    "/hosting/upload-storefront": hosting_upload_storefront,
     "/google/ga4": ga4,
     "/google/gsc": gsc,
     "/google/gsc/sitemaps": gsc_sitemaps,

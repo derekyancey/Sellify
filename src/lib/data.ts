@@ -18,19 +18,19 @@ function demoDb(): DemoDB {
   saveDemo(db);
   return db;
 }
-const emptyDb = () => ({ collections: [], discounts: [], segments: [], templates: [], campaigns: [], checkouts: [], automations: [] });
+const emptyDb = () => ({ collections: [], discounts: [], segments: [], templates: [], campaigns: [], checkouts: [], automations: [], themes: [] });
 function saveDemo(db: DemoDB) { try { localStorage.setItem(DEMO_KEY, JSON.stringify(db)); } catch { /* ignore */ } }
 export function resetDemo() { try { localStorage.removeItem(DEMO_KEY); } catch { /* ignore */ } }
 
 // Some columns hold JSON in Appwrite (longtext); (de)serialize them here.
-const JSON_COLS: Partial<Record<TableName, string[]>> = { orders: ["items"], checkouts: ["items"], segments: ["rules"] };
+const JSON_COLS: Partial<Record<TableName, string[]>> = { orders: ["items"], checkouts: ["items"], segments: ["rules"], themes: ["data"] };
 const toRow = (t: TableName, data: any) => {
   const out = { ...data };
   for (const c of JSON_COLS[t] ?? []) if (out[c] !== undefined && typeof out[c] !== "string") out[c] = JSON.stringify(out[c]);
   return out;
 };
 const fromRow = (t: TableName, row: any) => {
-  for (const c of JSON_COLS[t] ?? []) if (typeof row[c] === "string") { try { row[c] = JSON.parse(row[c]); } catch { row[c] = []; } }
+  for (const c of JSON_COLS[t] ?? []) if (typeof row[c] === "string") { try { row[c] = JSON.parse(row[c]); } catch { row[c] = c === "data" ? null : []; } }
   return row;
 };
 const strip = (data: any) => {

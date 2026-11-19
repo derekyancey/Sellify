@@ -12,6 +12,9 @@
  *   window.addEventListener("yancey:cart", e => e.detail)   // fires on every cart change
  *   await Yancey.config()                       -> { stripe: bool, paypal: bool }
  *   await Yancey.collection("best-sellers")     -> { title, description, products }
+ *   await Yancey.collections()                  -> all collections for this site
+ *   await Yancey.theme()                        -> the live theme ({ name, data }) or null
+ *   await Yancey.subscribe("a@b.com")           -> newsletter signup (customer with marketing on)
  *   await Yancey.discount("WELCOME10")          -> { subtotal, discount: { code, amount }, total } or throws
  *   await Yancey.checkout("stripe" | "paypal", { email, discountCode, acceptsMarketing })
  *                                                // redirects to Stripe (card, Apple Pay, Google Pay) or PayPal
@@ -95,6 +98,21 @@
     return { title: c.title, description: c.description, handle: c.handle, products: list };
   }
 
+  async function collections() {
+    return rows("collections", [{ method: "equal", attribute: "siteId", values: [cfg.site] }, { method: "limit", values: [200] }]);
+  }
+
+  /** The live theme (Online store → Themes): { $id, name, data } or null. */
+  async function theme() {
+    var found = await rows("themes", [{ method: "equal", attribute: "siteId", values: [cfg.site] }, { method: "equal", attribute: "role", values: ["main"] }, { method: "limit", values: [1] }]);
+    if (!found.length) return null;
+    var t = found[0];
+    try { t.data = typeof t.data === "string" ? JSON.parse(t.data) : t.data; } catch (e) { t.data = null; }
+    return t;
+  }
+
+  function subscribe(email) { return call("/subscribe", { siteId: cfg.site, email: email }); }
+
   function discount(code, items) {
     return call("/discount", { siteId: cfg.site, items: items || cart.items(), code: code });
   }
@@ -138,5 +156,5 @@
     return null;
   }
 
-  window.Yancey = { cart: cart, products: function () { return products(); }, collection: collection, discount: discount, checkout: checkout, handleReturn: handleReturn, config: function () { return call("/config", {}); }, settings: cfg };
+  window.Yancey = { cart: cart, products: function () { return products(); }, collection: collection, collections: collections, theme: theme, subscribe: subscribe, discount: discount, checkout: checkout, handleReturn: handleReturn, config: function () { return call("/config", {}); }, settings: cfg };
 })();

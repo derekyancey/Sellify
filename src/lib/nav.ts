@@ -48,13 +48,9 @@ export const NAV: NavGroup[] = [
     { to: "/discounts", label: "Discounts", icon: Percent },
     { to: "/content/files", label: "Content", icon: FileImage, children: [
       { to: "/content/files", label: "Files" },
-      { to: "/content/blog", label: "Blog & pages", planned: {
-        what: "Write blog posts and pages for your sites.",
-        approach: "Decap CMS (open source, Git-based) edits Markdown in each site's repo; Appwrite Sites rebuilds on each commit.",
-        links: [{ label: "Decap CMS", href: "https://decapcms.org" }] } },
-      { to: "/content/menus", label: "Menus", planned: {
-        what: "Edit navigation menus without touching code.",
-        approach: "Custom: a menus table read by yancey.js (Yancey.menu('main')), so storefronts render it at runtime." } },
+      { to: "/content/blog", label: "Blog", planned: {
+        what: "Write blog posts for your store. (Pages and menus are built in the theme editor: Online store → Customize.)",
+        approach: "Custom: a posts table rendered by new blog and article templates in the theme editor, so posts use the store's design." } },
     ] },
   ] },
   { group: "Insights", items: [

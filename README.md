@@ -13,7 +13,8 @@ A Shopify-style admin for **all of your websites** in one place. Switch between 
 | **Content** | Files (images for products and emails) | Appwrite Storage |
 | **Analytics / SEO** | GA4, Search Console, crawler, PageSpeed, sitemaps | Google, Python crawler |
 | **Finance** | Per-store sales, refunds, discounts, net and payment-method split, monthly chart, CSV for your accountant; Stripe/PayPal balances, fees and payouts | Yancey orders, Stripe + PayPal reporting APIs (read-only) |
-| **Sales channels** | Online store (embed snippet), Google & YouTube and TikTok (product feed) | yancey.js, Merchant Center free listings |
+| **Online store** | Themes library and a Shopify-style **theme editor**: sections and blocks, theme settings, pages, menus, live preview, one-click publish | Built in (see below), Appwrite Sites |
+| **Sales channels** | Google & YouTube and TikTok (product feed), or embed the cart on your own site | yancey.js, Merchant Center free listings |
 | **Infrastructure** | Domain & DNS, Deploys | Cloudflare, Appwrite Sites |
 | **Checkout** | Cards, Apple Pay, Google Pay, PayPal | Stripe Checkout, PayPal |
 
@@ -24,9 +25,9 @@ Each planned page already describes its free approach. In brief:
 | Planned | Free approach |
 | --- | --- |
 | Shipping labels | Shippo / EasyPost APIs: pay per label, no monthly fee |
-| Gift cards, Purchase orders, Transfers, Companies, Menus | Custom tables in Appwrite, no third-party cost |
+| Gift cards, Purchase orders, Transfers, Companies | Custom tables in Appwrite, no third-party cost |
 | Attribution | UTM tags + GA4 source/medium joined with orders |
-| Blog & pages | [Decap CMS](https://decapcms.org) (open source, Git-based) |
+| Blog | Posts table + blog/article templates in the theme editor |
 | Point of sale | Stripe Terminal / Tap to Pay (per transaction) |
 
 ```
@@ -198,6 +199,39 @@ Re-run `python appwrite/setup.py` after pulling: it adds the new tables (collect
   - **Settings:** each one is switched on per site under **Marketing → Automations**, which also has *Preview due emails* (a dry run) and *Run now*. These use `site-ops`' `RESEND_API_KEY`, `UNSUBSCRIBE_SECRET`, `CHECKOUT_PUBLIC_URL` and optionally `AUTOMATION_MAX_PER_RUN` (default 50).
 - **Product feed:** the checkout function serves `/feed.xml?site=<id>` in Google Merchant Center format, which TikTok, Pinterest and Meta also accept. Set `VITE_CHECKOUT_PUBLIC_URL` so the dashboard can show the URL. Set each site's product page path under **Sales channels → Google & YouTube**. Products without an image are left out, because Google requires one.
 - **Shared code:** `appwrite/shared/` is the single source for code used by several functions. Run `python appwrite/sync_shared.py` after editing it, and `--check` before deploying.
+
+## Online store: themes and the theme editor
+
+**Sales channels → Online store** works like Shopify's *Online Store → Themes*: a current (live) theme, a theme library, **Add theme** (four starting styles: Meridian, Pantry, Noir, Bloom), upload/download a theme file, duplicate, rename, preview and publish. **Customize** opens the editor:
+
+- **Sidebar:** the page's sections in three groups (Header, Template, Footer), each section expandable to its blocks. Drag to reorder (also between groups), eye icon to hide, **Add section** / **Add block**. The section picker searches by name and shows a live preview of each section with your colors and fonts.
+- **Settings panel:** every section and block has schema-driven settings (text, rich text, images, links, products, collections, menus, colors, color schemes, ranges, alignment…). Sections also have per-section **Custom CSS** and can be renamed.
+- **Preview:** click any section or block to select it; the blue toolbar moves, duplicates, hides or removes it. **Double-click text to edit it in place.** Toggle the inspector off to click through the store like a shopper (links switch the editor to that template; the cart works). Desktop, mobile and full-screen views.
+- **Page selector:** Home, product, collection, collections list, cart, search, order confirmation, 404, and your own **pages** (*Create page* makes `/pages/<handle>` built from sections). Product and collection templates let you choose which product or collection to preview.
+- **Theme settings:** logo and favicon, editable color schemes, typography (32 Google Fonts + system fonts), layout, animations, buttons, inputs, product cards, badges, social links, search, cart (drawer or page, note, discount field, free-shipping bar), SEO and custom CSS.
+- **Menus** are edited from the editor (pencil next to any menu setting), with nested sub-items.
+- Undo/redo (⌘Z / ⇧⌘Z), save (⌘S), unsaved-change warning, and unsaved work is kept in the browser and offered back if a tab closes.
+
+**Sections:** announcement bar, header, footer, image banner, slideshow, rich text, image with text, multicolumn, collage, collapsible content (FAQ), video, email signup, testimonials, logo list, scrolling text, countdown timer, contact form, custom HTML, spacer, featured collection, featured product, collection list, related products, plus the template sections (product information with 11 block types, collection banner and product grid with sorting, collections list, cart, 404).
+
+**Going live:** **Publish to *domain*** pre-renders every page (home, each product and collection, your pages, cart, search) into static HTML, bundles `storefront.js` and `yancey.js`, and uploads it as a new deployment of the store's Appwrite site (the `site-ops` route `/hosting/upload-storefront`). Pages are crawlable and fast; in the browser `storefront.js` then reloads the live theme, products and stock, re-renders only what changed, and runs the cart drawer, checkout (Stripe, Apple Pay, Google Pay, PayPal), discount codes and email signup (the `checkout` function's new `/subscribe` route; subscribers land in Customers with marketing on, so the welcome automation picks them up). Products added later still work without republishing because the site's fallback file is set to `index.html`, which renders any URL. Set it by hand under *Sites → (site) → Settings* if the function couldn't.
+
+Setup after pulling: run `python appwrite/setup.py` (adds the `themes` table, public-read so storefronts can load the live theme) and redeploy both functions. `npm run build` now also builds `dist/storefront.js` from `src/theme/runtime.ts`.
+
+How it's built: the theme format mirrors Shopify's Online Store 2.0 JSON templates (section groups, templates, `settings`/`blocks`/`block_order`, schemas with presets), so the editor is generic over section schemas in `src/theme/sections/`. We looked at open-source builders (GrapesJS, already used for email; Puck; Craft.js), but those are free-form canvases. Shopify's editor is schema-driven sections and blocks, so we built that model directly: one renderer (`src/theme/render.ts`) produces the HTML for the editor preview, the publish step and the live store.
+
+```
+src/theme/
+  types.ts      theme document + section schema types
+  sections/     every section: schema (settings, blocks, presets) + render()
+  render.ts     theme + route + data -> HTML
+  settings.ts   theme settings schema, color schemes
+  presets.ts    the four starting styles
+  ops.ts        immutable editor operations (undo/redo friendly)
+  behaviors.ts  cart drawer, quantity, slideshow, countdown… (live store + preview)
+  runtime.ts    storefront.js
+src/pages/online-store/   Themes page, ThemeEditor and its panels
+```
 
 ## Finance
 

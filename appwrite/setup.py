@@ -99,6 +99,12 @@ SCHEMA = {
         "columns": [S("siteId", 36, True), S("name", 128, True), LT("rules")],
         "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"])],
     },
+    "themes": {
+        "public_read": True,  # storefronts load the live (role "main") theme with the public Web SDK
+        "columns": [S("siteId", 36, True), S("name", 128, True), E("role", ["main", "unpublished"], "unpublished"), S("style", 32),
+                    LT("data"), D("savedAt"), D("publishedAt")],
+        "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"])],
+    },
     "templates": {
         "public_read": False,
         "columns": [S("siteId", 36, True), S("name", 128, True), S("subject", 255), LT("html"), LT("design")],

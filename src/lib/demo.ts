@@ -128,6 +128,7 @@ export function demoOps(path: string, body: any): any {
     case "/hosting/deployments": return { deployments: Array.from({ length: 8 }, (_, i) => ({ id: "d" + i, status: i === 2 ? "failed" : "ready", active: i === 0, branch: "main",
       message: pick(["Update homepage copy", "Add holiday collection", "Fix checkout button", "Bump deps", "New product photos"]), commit: id().slice(0, 7), createdAt: ago(i * 2), buildSeconds: 20 + Math.floor(rand() * 60), type: "vcs" })) };
     case "/hosting/redeploy": return { ok: true, deploymentId: "dnew" };
+    case "/hosting/upload-storefront": return { ok: true, deploymentId: "dstore" + id().slice(0, 4), files: Object.keys(body.files ?? {}).length, bytes: JSON.stringify(body.files ?? {}).length, fallback: "index.html" };
     case "/google/connection": return body.siteId === "site_coffee" ? { connected: true, email: "owner@example.com", available: true } : { connected: false, available: true };
     case "/google/oauth/start": return { url: `/oauth/google?code=demo&state=${body.siteId}` };
     case "/google/oauth/finish": return { siteId: body.state, email: "owner@example.com" };

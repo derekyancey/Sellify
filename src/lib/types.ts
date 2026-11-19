@@ -1,3 +1,5 @@
+import type { ThemeDoc } from "../theme/types";
+
 export interface Base { $id: string; $createdAt: string }
 
 export interface Site extends Base {
@@ -140,9 +142,21 @@ export interface Checkout extends Base {
   recoveryEmailedAt?: string;
 }
 
-export type TableName = "sites" | "products" | "orders" | "customers" | "collections" | "discounts" | "segments" | "templates" | "campaigns" | "checkouts" | "automations";
+/** An online-store theme (see src/theme/types.ts). One per store has role "main": that's the live one. */
+export type ThemeRole = "main" | "unpublished";
+export interface Theme extends Base {
+  siteId: string;
+  name: string;
+  role: ThemeRole;
+  style?: string;               // which starting style it was created from
+  data: ThemeDoc;
+  savedAt?: string;
+  publishedAt?: string;
+}
+
+export type TableName = "sites" | "products" | "orders" | "customers" | "collections" | "discounts" | "segments" | "templates" | "campaigns" | "checkouts" | "automations" | "themes";
 interface TableMap {
   sites: Site; products: Product; orders: Order; customers: Customer; collections: Collection; discounts: Discount;
-  segments: Segment; templates: EmailTemplate; campaigns: Campaign; checkouts: Checkout; automations: Automation;
+  segments: Segment; templates: EmailTemplate; campaigns: Campaign; checkouts: Checkout; automations: Automation; themes: Theme;
 }
 export type RowOf<T extends TableName> = TableMap[T];

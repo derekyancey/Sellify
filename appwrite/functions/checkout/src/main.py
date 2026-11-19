@@ -8,6 +8,7 @@ checkout: PUBLIC Appwrite Function your storefronts call to take payments.
   POST /config           {siteId} -> which providers are enabled (so storefronts can show the right buttons)
   POST /discount         {siteId, items, code} -> preview a discount code
   GET|POST /unsubscribe  ?s=siteId&c=customerId&t=token   one-click unsubscribe from marketing email
+  POST /subscribe        {siteId, email} -> newsletter signup (customer with marketing on)
   GET /feed.xml?site=ID  product feed for Google Merchant Center (free listings), TikTok, Pinterest, Meta
   (optional on any cart route: discountCode, acceptsMarketing)
 
@@ -191,6 +192,18 @@ def unsubscribe(req):
     return ("html", 200, UNSUB_PAGE.format(title="You're unsubscribed", body="You won't receive marketing emails from this store any more. Order receipts still arrive as usual."))
 
 
+def subscribe(req):
+    """Storefront email signup: create or update the customer with marketing turned on."""
+    import re
+    b, store = _json(req), _store(req)
+    site = store.site(str(b.get("siteId", "")))
+    email = str(b.get("email", "")).strip().lower()
+    if not re.fullmatch(r"[^@\s]{1,64}@[^@\s]{1,190}\.[a-z]{2,24}", email):
+        raise HttpError("Please enter a valid email address")
+    store.subscribe(a(site, "$id"), email)
+    return {"ok": True}
+
+
 def product_feed(req):
     q = getattr(req, "query", None) or {}
     store = _store(req)
@@ -220,6 +233,7 @@ ROUTES = {
     "/feed.xml": product_feed,
     "/discount": discount_preview,
     "/unsubscribe": unsubscribe,
+    "/subscribe": subscribe,
     "/stripe/session": stripe_session,
     "/stripe/webhook": stripe_webhook,
     "/paypal/create": paypal_create,
