@@ -552,7 +552,16 @@ def import_summary(b):
     from appwrite.query import Query
     (site_id,) = need(b, "siteId")
     db, DBID = _db(), os.environ.get("APPWRITE_DATABASE_ID", "yancey")
-    count = lambda table, *q: db.list_rows(DBID, table, queries=[Query.equal("siteId", site_id), *q, Query.limit(1)], total=True).total
+    def count(table, *q):
+        # Appwrite caps `total` at 5,000, so page through ids ourselves.
+        n, cursor = 0, None
+        while True:
+            page = db.list_rows(DBID, table, queries=[Query.equal("siteId", site_id), *q, Query.select(["$id"]), Query.limit(1000)]
+                                + ([Query.cursor_after(cursor)] if cursor else []), total=False).rows
+            n += len(page)
+            if len(page) < 1000:
+                return n
+            cursor = importer._a(page[-1], "$id")
     w = importer.Writer(db, DBID)
     products = w.all_for_site("products", site_id)
     return {"products": len(products), "customers": count("customers"), "subscribers": count("customers", Query.equal("acceptsMarketing", True)),
