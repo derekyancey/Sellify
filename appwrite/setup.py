@@ -291,7 +291,8 @@ def wait_for_columns(db, table, keys, timeout=60):
     """Columns are created asynchronously; indexes can only be built once they're 'available'."""
     deadline = time.time() + timeout
     while time.time() < deadline:
-        statuses = [attr(db.get_column(DB_ID, table, k), "status") for k in keys]
+        # Newer SDKs return status as an enum (ColumnStatus.AVAILABLE); compare its value.
+        statuses = [getattr(st, "value", st) for st in (attr(db.get_column(DB_ID, table, k), "status") for k in keys)]
         if all(s == "available" for s in statuses):
             return
         if any(s == "failed" for s in statuses):
