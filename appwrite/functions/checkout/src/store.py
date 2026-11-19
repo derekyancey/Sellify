@@ -24,6 +24,16 @@ def a(obj, key):
     return getattr(obj, key.lstrip("$"), None)
 
 
+def _variants(p):
+    v = a(p, "variants")
+    if isinstance(v, str):
+        try:
+            v = json.loads(v)
+        except ValueError:
+            v = []
+    return v if isinstance(v, list) else []
+
+
 class Store:
     def __init__(self, api_key):
         client = (Client().set_endpoint(os.environ["APPWRITE_FUNCTION_API_ENDPOINT"])
@@ -54,19 +64,30 @@ class Store:
         qty = {}
         for it in items:
             pid, q = str(it.get("productId", "")), int(it.get("quantity", 1))
+            vid = str(it.get("variantId") or "") or None
             if not pid or q < 1 or q > 100:
                 raise HttpError("Invalid cart item")
-            qty[pid] = qty.get(pid, 0) + q
-        products = self.products(site_id, qty.keys())
+            qty[(pid, vid)] = qty.get((pid, vid), 0) + q
+        products = self.products(site_id, {pid for pid, _ in qty})
         lines = []
-        for pid, q in qty.items():
+        for (pid, vid), q in qty.items():
             p = products.get(pid)
-            if not p or a(p, "status") != "active":
+            if not p or a(p, "status") not in ("active", "unlisted"):  # unlisted = hidden from lists, still buyable by link
                 raise HttpError("A product in your cart is no longer available", 409)
-            if (a(p, "inventory") or 0) < q:
-                raise HttpError(f"Only {a(p, 'inventory')} of {a(p, 'title')} left in stock", 409)
-            lines.append({"productId": pid, "title": a(p, "title"), "quantity": q, "price": round(float(a(p, "price")), 2),
-                          "imageUrl": a(p, "imageUrl") or None})
+            variants = _variants(p)
+            v = None
+            if variants:
+                v = next((x for x in variants if x.get("id") == vid), None) if vid else (variants[0] if len(variants) == 1 else None)
+                if v is None:
+                    raise HttpError(f"Choose an option for {a(p, 'title')}" if not vid else f"That option of {a(p, 'title')} is no longer available", 409)
+            tracked = a(p, "tracksInventory") is not False
+            stock = (v.get("inventory", 0) if v else a(p, "inventory")) or 0
+            if tracked and stock < q:
+                raise HttpError(f"Only {max(0, stock)} of {a(p, 'title')} left in stock", 409)
+            price = float(v["price"]) if v else float(a(p, "price"))
+            title = a(p, "title") + (f" - {v['title']}" if v and v.get("title") and v["title"] != "Default Title" else "")
+            lines.append({"productId": pid, "variantId": v["id"] if v else None, "title": title, "quantity": q, "price": round(price, 2),
+                          "imageUrl": (v or {}).get("image") or a(p, "imageUrl") or None, "tracked": tracked})
         subtotal = round(sum(l["price"] * l["quantity"] for l in lines), 2)
         discount = self.discount(site_id, code, subtotal) if code else None
         total = round(subtotal - (discount["amount"] if discount else 0), 2)
@@ -121,7 +142,7 @@ class Store:
             return False
         if a(c, "siteId") != site_id:
             return False
-        self.db.update_row(DB, "customers", customer_id, {"acceptsMarketing": False})
+        self.db.update_row(DB, "customers", customer_id, {"acceptsMarketing": False, "unsubscribedAt": dt.datetime.now(dt.timezone.utc).isoformat()})
         return True
 
     def finalize(self, checkout_id, provider, payment_ref, email, name, amount_paid):
@@ -139,7 +160,7 @@ class Store:
         customer_id = self._upsert_customer(site_id, email, name, float(a(co, "total")), bool(a(co, "acceptsMarketing"))) if email else None
         last = self.db.list_rows(DB, "orders", queries=[Query.equal("siteId", site_id), Query.order_desc("number"), Query.limit(1)])
         number = (a(last.rows[0], "number") if last.rows else 1000) + 1
-        items = [{k: l[k] for k in ("productId", "title", "quantity", "price")} for l in lines]
+        items = [{k: l.get(k) for k in ("productId", "variantId", "title", "quantity", "price")} for l in lines]
         order = {"siteId": site_id, "number": number, "customerId": customer_id, "customerName": name, "customerEmail": email,
                  "items": json.dumps(items), "total": float(a(co, "total")), "financialStatus": "paid",
                  "fulfillmentStatus": "unfulfilled", "paymentProvider": provider, "paymentRef": payment_ref,
@@ -151,8 +172,17 @@ class Store:
                 return {"orderId": checkout_id, "duplicate": True}
             raise
         for l in lines:
+            if l.get("tracked") is False:
+                continue  # digital / untracked products: no stock to reduce
             try:
                 self.db.decrement_row_column(DB, "products", l["productId"], "inventory", l["quantity"], min=0)
+                if l.get("variantId"):  # keep the variant's own count in step
+                    p = self.db.get_row(DB, "products", l["productId"])
+                    vs = _variants(p)
+                    for v in vs:
+                        if v.get("id") == l["variantId"]:
+                            v["inventory"] = max(0, int(v.get("inventory") or 0) - l["quantity"])
+                    self.db.update_row(DB, "products", l["productId"], {"variants": json.dumps(vs)})
             except AppwriteException:
                 pass  # product deleted since checkout; the order still stands
         if a(co, "discountId"):

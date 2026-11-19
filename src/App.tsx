@@ -6,6 +6,7 @@ import StoresHome from "./pages/StoresHome";
 import StoreSettings from "./pages/StoreSettings";
 import Account from "./pages/Account";
 import Finance from "./pages/Finance";
+import Import from "./pages/Import";
 import GoogleCallback from "./pages/GoogleCallback";
 import Layout from "./components/Layout";
 import { Loading } from "./components/ui";
@@ -65,6 +66,7 @@ function StoreRoutes() {
       <Route element={<Layout />}>
         <Route index element={<HomePage />} />
         <Route path="settings" element={<StoreSettings />} />
+        <Route path="import" element={<Import />} />
         <Route path="orders" element={<Orders />} />
         <Route path="orders/drafts" element={<Orders key="drafts" drafts />} />
         <Route path="orders/abandoned" element={<Abandoned />} />

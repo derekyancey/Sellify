@@ -21,7 +21,13 @@ export interface Site extends Base {
 }
 export type EmailStatus = "none" | "pending" | "verified" | "failed";
 
-export type ProductStatus = "active" | "draft" | "archived";
+export type ProductStatus = "active" | "draft" | "archived" | "unlisted";
+export interface ProductImage { src: string; alt?: string | null; original?: string }
+export interface Variant {
+  id: string; title: string; options?: Record<string, string>; sku?: string | null; price: number; compareAtPrice?: number | null;
+  inventory: number; tracked?: boolean; barcode?: string | null; grams?: number; requiresShipping?: boolean; taxable?: boolean;
+  costPerItem?: number | null; image?: string | null;
+}
 export interface Product extends Base {
   siteId: string;
   title: string;
@@ -32,12 +38,16 @@ export interface Product extends Base {
   inventory: number;
   status: ProductStatus;
   imageUrl?: string;
+  // richer catalog data (imported from Shopify, or edited here)
+  handle?: string; vendor?: string; productType?: string; tags?: string[];
+  images?: ProductImage[]; variants?: Variant[]; seoTitle?: string; seoDescription?: string;
+  tracksInventory?: boolean; costPerItem?: number; externalId?: string; source?: string;
 }
 
 export interface Customer extends Base {
   siteId: string;
   name: string;
-  email: string;
+  email?: string;               // a few imported customers only have a phone / Shopify ID
   phone?: string;
   ordersCount: number;
   totalSpent: number;
@@ -45,7 +55,11 @@ export interface Customer extends Base {
   lastOrderAt?: string;
   welcomedAt?: string;
   winbackAt?: string;
+  firstName?: string; lastName?: string; acceptsSms?: boolean; address?: Address | null; tags?: string[]; note?: string;
+  taxExempt?: boolean; unsubscribedAt?: string; externalId?: string; source?: string;
 }
+export interface Address { name?: string | null; company?: string | null; address1?: string | null; address2?: string | null; city?: string | null;
+  province?: string | null; provinceCode?: string | null; zip?: string | null; country?: string | null; countryCode?: string | null; phone?: string | null }
 
 export type AutomationType = "abandoned_cart" | "welcome" | "winback";
 export interface Automation extends Base {
@@ -59,10 +73,10 @@ export interface Automation extends Base {
   sentCount: number;
 }
 
-export type FinancialStatus = "pending" | "paid" | "refunded";
-export type FulfillmentStatus = "unfulfilled" | "fulfilled" | "cancelled";
-export type PaymentProvider = "manual" | "stripe" | "paypal";
-export interface LineItem { productId: string; title: string; quantity: number; price: number }
+export type FinancialStatus = "pending" | "paid" | "partially_refunded" | "refunded" | "voided";
+export type FulfillmentStatus = "unfulfilled" | "partial" | "fulfilled" | "cancelled";
+export type PaymentProvider = "manual" | "stripe" | "paypal" | "shopify";
+export interface LineItem { productId: string | null; variantId?: string | null; title: string; quantity: number; price: number; sku?: string | null; discount?: number | null }
 export interface Order extends Base {
   siteId: string;
   number: number;
@@ -77,7 +91,14 @@ export interface Order extends Base {
   paymentRef?: string;              // Stripe PaymentIntent id or PayPal capture id
   discountCode?: string;
   discountAmount?: number;
+  // imported order details
+  placedAt?: string; externalId?: string; subtotal?: number; shippingTotal?: number; taxTotal?: number; refundedAmount?: number;
+  cancelledAt?: string; currency?: string; billingAddress?: Address | null; shippingAddress?: Address | null;
+  paymentMethod?: string; source?: string; tags?: string[];
 }
+
+/** When the order was placed: the original Shopify date for imported orders. */
+export const orderDate = (o: Order) => o.placedAt || o.$createdAt;
 
 export interface Collection extends Base {
   siteId: string;

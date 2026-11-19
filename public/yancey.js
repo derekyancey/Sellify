@@ -8,9 +8,11 @@
  *         data-success-url="/thank-you"></script>
  *
  *   await Yancey.products()                     -> active products for this site
- *   Yancey.cart.add(productId, qty) / .remove(productId) / .setQuantity(id, n) / .items() / .count() / .clear()
+ *   Yancey.cart.add(productId, qty, variantId?) / .remove(productId, variantId?) / .setQuantity(id, n, variantId?) / .items() / .count() / .clear()
+ *     (products with several variants need a variantId: product.variants[i].id)
  *   window.addEventListener("yancey:cart", e => e.detail)   // fires on every cart change
  *   await Yancey.config()                       -> { stripe: bool, paypal: bool }
+ *   await Yancey.product("handle-or-id")         -> one product (works for unlisted ones too), with .variants and .images
  *   await Yancey.collection("best-sellers")     -> { title, description, products }
  *   await Yancey.discount("WELCOME10")          -> { subtotal, discount: { code, amount }, total } or throws
  *   await Yancey.checkout("stripe" | "paypal", { email, discountCode, acceptsMarketing })
@@ -44,16 +46,21 @@
   var cart = {
     items: function () { return store(true); },
     count: function () { return cart.items().reduce(function (n, i) { return n + i.quantity; }, 0); },
-    setQuantity: function (productId, quantity) {
-      var items = cart.items().filter(function (i) { return i.productId !== productId; });
-      if (quantity > 0) items.push({ productId: productId, quantity: Math.min(100, Math.floor(quantity)) });
-      store(false, items); emit(items); return items;
+    setQuantity: function (productId, quantity, variantId) {
+      var same = function (i) { return i.productId === productId && (i.variantId || null) === (variantId || null); };
+      var items = cart.items(), at = items.findIndex(same), next = items.filter(function (i) { return !same(i); });
+      if (quantity > 0) {
+        var line = { productId: productId, quantity: Math.min(100, Math.floor(quantity)) };
+        if (variantId) line.variantId = variantId;
+        next.splice(at < 0 ? next.length : at, 0, line);  // keep the line's position in the cart
+      }
+      store(false, next); emit(next); return next;
     },
-    add: function (productId, quantity) {
-      var cur = cart.items().find(function (i) { return i.productId === productId; });
-      return cart.setQuantity(productId, (cur ? cur.quantity : 0) + (quantity || 1));
+    add: function (productId, quantity, variantId) {
+      var cur = cart.items().find(function (i) { return i.productId === productId && (i.variantId || null) === (variantId || null); });
+      return cart.setQuantity(productId, (cur ? cur.quantity : 0) + (quantity == null ? 1 : quantity), variantId);
     },
-    remove: function (productId) { return cart.setQuantity(productId, 0); },
+    remove: function (productId, variantId) { return cart.setQuantity(productId, 0, variantId); },
     clear: function () { store(false, []); emit([]); },
   };
 
@@ -79,10 +86,25 @@
     return json.rows;
   }
 
-  function products(ids) {
-    var q = [{ method: "equal", attribute: "siteId", values: [cfg.site] }, { method: "equal", attribute: "status", values: ["active"] }, { method: "limit", values: [100] }];
-    if (ids) q.push({ method: "equal", attribute: "$id", values: ids.length ? ids : ["-"] });
-    return rows("products", q);
+  function parse(p) {
+    ["variants", "images", "tags"].forEach(function (k) { if (typeof p[k] === "string") { try { p[k] = JSON.parse(p[k]); } catch (e) { p[k] = []; } } });
+    return p;
+  }
+
+  // Active products for listings; collections (by id) may also include unlisted ones, which are buyable by link.
+  async function products(ids) {
+    var q = [{ method: "equal", attribute: "siteId", values: [cfg.site] }, { method: "limit", values: [100] }];
+    q.push(ids ? { method: "equal", attribute: "$id", values: ids.length ? ids : ["-"] } : { method: "equal", attribute: "status", values: ["active"] });
+    var list = (await rows("products", q)).map(parse);
+    return ids ? list.filter(function (p) { return p.status === "active" || p.status === "unlisted"; }) : list;
+  }
+
+  async function product(handleOrId) {
+    var q = [{ method: "equal", attribute: "siteId", values: [cfg.site] }, { method: "equal", attribute: "handle", values: [handleOrId] }, { method: "limit", values: [1] }];
+    var hit = await rows("products", q);
+    if (!hit.length) hit = (await products([handleOrId]));
+    var p = hit[0] && parse(hit[0]);
+    return p && (p.status === "active" || p.status === "unlisted") ? p : null;
   }
 
   async function collection(handle) {
@@ -106,7 +128,7 @@
       if (!raw) return;
       var json = atob(raw.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((raw.length + 3) % 4));
       var items = JSON.parse(json).filter(function (i) { return i && typeof i.productId === "string" && i.quantity > 0; })
-        .map(function (i) { return { productId: i.productId, quantity: Math.min(100, Math.floor(i.quantity)) }; });
+        .map(function (i) { var l = { productId: i.productId, quantity: Math.min(100, Math.floor(i.quantity)) }; if (i.variantId) l.variantId = i.variantId; return l; });
       store(false, items); setTimeout(function () { emit(items); });
       p.delete("yancey_cart");
       history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : "") + location.hash);
@@ -138,5 +160,5 @@
     return null;
   }
 
-  window.Yancey = { cart: cart, products: function () { return products(); }, collection: collection, discount: discount, checkout: checkout, handleReturn: handleReturn, config: function () { return call("/config", {}); }, settings: cfg };
+  window.Yancey = { cart: cart, products: function () { return products(); }, product: product, collection: collection, discount: discount, checkout: checkout, handleReturn: handleReturn, config: function () { return call("/config", {}); }, settings: cfg };
 })();

@@ -42,6 +42,21 @@ D = lambda key, req=False: ("datetime", key, req, {})
 SA = lambda key, size=36: ("varchar", key, False, {"size": size, "array": True})
 E = lambda key, elements, default: ("enum", key, False, {"elements": elements, "default": default})
 
+PRODUCT_STATUSES = ["active", "draft", "archived", "unlisted"]
+FINANCIAL_STATUSES = ["pending", "paid", "partially_refunded", "refunded", "voided"]
+FULFILLMENT_STATUSES = ["unfulfilled", "partial", "fulfilled", "cancelled"]
+PAYMENT_PROVIDERS = ["manual", "stripe", "paypal", "shopify"]
+
+# Changes to columns that already exist on older installs (safe to re-run).
+MIGRATIONS = [
+    ("customers", "email", lambda db: db.update_varchar_column(DB_ID, "customers", "email", False, None)),
+    ("orders", "discountCode", lambda db: db.update_varchar_column(DB_ID, "orders", "discountCode", False, None, size=64)),
+    ("products", "status", lambda db: db.update_enum_column(DB_ID, "products", "status", PRODUCT_STATUSES, False, "draft")),
+    ("orders", "financialStatus", lambda db: db.update_enum_column(DB_ID, "orders", "financialStatus", FINANCIAL_STATUSES, False, "pending")),
+    ("orders", "fulfillmentStatus", lambda db: db.update_enum_column(DB_ID, "orders", "fulfillmentStatus", FULFILLMENT_STATUSES, False, "unfulfilled")),
+    ("orders", "paymentProvider", lambda db: db.update_enum_column(DB_ID, "orders", "paymentProvider", PAYMENT_PROVIDERS, False, "manual")),
+]
+
 SCHEMA = {
     "sites": {
         "public_read": False,
@@ -56,23 +71,33 @@ SCHEMA = {
     "products": {
         "public_read": True,  # lets your storefront sites read the catalog with the public Web SDK
         "columns": [S("siteId", 36, True), S("title", 255, True), LT("description"), F("price", True, min=0), F("compareAtPrice", min=0),
-                    S("sku", 64), I("inventory", min=0, default=0), E("status", ["active", "draft", "archived"], "draft"), S("imageUrl", 2048)],
-        "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"])],
+                    S("sku", 64), I("inventory", min=0, default=0), E("status", PRODUCT_STATUSES, "draft"), S("imageUrl", 2048),
+                    # imported / richer catalog data (Shopify-compatible)
+                    S("handle", 255), S("vendor", 255), S("productType", 255), LT("tags"), LT("images"), LT("variants"),
+                    S("seoTitle", 255), S("seoDescription", 1024), B("tracksInventory", default=True), F("costPerItem", min=0),
+                    S("externalId", 64), S("source", 32)],
+        "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"]), ("by_handle", TablesDBIndexType.KEY, ["siteId", "handle"])],
     },
     "customers": {
         "public_read": False,
-        "columns": [S("siteId", 36, True), S("name", 128, True), S("email", 255, True), S("phone", 32),
+        "columns": [S("siteId", 36, True), S("name", 128, True), S("email", 255), S("phone", 32),
                     I("ordersCount", min=0, default=0), F("totalSpent", min=0, default=0), B("acceptsMarketing", default=False),
-                    D("lastOrderAt"), D("welcomedAt"), D("winbackAt")],
+                    D("lastOrderAt"), D("welcomedAt"), D("winbackAt"),
+                    S("firstName", 128), S("lastName", 128), B("acceptsSms", default=False), LT("address"), LT("tags"), LT("note"),
+                    B("taxExempt", default=False), D("unsubscribedAt"), S("externalId", 64), S("source", 32)],
         "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"]), ("by_email", TablesDBIndexType.KEY, ["email"])],
     },
     "orders": {
         "public_read": False,
         "columns": [S("siteId", 36, True), I("number", True, min=0), S("customerId", 36), S("customerName", 128), S("customerEmail", 255),
-                    LT("items"), F("total", True, min=0), E("financialStatus", ["pending", "paid", "refunded"], "pending"),
-                    E("fulfillmentStatus", ["unfulfilled", "fulfilled", "cancelled"], "unfulfilled"),
-                    E("paymentProvider", ["manual", "stripe", "paypal"], "manual"), S("paymentRef", 128),
-                    S("discountCode", 32), F("discountAmount", min=0)],
+                    LT("items"), F("total", True, min=0), E("financialStatus", FINANCIAL_STATUSES, "pending"),
+                    E("fulfillmentStatus", FULFILLMENT_STATUSES, "unfulfilled"),
+                    E("paymentProvider", PAYMENT_PROVIDERS, "manual"), S("paymentRef", 128),
+                    S("discountCode", 64), F("discountAmount", min=0),
+                    # imported order details (Shopify-compatible)
+                    D("placedAt"), S("externalId", 64), F("subtotal", min=0), F("shippingTotal", min=0), F("taxTotal", min=0),
+                    F("refundedAmount", min=0), D("cancelledAt"), S("currency", 8), LT("billingAddress"), LT("shippingAddress"),
+                    S("paymentMethod", 128), S("source", 32), LT("tags")],
         "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"]), ("by_number", TablesDBIndexType.KEY, ["siteId", "number"])],
     },
     # Carts that were sent to Stripe/PayPal. Only the checkout function (server key) touches these.
@@ -189,6 +214,19 @@ def main():
         wait_for_columns(db, table, [c[1] for c in spec["columns"]])
         for key, kind, cols in spec["indexes"]:
             ensure(f"index {key}", lambda: db.create_index(DB_ID, table, key, kind, cols))
+
+    print("Migrations")
+    for table, key, fn in MIGRATIONS:
+        try:
+            fn(db)
+            print(f"  ~ {table}.{key}")
+        except AppwriteException as e:
+            if e.code == 404:
+                print(f"  - {table}.{key} (not found, skipped)")
+            else:
+                raise
+    wait_for_columns(db, "customers", ["email"]); wait_for_columns(db, "orders", ["discountCode", "financialStatus", "fulfillmentStatus", "paymentProvider"])
+    wait_for_columns(db, "products", ["status"])
 
     print("Storage")
     ensure(f"bucket '{BUCKET_ID}' (public read, for product and email images)", lambda: Storage(client).create_bucket(

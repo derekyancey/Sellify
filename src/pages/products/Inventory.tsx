@@ -12,7 +12,7 @@ export default function Inventory() {
   const [lowOnly, setLowOnly] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
-  const rows = useMemo(() => (data ?? []).filter(p => p.status !== "archived" && (!lowOnly || p.inventory < threshold))
+  const rows = useMemo(() => (data ?? []).filter(p => p.status !== "archived" && p.tracksInventory !== false && (!lowOnly || p.inventory < threshold))
     .sort((a, b) => a.inventory - b.inventory), [data, lowOnly, threshold]);
   const changed = Object.keys(edits).filter(id => data?.find(p => p.$id === id)?.inventory !== edits[id]);
 
@@ -27,7 +27,7 @@ export default function Inventory() {
 
   return (
     <>
-      <PageHeader title="Inventory" subtitle="Adjust stock in bulk. Paid orders reduce stock automatically."
+      <PageHeader title="Inventory" subtitle={`Adjust stock in bulk. Paid orders reduce stock automatically.${(data ?? []).some(p => p.tracksInventory === false) ? ` ${(data ?? []).filter(p => p.tracksInventory === false).length} products don't track stock (e.g. digital) and aren't listed.` : ""}`}
         actions={<><Button disabled={!changed.length} onClick={() => setEdits({})}>Discard</Button><Button variant="primary" disabled={!changed.length} loading={busy} onClick={save}>Save {changed.length || ""} change{changed.length === 1 ? "" : "s"}</Button></>} />
       {msg && <div className={`mb-4 rounded-lg px-3 py-2 text-sm ${msg.startsWith("Error") ? "bg-red-50 text-red-800" : "bg-emerald-50 text-emerald-800"}`}>{msg}</div>}
       <Card>

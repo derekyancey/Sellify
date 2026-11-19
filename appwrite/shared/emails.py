@@ -134,7 +134,8 @@ def test_email(site):
 # --------------------------------------------------------------------------- abandoned cart
 def cart_link(site, items):
     """Link back to the store with the cart encoded; yancey.js restores it from ?yancey_cart=."""
-    raw = json.dumps([{"productId": i["productId"], "quantity": i["quantity"]} for i in items], separators=(",", ":"))
+    raw = json.dumps([{"productId": i["productId"], "quantity": i["quantity"], **({"variantId": i["variantId"]} if i.get("variantId") else {})}
+                      for i in items], separators=(",", ":"))
     return f"https://{get(site, 'domain')}/?yancey_cart=" + base64.urlsafe_b64encode(raw.encode()).decode().rstrip("=")
 
 

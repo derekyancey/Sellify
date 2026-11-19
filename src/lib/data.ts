@@ -23,14 +23,17 @@ function saveDemo(db: DemoDB) { try { localStorage.setItem(DEMO_KEY, JSON.string
 export function resetDemo() { try { localStorage.removeItem(DEMO_KEY); } catch { /* ignore */ } }
 
 // Some columns hold JSON in Appwrite (longtext); (de)serialize them here.
-const JSON_COLS: Partial<Record<TableName, string[]>> = { orders: ["items"], checkouts: ["items"], segments: ["rules"] };
+const JSON_COLS: Partial<Record<TableName, string[]>> = {
+  orders: ["items", "billingAddress", "shippingAddress", "tags"], checkouts: ["items"], segments: ["rules"],
+  products: ["images", "variants", "tags"], customers: ["address", "tags"],
+};
 const toRow = (t: TableName, data: any) => {
   const out = { ...data };
   for (const c of JSON_COLS[t] ?? []) if (out[c] !== undefined && typeof out[c] !== "string") out[c] = JSON.stringify(out[c]);
   return out;
 };
 const fromRow = (t: TableName, row: any) => {
-  for (const c of JSON_COLS[t] ?? []) if (typeof row[c] === "string") { try { row[c] = JSON.parse(row[c]); } catch { row[c] = []; } }
+  for (const c of JSON_COLS[t] ?? []) if (typeof row[c] === "string") { try { row[c] = JSON.parse(row[c]); } catch { row[c] = null; } }
   return row;
 };
 const strip = (data: any) => {
@@ -43,12 +46,22 @@ export async function list<T extends TableName>(table: T, siteId?: string): Prom
   if (isDemo) {
     const rows = demoDb()[table] as RowOf<T>[];
     return (siteId ? rows.filter((r: any) => r.siteId === siteId) : rows)
-      .slice().sort((a, b) => b.$createdAt.localeCompare(a.$createdAt));
+      .slice().sort((a: any, b: any) => (b.placedAt || b.$createdAt).localeCompare(a.placedAt || a.$createdAt));
   }
-  const queries = [Query.orderDesc("$createdAt"), Query.limit(1000)];
-  if (siteId) queries.push(Query.equal("siteId", siteId));
-  const res = await tables.listRows({ databaseId: config.databaseId, tableId: table, queries });
-  return res.rows.map(r => fromRow(table, r)) as unknown as RowOf<T>[];
+  // Page through everything (stores can have tens of thousands of customers).
+  const out: any[] = [];
+  let cursor: string | undefined;
+  for (;;) {
+    const queries = [Query.orderDesc("$createdAt"), Query.limit(1000)];
+    if (siteId) queries.push(Query.equal("siteId", siteId));
+    if (cursor) queries.push(Query.cursorAfter(cursor));
+    const res = await tables.listRows({ databaseId: config.databaseId, tableId: table, queries });
+    out.push(...res.rows.map(r => fromRow(table, r)));
+    if (res.rows.length < 1000) break;
+    cursor = res.rows[res.rows.length - 1].$id;
+  }
+  if (table === "orders") out.sort((a, b) => (b.placedAt || b.$createdAt).localeCompare(a.placedAt || a.$createdAt));
+  return out as unknown as RowOf<T>[];
 }
 
 export async function create<T extends TableName>(table: T, data: Omit<RowOf<T>, "$id" | "$createdAt">): Promise<RowOf<T>> {

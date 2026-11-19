@@ -1,3 +1,4 @@
+import { orderDate } from "../lib/types";
 import { Link } from "react-router-dom";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AlertTriangle, CheckCircle2, Circle } from "lucide-react";
@@ -28,13 +29,13 @@ export default function HomePage() {
   if (store.loading || !store.data) return <Loading />;
   const { orders, products } = store.data;
   const since = daysAgo(30).toISOString();
-  const recent = orders.filter(o => o.$createdAt >= since);
+  const recent = orders.filter(o => orderDate(o) >= since);
   const paid = recent.filter(o => o.financialStatus === "paid");
   const revenue = paid.reduce((t, o) => t + o.total, 0);
 
   const byDay = new Map<string, number>();
   for (let i = 29; i >= 0; i--) byDay.set(ymd(daysAgo(i)), 0);
-  paid.forEach(o => { const d = o.$createdAt.slice(0, 10); if (byDay.has(d)) byDay.set(d, byDay.get(d)! + o.total); });
+  paid.forEach(o => { const d = orderDate(o).slice(0, 10); if (byDay.has(d)) byDay.set(d, byDay.get(d)! + o.total); });
   const chart = [...byDay].map(([d, v]) => ({ date: d.slice(5), revenue: Math.round(v * 100) / 100 }));
 
   const sold = new Map<string, number>();
@@ -90,7 +91,7 @@ export default function HomePage() {
         <Table head={["Order", "Date", "Customer", "Payment", "Fulfillment", "Total"]} empty={!orders.length}>
           {orders.slice(0, 6).map(o => (
             <tr key={o.$id}>
-              <Td className="font-medium">#{o.number}</Td><Td>{date(o.$createdAt)}</Td><Td>{o.customerName}</Td>
+              <Td className="font-medium">#{o.number}</Td><Td>{date(orderDate(o))}</Td><Td>{o.customerName}</Td>
               <Td><FinStatus s={o.financialStatus} /></Td><Td><FulStatus s={o.fulfillmentStatus} /></Td>
               <Td className="tabular-nums">{money(o.total, s.currency)}</Td>
             </tr>

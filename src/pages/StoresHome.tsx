@@ -1,3 +1,4 @@
+import { orderDate } from "../lib/types";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowRight, Globe, Plus } from "lucide-react";
@@ -26,7 +27,7 @@ export default function StoresHome() {
     const since = daysAgo(30).toISOString();
     const by: Record<string, { revenue: number; orders: number }> = {};
     for (const o of orders.data ?? []) {
-      if (o.$createdAt < since) continue;
+      if (orderDate(o) < since) continue;
       const s = (by[o.siteId] ??= { revenue: 0, orders: 0 });
       s.orders++; if (o.financialStatus === "paid") s.revenue += o.total;
     }

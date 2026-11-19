@@ -12,6 +12,8 @@ Routes (all POST with a JSON body, called via functions.createExecution from the
   /seo/crawl
   /payments/refund
   /email/setup | /email/status | /email/test | /email/order | /email/recovery | /email/campaign
+  /import/products | /import/customers | /import/orders   (Shopify CSV rows; idempotent upserts)
+  /import/images | /import/summary
   /finance/processors   (Stripe + PayPal balances, fees, payouts; read-only)
   /automations/preview | /automations/run   (also runs on this function's hourly schedule)
 
@@ -38,6 +40,8 @@ import finance  # noqa: E402
 import emails  # noqa: E402
 import google_apis  # noqa: E402
 import google_oauth  # noqa: E402
+import imagecopy  # noqa: E402
+import importer  # noqa: E402
 from errors import HttpError  # noqa: E402
 
 CF = "https://api.cloudflare.com/client/v4"
@@ -514,6 +518,41 @@ def email_campaign(b):
     return {"ok": failed == 0, "sent": sent, "failed": failed, "error": last_error}
 
 
+def _import(kind):
+    def handler(b):
+        site_id, rows = need(b, "siteId", "rows")
+        if not isinstance(rows, list) or len(rows) > 2000:
+            raise HttpError("Send between 1 and 2000 rows per request")
+        db = _db()
+        try:
+            db.get_row(os.environ.get("APPWRITE_DATABASE_ID", "yancey"), "sites", site_id)
+        except Exception:  # noqa: BLE001
+            raise HttpError("Unknown store", 404)
+        return importer.run(db, kind, site_id, rows, b.get("options") or {}, os.environ.get("APPWRITE_DATABASE_ID", "yancey"))
+    return handler
+
+
+def import_images(b):
+    from appwrite.services.storage import Storage
+    (site_id,) = need(b, "siteId")
+    return imagecopy.run(_db(), Storage(appwrite_client()), site_id, database_id=os.environ.get("APPWRITE_DATABASE_ID", "yancey"),
+                         bucket=os.environ.get("APPWRITE_BUCKET_ID", "files"),
+                         public_endpoint=os.environ.get("APPWRITE_PUBLIC_ENDPOINT") or os.environ["APPWRITE_FUNCTION_API_ENDPOINT"],
+                         project_id=os.environ["APPWRITE_FUNCTION_PROJECT_ID"], budget_seconds=min(int(b.get("seconds") or 20), 22))
+
+
+def import_summary(b):
+    """Counts for the Import page: what's in this store now and how many Shopify-hosted images remain."""
+    from appwrite.query import Query
+    (site_id,) = need(b, "siteId")
+    db, DBID = _db(), os.environ.get("APPWRITE_DATABASE_ID", "yancey")
+    count = lambda table, *q: db.list_rows(DBID, table, queries=[Query.equal("siteId", site_id), *q, Query.limit(1)], total=True).total
+    w = importer.Writer(db, DBID)
+    products = w.all_for_site("products", site_id)
+    return {"products": len(products), "customers": count("customers"), "subscribers": count("customers", Query.equal("acceptsMarketing", True)),
+            "orders": count("orders"), "imagesOnShopify": sum(len(imagecopy.pending_urls(p)) for p in products)}
+
+
 def finance_processors(b):
     return finance.summary(max(1, min(int(b.get("days") or 30), 366)))
 
@@ -558,6 +597,11 @@ ROUTES = {
     "/email/order": email_order,
     "/email/recovery": email_recovery,
     "/email/campaign": email_campaign,
+    "/import/products": _import("products"),
+    "/import/customers": _import("customers"),
+    "/import/orders": _import("orders"),
+    "/import/images": import_images,
+    "/import/summary": import_summary,
     "/finance/processors": finance_processors,
     "/automations/preview": automations_preview,
     "/automations/run": automations_run,

@@ -52,7 +52,7 @@ export function buildDemo() {
         const total = items.reduce((t, li) => t + li.price * li.quantity, 0);
         const financialStatus = rand() > 0.94 ? "refunded" : rand() > 0.1 ? "paid" : "pending";
         const fulfillmentStatus = d > 3 ? "fulfilled" : rand() > 0.5 ? "fulfilled" : "unfulfilled";
-        orders.push({ $id: id(), $createdAt: ago(d), siteId: s.$id, number: number++, customerId: c.$id, customerName: c.name, customerEmail: c.email,
+        orders.push({ $id: id(), $createdAt: ago(d), siteId: s.$id, number: number++, customerId: c.$id, customerName: c.name, customerEmail: c.email ?? "",
           items, total, financialStatus, fulfillmentStatus, ...(rand() > 0.35
             ? { paymentProvider: "stripe" as const, paymentRef: "pi_demo" + id().slice(0, 10) }
             : { paymentProvider: "paypal" as const, paymentRef: "CAPDEMO" + id().slice(0, 8).toUpperCase() }) });
@@ -102,6 +102,14 @@ export function demoOps(path: string, body: any): any {
       { siteId: body.siteId, type: "abandoned_cart", eligible: 2, sent: 2 }, { siteId: body.siteId, type: "welcome", eligible: 3, sent: 3 }, { siteId: body.siteId, type: "winback", eligible: 1, sent: 1 }] };
     case "/email/campaign": return { ok: true, sent: (body.recipients ?? []).length, failed: 0 };
     case "/email/recovery": return { ok: true, id: "em_demo" };
+    case "/import/summary": return { products: 11, customers: 36, subscribers: 22, orders: 121, imagesOnShopify: 3 };
+    case "/import/products": case "/import/orders": case "/import/customers": {
+      const key = path.endsWith("products") ? "Handle" : path.endsWith("orders") ? "Name" : null;
+      const n = key ? new Set((body.rows ?? []).map((r: any) => r[key])).size : (body.rows ?? []).length;
+      return { records: n, added: n, updated: 0, problems: [], problemCount: 0,
+        subscribers: path.endsWith("customers") ? (body.rows ?? []).filter((r: any) => /yes/i.test(r["Accepts Email Marketing"] ?? "")).length : undefined };
+    }
+    case "/import/images": return { copied: 3, reused: 0, failed: [], failedCount: 0, done: true, remaining: 0 };
     case "/finance/processors": return { days: body.days,
       stripe: { available: [{ currency: "USD", amount: 1284.5 }], pending: [{ currency: "USD", amount: 312.2 }],
         period: { USD: { gross: 3120, fees: 98.4, refunds: 64, net: 2957.6, payouts: 2600 } },

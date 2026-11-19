@@ -199,6 +199,19 @@ Re-run `python appwrite/setup.py` after pulling: it adds the new tables (collect
 - **Product feed:** the checkout function serves `/feed.xml?site=<id>` in Google Merchant Center format, which TikTok, Pinterest and Meta also accept. Set `VITE_CHECKOUT_PUBLIC_URL` so the dashboard can show the URL. Set each site's product page path under **Sales channels → Google & YouTube**. Products without an image are left out, because Google requires one.
 - **Shared code:** `appwrite/shared/` is the single source for code used by several functions. Run `python appwrite/sync_shared.py` after editing it, and `--check` before deploying.
 
+## Moving from Shopify: Import data
+
+Each store has **Import data** (sidebar, and the Import buttons on Products and Customers). Drop in Shopify exports: *Products → Export*, *Customers → Export*, *Orders → Export*, choosing "All" and CSV. Zips from Shopify's email are fine too. Yancey recognises each file, shows what's in it, and imports in the right order (products → customers → orders).
+
+- **Safe to repeat / always latest:** products are matched by **handle**, customers by **email** (or Shopify ID if there's no email), and orders by **Shopify order ID**. Every record has a stable ID, and rows are written with Appwrite's bulk upsert, so uploading the same or a newer export updates existing records to the latest data. Nothing is duplicated.
+- **Email subscribers:** "Accepts Email Marketing" becomes the customer's subscribed flag. A customers file can go into **several stores at once**, optionally **subscribers only**. Anyone who unsubscribed through Yancey (email link, or unticked on the Customers page) is **never re-subscribed** by an import.
+- **Kept from Shopify:**
+  - **Products:** variants with their own prices, SKUs and stock; every image; tags; vendor and type; SEO title and description; the "unlisted" status; and whether stock is tracked (digital products aren't).
+  - **Orders:** original order numbers (new orders continue after the highest), original dates, line items linked to products and variants, subtotal, discounts, shipping, tax, refunds, cancellations, billing address and tags.
+  - **Customers:** names, phone, default address, tags, SMS consent, order count and amount spent.
+- **No side effects:** imports never send email or change stock.
+- **Images:** step 3, "Copy images off Shopify", moves every product, variant and description image from Shopify's CDN into Appwrite Storage, in resumable ~20-second batches. Re-imports keep the copied images.
+
 ## Finance
 
 Each store's **Finance** page shows that store's sales, refunds, discounts, net and split by payment method. These come from Yancey's own orders, with a 30-day, 90-day or 1-year view and **Export for accountant** (CSV). Below that, **Payment accounts** shows your Stripe and PayPal balances, fees, refunds and recent payouts. Those are read-only, come from the processors, and are shared by every store that uses the account. They appear once `STRIPE_SECRET_KEY` / `PAYPAL_CLIENT_ID` + `PAYPAL_CLIENT_SECRET` are set on `site-ops`. PayPal's figures need the *Transaction search* permission on the PayPal app.
