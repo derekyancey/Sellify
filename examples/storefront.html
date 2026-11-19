@@ -4,6 +4,8 @@
   1. Replace the data-* values (Yancey → Sites & settings → "Sell on your site" shows them filled in).
   2. Add this site's domain as a Web platform in your Appwrite project (needed for browser requests).
   This page is also its own success page: it passes its own URL as successUrl, so Stripe and PayPal send buyers back here.
+  Free carts (free products or a 100% code) show an email box and "Get it free" instead of the payment buttons.
+  Digital products' download links appear here after checkout, and in the receipt email.
 -->
 <html lang="en">
 <head>
@@ -13,6 +15,7 @@
   <style>
     :root { --ink: #18181b; --muted: #71717a; --line: #e4e4e7; --bg: #fafafa; }
     * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
     body { margin: 0; font: 15px/1.5 system-ui, sans-serif; color: var(--ink); background: var(--bg); }
     header { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--line); background: #fff; }
     main { max-width: 1000px; margin: 0 auto; padding: 16px; }
@@ -48,9 +51,16 @@
     <div class="line muted" id="discountLine" hidden><span id="discountLabel"></span><span id="discountAmt"></span></div>
     <div class="line"><strong>Total</strong><strong id="total">$0.00</strong></div>
     <label class="muted"><input type="checkbox" id="optin" /> Email me news and offers (you can unsubscribe anytime)</label>
-    <button id="payStripe">Pay with card, Apple Pay or Google Pay</button>
-    <button id="payPaypal" class="paypal">PayPal</button>
-    <p class="muted">You'll be redirected to a secure Stripe or PayPal page to pay.</p>
+    <div id="paid">
+      <button id="payStripe">Pay with card, Apple Pay or Google Pay</button>
+      <button id="payPaypal" class="paypal">PayPal</button>
+      <p class="muted">You'll be redirected to a secure Stripe or PayPal page to pay.</p>
+    </div>
+    <form id="free" hidden style="display:flex;flex-direction:column;gap:8px">
+      <input id="freeEmail" type="email" required placeholder="Your email" autocomplete="email" style="padding:8px;border:1px solid var(--line);border-radius:8px;font:inherit" />
+      <button id="getFree">Get it free</button>
+      <p class="muted">We'll email you your order and any download links.</p>
+    </form>
   </aside>
 
   <script src="https://YOUR-YANCEY-DOMAIN/yancey.js"
@@ -84,8 +94,10 @@
       if (applied && !items.length) applied = null;
       $("discountLine").hidden = !applied;
       if (applied) { $("discountLabel").textContent = `Discount (${applied.code})`; $("discountAmt").textContent = `−${fmt(applied.amount)}`; total -= applied.amount; }
-      $("total").textContent = fmt(total);
+      $("total").textContent = fmt(Math.max(0, total));
       $("payStripe").disabled = $("payPaypal").disabled = !items.length;
+      const free = items.length > 0 && total <= 0;  // the server re-checks this
+      $("paid").hidden = free; $("free").hidden = !free;
     }
 
     async function pay(provider, btn) {
@@ -98,7 +110,10 @@
       try {
         const result = await Yancey.handleReturn();
         if (result) {
-          notice(result.number ? `Thank you! Your order #${result.number} is confirmed.` : "Thank you! Your payment went through and your order is confirmed.");
+          notice(result.number ? `Thank you! Your order #${result.number} is confirmed.` : "Thank you! Your order is confirmed.");
+          if (result.downloads && result.downloads.length) $("notice").innerHTML += `<div class="msg"><strong>Your downloads</strong>` +
+            result.downloads.map((d) => `<div class="line"><span>${esc(d.name)}</span><a href="${esc(d.url)}">Download</a></div>`).join("") +
+            `<p class="muted">We've also emailed you these links.</p></div>`;
           history.replaceState(null, "", location.pathname);
         }
       } catch (e) { notice(`We couldn't confirm your payment: ${e.message}`, true); }
@@ -112,7 +127,7 @@
           ${p.imageUrl ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.title)}">` : '<div class="ph"></div>'}
           <div class="body">
             <strong>${esc(p.title)}</strong>
-            <span class="price">${fmt(p.price)}${p.compareAtPrice ? `<s>${fmt(p.compareAtPrice)}</s>` : ""}</span>
+            <span class="price">${p.price ? fmt(p.price) : "Free"}${p.compareAtPrice ? `<s>${fmt(p.compareAtPrice)}</s>` : ""}</span>
             ${(p.variants || []).length > 1 ? `<select data-variant-for="${p.$id}">${p.variants.map((v) => `<option value="${esc(v.id)}">${esc(v.title)} · ${fmt(v.price)}</option>`).join("")}</select>` : ""}
             ${soldOut(p) ? "<button disabled>Sold out</button>" : `<button data-add="${p.$id}">Add to cart</button>`}
           </div>
@@ -146,6 +161,11 @@
     $("closeCart").onclick = () => $("cart").classList.remove("open");
     $("payStripe").onclick = (e) => pay("stripe", e.currentTarget);
     $("payPaypal").onclick = (e) => pay("paypal", e.currentTarget);
+    $("free").onsubmit = async (e) => {
+      e.preventDefault(); $("getFree").disabled = true;
+      try { await Yancey.checkout("free", { email: $("freeEmail").value, successUrl: location.pathname, discountCode: applied?.code, acceptsMarketing: $("optin").checked }); }
+      catch (err) { notice(err.message, true); $("cart").classList.remove("open"); $("getFree").disabled = false; }
+    };
     init().catch((e) => notice(e.message, true));
   </script>
 </body>

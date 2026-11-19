@@ -3,10 +3,11 @@ import { useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Download, Plus, Trash2, Upload } from "lucide-react";
 import { storeSlug, useSite, useStorePath } from "../context/Site";
-import { createOrder, list, ops, update } from "../lib/data";
+import { createOrder, list, ops, orderDownloads, update } from "../lib/data";
+import { config } from "../lib/appwrite";
 import { useAsync } from "../lib/useAsync";
 import { date, dateTime, money } from "../lib/format";
-import type { Address, FinancialStatus, FulfillmentStatus, LineItem, Order, PaymentProvider } from "../lib/types";
+import type { Address, Download as DownloadLink, FinancialStatus, FulfillmentStatus, LineItem, Order, PaymentProvider } from "../lib/types";
 import { Badge, Button, Card, ErrorBox, Field, Input, Loading, Modal, PageHeader, Select, Table, Td, cx } from "../components/ui";
 
 const label = (s: string) => (s[0].toUpperCase() + s.slice(1)).replace(/_/g, " ");
@@ -17,7 +18,7 @@ export const FulStatus = ({ s }: { s: FulfillmentStatus }) =>
 const addressLines = (a?: Address | null) => !a ? [] : [a.name, a.company, a.address1, a.address2,
   [a.city, a.provinceCode || a.province, a.zip].filter(Boolean).join(" "), a.country || a.countryCode, a.phone].filter(Boolean) as string[];
 
-const providerLabel: Record<PaymentProvider, string> = { stripe: "Stripe", paypal: "PayPal", manual: "Manual", shopify: "Shopify (imported)" };
+export const providerLabel: Record<PaymentProvider, string> = { stripe: "Stripe", paypal: "PayPal", manual: "Manual", shopify: "Shopify (imported)", free: "Free checkout" };
 export const paymentLink = (o: Order) =>
   o.paymentProvider === "stripe" && o.paymentRef ? `https://dashboard.stripe.com/payments/${o.paymentRef}`
   : o.paymentProvider === "paypal" && o.paymentRef ? `https://www.paypal.com/activity/payment/${o.paymentRef}` : null;
@@ -75,6 +76,10 @@ export default function Orders({ drafts = false }: { drafts?: boolean }) {
     catch (e: any) { setActionError(e.message); } finally { setBusy(false); }
   };
   const refund = async (o: Order) => {
+    if (o.paymentProvider === "free") {
+      if (confirm("Void this free order? Its download links stop working.")) await setStatus(o, { financialStatus: "voided" });
+      return;
+    }
     const auto = (o.paymentProvider === "stripe" || o.paymentProvider === "paypal") && o.paymentRef;
     const msg = auto ? `Refund ${money(o.total, s.currency)} to ${o.customerName} through ${providerLabel[o.paymentProvider!]}?`
       : o.paymentProvider === "shopify" ? "Mark this order refunded in Yancey? It was paid through Shopify, so issue the refund in your Shopify admin."
@@ -122,14 +127,14 @@ export default function Orders({ drafts = false }: { drafts?: boolean }) {
       <Modal open={!!selected} onClose={() => { setSelected(null); setActionError(null); }} title={selected ? `Order #${selected.number}` : ""}
         footer={selected && <>
           {selected.financialStatus === "pending" && <Button disabled={busy} onClick={() => setStatus(selected, { financialStatus: "paid" })}>Mark as paid</Button>}
-          {selected.financialStatus === "paid" && <Button variant="ghost" disabled={busy} onClick={() => refund(selected)}>Refund</Button>}
+          {selected.financialStatus === "paid" && <Button variant="ghost" disabled={busy} onClick={() => refund(selected)}>{selected.paymentProvider === "free" ? "Void" : "Refund"}</Button>}
           {selected.fulfillmentStatus === "unfulfilled" && <Button variant="ghost" onClick={() => setStatus(selected, { fulfillmentStatus: "cancelled" })}>Cancel</Button>}
           {selected.fulfillmentStatus === "unfulfilled" && <Button variant="primary" loading={busy} onClick={() => fulfil(selected)}>Mark fulfilled</Button>}
         </>}>
         {selected && <>
           {actionError && <ErrorBox error={actionError} />}
           <div className="flex flex-wrap items-center gap-2"><FinStatus s={selected.financialStatus} /><FulStatus s={selected.fulfillmentStatus} /><span className="text-sm text-zinc-500">{dateTime(orderDate(selected))}</span></div>
-          <div className="text-sm text-zinc-600">Paid via <strong>{providerLabel[selected.paymentProvider ?? "manual"]}</strong>
+          <div className="text-sm text-zinc-600">{selected.paymentProvider === "free" ? "Placed through " : "Paid via "}<strong>{providerLabel[selected.paymentProvider ?? "manual"]}</strong>
             {paymentLink(selected) && <> · <a className="underline" href={paymentLink(selected)!} target="_blank" rel="noreferrer">view payment</a></>}</div>
           <div className="text-sm"><div className="font-medium">{selected.customerName}</div><div className="text-zinc-500">{selected.customerEmail}</div></div>
           {selected.fulfillmentStatus === "unfulfilled" && (canEmail ? (
@@ -139,7 +144,7 @@ export default function Orders({ drafts = false }: { drafts?: boolean }) {
             </div>
           ) : <p className="text-xs text-zinc-500">Shipping emails are off. <Link className="underline" to={sp("/settings#email")}>Set up email</Link> to notify customers.</p>)}
           <ul className="divide-y divide-zinc-100 rounded-lg border border-zinc-200 text-sm">
-            {selected.items.map((li, i) => <li key={i} className="flex justify-between gap-2 px-3 py-2"><span>{li.quantity} × {li.title}{li.sku && <span className="ml-1 text-xs text-zinc-400">{li.sku}</span>}</span><span className="tabular-nums">{money(li.price * li.quantity, s.currency)}</span></li>)}
+            {selected.items.map((li, i) => <li key={i} className="flex justify-between gap-2 px-3 py-2"><span>{li.quantity} × {li.title}{li.sku && <span className="ml-1 text-xs text-zinc-400">{li.sku}</span>}{li.digital && <span className="ml-1.5"><Badge tone="blue">digital</Badge></span>}</span><span className="tabular-nums">{money(li.price * li.quantity, s.currency)}</span></li>)}
             {selected.subtotal != null && selected.subtotal !== selected.total && <li className="flex justify-between px-3 py-1.5 text-zinc-600"><span>Subtotal</span><span className="tabular-nums">{money(selected.subtotal, s.currency)}</span></li>}
             {!!selected.discountAmount && <li className="flex justify-between px-3 py-1.5 text-zinc-600"><span>Discount{selected.discountCode ? ` (${selected.discountCode})` : ""}</span><span className="tabular-nums">−{money(selected.discountAmount, s.currency)}</span></li>}
             {!!selected.shippingTotal && <li className="flex justify-between px-3 py-1.5 text-zinc-600"><span>Shipping</span><span className="tabular-nums">{money(selected.shippingTotal, s.currency)}</span></li>}
@@ -147,6 +152,7 @@ export default function Orders({ drafts = false }: { drafts?: boolean }) {
             <li className="flex justify-between px-3 py-2 font-semibold"><span>Total</span><span>{money(selected.total, s.currency)}</span></li>
             {!!selected.refundedAmount && <li className="flex justify-between px-3 py-1.5 text-red-700"><span>Refunded</span><span className="tabular-nums">−{money(selected.refundedAmount, s.currency)}</span></li>}
           </ul>
+          {selected.items.some(i => i.digital) && <OrderDownloads order={selected} canEmail={s.emailStatus === "verified"} />}
           {(addressLines(selected.billingAddress).length > 0 || selected.externalId) && (
             <div className="grid gap-3 text-sm sm:grid-cols-2">
               {addressLines(selected.billingAddress).length > 0 && <div><div className="text-xs font-medium uppercase text-zinc-500">Billing address</div>{addressLines(selected.billingAddress).map((l, i) => <div key={i}>{l}</div>)}</div>}
@@ -161,6 +167,57 @@ export default function Orders({ drafts = false }: { drafts?: boolean }) {
 
       {creating && <CreateOrder draft={drafts} onClose={() => setCreating(false)} onCreated={() => { setCreating(false); reload(); }} />}
     </>
+  );
+}
+
+const linkFor = (d: DownloadLink) => `${config.checkoutPublicUrl || "https://<checkout function domain>"}/download?t=${d.token}`;
+
+/** The buyer's personal download links for this order: see usage, copy, reset, turn off, or email them again. */
+function OrderDownloads({ order, canEmail }: { order: Order; canEmail: boolean }) {
+  const { site } = useSite(); const s = site!;
+  const sp = useStorePath();
+  const { data, loading, error, reload } = useAsync(() => orderDownloads(order.$id, s.$id), [order.$id]);
+  const [msg, setMsg] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const [sending, setSending] = useState(false);
+  const patch = async (d: DownloadLink, data: Partial<DownloadLink>) => { setErr(null); try { await update("downloads", d.$id, data); reload(); } catch (e: any) { setErr(e.message); } };
+  const resend = async () => {
+    setSending(true); setErr(null); setMsg(null);
+    try { await ops("/email/downloads", { site: s, order }); setMsg(`Download links sent to ${order.customerEmail}.`); }
+    catch (e: any) { setErr(e.message); } finally { setSending(false); }
+  };
+  const expired = (d: DownloadLink) => !!d.expiresAt && new Date(d.expiresAt) < new Date();
+  return (
+    <div className="rounded-lg border border-zinc-200 text-sm">
+      <div className="flex items-center justify-between gap-2 border-b border-zinc-100 px-3 py-2">
+        <span className="font-medium">Downloads</span>
+        {canEmail ? <Button disabled={sending || !data?.length || !order.customerEmail} loading={sending} onClick={resend}>Email links again</Button>
+          : <Link className="text-xs underline" to={sp("/settings#email")}>Set up email to resend links</Link>}
+      </div>
+      {(error || err) && <div className="p-2"><ErrorBox error={String(error || err)} /></div>}
+      {msg && <p className="px-3 pt-2 text-xs text-green-700">{msg}</p>}
+      {loading ? <div className="p-3"><Loading /></div> : !data?.length ? <p className="px-3 py-2 text-xs text-zinc-500">No download links were created for this order (the products had no files when it was placed).</p> : (
+        <ul className="divide-y divide-zinc-100">
+          {data.map(d => (
+            <li key={d.$id} className="space-y-1 px-3 py-2">
+              <div className="flex items-center justify-between gap-2"><span className="min-w-0 truncate font-medium">{d.name}</span>
+                {d.revoked ? <Badge tone="red">off</Badge> : expired(d) ? <Badge tone="gray">expired</Badge>
+                  : d.maxDownloads && d.downloadCount >= d.maxDownloads ? <Badge tone="yellow">used up</Badge> : <Badge tone="green">active</Badge>}</div>
+              <div className="text-xs text-zinc-500">
+                Downloaded {d.downloadCount}{d.maxDownloads ? ` of ${d.maxDownloads}` : ""} time{d.downloadCount === 1 ? "" : "s"}
+                {d.lastDownloadAt && `, last ${dateTime(d.lastDownloadAt)}`}{d.expiresAt && ` · ${expired(d) ? "expired" : "expires"} ${date(d.expiresAt)}`}
+              </div>
+              <div className="flex flex-wrap gap-3 text-xs">
+                <button className="underline" onClick={() => { navigator.clipboard?.writeText(linkFor(d)); setMsg("Link copied."); }}>Copy link</button>
+                {(d.downloadCount > 0 || expired(d)) && <button className="underline" onClick={() => patch(d, { downloadCount: 0, ...(expired(d) ? { expiresAt: new Date(Date.now() + 7 * 864e5).toISOString() } : {}) })}>
+                  {expired(d) ? "Reset and extend 7 days" : "Reset count"}</button>}
+                <button className="underline" onClick={() => patch(d, { revoked: !d.revoked })}>{d.revoked ? "Turn back on" : "Turn off"}</button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 

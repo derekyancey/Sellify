@@ -2,6 +2,7 @@
 import datetime as dt
 import json
 import os
+import secrets
 
 from appwrite.client import Client
 from appwrite.exception import AppwriteException
@@ -9,6 +10,7 @@ from appwrite.id import ID
 from appwrite.query import Query
 from appwrite.services.tables_db import TablesDB
 
+import downloads
 from errors import HttpError
 
 DB = os.environ.get("APPWRITE_DATABASE_ID", "yancey")
@@ -59,6 +61,8 @@ class Store:
 
     # ------------------------------------------------------------- cart -> priced line items (never trust client prices)
     def price_cart(self, site_id, items, code=None):
+        """Lines, subtotal, discount and total. The total can be 0 (free products or a 100% code):
+        the payment routes refuse those and /free/checkout takes only those."""
         if not isinstance(items, list) or not items or len(items) > 50:
             raise HttpError("Cart is empty")
         qty = {}
@@ -87,12 +91,11 @@ class Store:
             price = float(v["price"]) if v else float(a(p, "price"))
             title = a(p, "title") + (f" - {v['title']}" if v and v.get("title") and v["title"] != "Default Title" else "")
             lines.append({"productId": pid, "variantId": v["id"] if v else None, "title": title, "quantity": q, "price": round(price, 2),
-                          "imageUrl": (v or {}).get("image") or a(p, "imageUrl") or None, "tracked": tracked})
+                          "imageUrl": (v or {}).get("image") or a(p, "imageUrl") or None, "tracked": tracked,
+                          "digital": bool(downloads.files_of(p))})
         subtotal = round(sum(l["price"] * l["quantity"] for l in lines), 2)
         discount = self.discount(site_id, code, subtotal) if code else None
-        total = round(subtotal - (discount["amount"] if discount else 0), 2)
-        if total <= 0:
-            raise HttpError("Cart total must be above zero")
+        total = max(0.0, round(subtotal - (discount["amount"] if discount else 0), 2))
         return {"lines": lines, "subtotal": subtotal, "discount": discount, "total": total}
 
     def discount(self, site_id, code, subtotal):
@@ -117,12 +120,43 @@ class Store:
 
     # ------------------------------------------------------------- writes
     def create_checkout(self, site_id, provider, cart, currency, email=None, accepts_marketing=False):
+        """Returns (checkoutId, accessKey). The key goes on the buyer's success URL so only they can see the order's downloads."""
         d = cart["discount"] or {}
+        key = secrets.token_urlsafe(24)
         row = self.db.create_row(DB, "checkouts", ID.unique(), {
             "siteId": site_id, "provider": provider, "items": json.dumps(cart["lines"]), "total": cart["total"],
             "currency": currency, "status": "open", "email": email or None, "acceptsMarketing": bool(accepts_marketing),
-            "discountCode": d.get("code"), "discountId": d.get("id"), "discountAmount": d.get("amount")})
-        return a(row, "$id")
+            "discountCode": d.get("code"), "discountId": d.get("id"), "discountAmount": d.get("amount"), "accessKey": key})
+        return a(row, "$id"), key
+
+    def order_status(self, checkout_id, key):
+        """For the buyer's success page: is the order in yet, and what can they download?"""
+        try:
+            co = self.db.get_row(DB, "checkouts", checkout_id)
+        except AppwriteException:
+            raise HttpError("Unknown order", 404)
+        if not (key and a(co, "accessKey") and secrets.compare_digest(str(a(co, "accessKey")), str(key))):
+            raise HttpError("Unknown order", 404)
+        if a(co, "status") != "completed":
+            return {"status": a(co, "status"), "checkoutId": checkout_id}
+        try:
+            order = self.db.get_row(DB, "orders", checkout_id)
+        except AppwriteException:
+            return {"status": "processing", "checkoutId": checkout_id}
+        return {"status": "completed", "orderId": checkout_id, "number": a(order, "number"),
+                "downloads": downloads.for_order(self.db, checkout_id)}
+
+    def already_claimed(self, site_id, email, product_ids):
+        """Free products: one claim per email per product, so a bot can't empty your stock or spam receipts."""
+        rows = self.db.list_rows(DB, "orders", queries=[Query.equal("siteId", site_id), Query.equal("customerEmail", email),
+                                                         Query.equal("paymentProvider", "free"), Query.limit(100)]).rows
+        claimed = set()
+        for r in rows:
+            try:
+                claimed |= {i.get("productId") for i in json.loads(a(r, "items") or "[]")}
+            except ValueError:
+                pass
+        return claimed & set(product_ids)
 
     def set_checkout_ref(self, checkout_id, ref):
         self.db.update_row(DB, "checkouts", checkout_id, {"providerRef": ref})
@@ -149,7 +183,7 @@ class Store:
         """Turn a paid checkout into an order. Idempotent: the order's row ID *is* the checkout ID."""
         co = self.checkout(checkout_id)
         if a(co, "status") == "completed":
-            return {"orderId": checkout_id, "duplicate": True}
+            return {"orderId": checkout_id, "duplicate": True, "downloads": downloads.for_order(self.db, checkout_id)}
         if abs(float(a(co, "total")) - float(amount_paid)) > 0.01:
             raise HttpError(f"Paid amount {amount_paid} does not match checkout total {a(co, 'total')}", 409)
         site_id = a(co, "siteId")
@@ -160,17 +194,23 @@ class Store:
         customer_id = self._upsert_customer(site_id, email, name, float(a(co, "total")), bool(a(co, "acceptsMarketing"))) if email else None
         last = self.db.list_rows(DB, "orders", queries=[Query.equal("siteId", site_id), Query.order_desc("number"), Query.limit(1)])
         number = (a(last.rows[0], "number") if last.rows else 1000) + 1
-        items = [{k: l.get(k) for k in ("productId", "variantId", "title", "quantity", "price")} for l in lines]
+        items = [{**{k: l.get(k) for k in ("productId", "variantId", "title", "quantity", "price")}, **({"digital": True} if l.get("digital") else {})}
+                 for l in lines]
+        all_digital = all(l.get("digital") for l in lines)  # nothing to ship: delivered by the download links
         order = {"siteId": site_id, "number": number, "customerId": customer_id, "customerName": name, "customerEmail": email,
                  "items": json.dumps(items), "total": float(a(co, "total")), "financialStatus": "paid",
-                 "fulfillmentStatus": "unfulfilled", "paymentProvider": provider, "paymentRef": payment_ref,
+                 "fulfillmentStatus": "fulfilled" if all_digital else "unfulfilled", "paymentProvider": provider, "paymentRef": payment_ref,
                  "discountCode": a(co, "discountCode"), "discountAmount": a(co, "discountAmount")}
         try:
             self.db.create_row(DB, "orders", checkout_id, order)
         except AppwriteException as e:
             if e.code == 409:  # a concurrent webhook/capture already created it
-                return {"orderId": checkout_id, "duplicate": True}
+                return {"orderId": checkout_id, "duplicate": True, "downloads": []}
             raise
+        links = []
+        digital = [l for l in lines if l.get("digital")]
+        if digital:
+            links = downloads.issue(self.db, site_id, checkout_id, digital, self.products(site_id, {l["productId"] for l in digital}))
         for l in lines:
             if l.get("tracked") is False:
                 continue  # digital / untracked products: no stock to reduce
@@ -191,7 +231,8 @@ class Store:
             except AppwriteException:
                 pass  # discount deleted since checkout
         self.db.update_row(DB, "checkouts", checkout_id, {"status": "completed", "providerRef": payment_ref})
-        return {"orderId": checkout_id, "number": number, "_order": {**order, "$id": checkout_id, "items": items}}
+        return {"orderId": checkout_id, "number": number, "downloads": links,
+                "_order": {**order, "$id": checkout_id, "items": items, "downloads": links}}
 
     def _upsert_customer(self, site_id, email, name, total, opted_in=False):
         found = self.db.list_rows(DB, "customers", queries=[Query.equal("siteId", site_id), Query.equal("email", email), Query.limit(1)])

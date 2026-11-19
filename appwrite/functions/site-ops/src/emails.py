@@ -66,7 +66,7 @@ def _money(v, currency):
     return f"{sym}{float(v):,.2f}" + ("" if sym else f" {currency}")
 
 
-def _layout(site, heading, intro, items, total, currency, footer):
+def _layout(site, heading, intro, items, total, currency, footer, downloads=None):
     e = html.escape
     rows = "".join(
         f'<tr><td style="padding:6px 0">{e(str(i["quantity"]))} × {e(i["title"])}</td>'
@@ -82,25 +82,75 @@ def _layout(site, heading, intro, items, total, currency, footer):
     <h1 style="font-size:20px;margin:0 0 8px">{e(heading)}</h1>
     <p style="margin:0 0 16px;color:#52525b">{intro}</p>
     <table style="width:100%;border-collapse:collapse;font-size:14px">{rows}{total_row}</table>
+    {_downloads_html(downloads)}
   </div>
   <p style="font-size:12px;color:#71717a;margin-top:16px">{footer} <a href="https://{domain}" style="color:#71717a">{domain}</a></p>
 </div></body></html>"""
 
 
-def _text(heading, intro, items, total, currency):
+def _downloads_html(downloads):
+    """Download buttons for digital products. Each link is personal: counted and limited per order."""
+    if not downloads:
+        return ""
+    e = html.escape
+    links = "".join(
+        f'<tr><td style="padding:6px 0">{e(d["name"])}</td><td style="padding:6px 0;text-align:right">'
+        f'<a href="{e(d["url"])}" style="display:inline-block;background:#18181b;color:#fff;text-decoration:none;border-radius:6px;padding:6px 12px;font-size:13px">Download</a></td></tr>'
+        for d in downloads)
+    note = _limits_note(downloads)
+    return (f'<h2 style="font-size:16px;margin:24px 0 4px">Your downloads</h2>'
+            f'<table style="width:100%;border-collapse:collapse;font-size:14px">{links}</table>'
+            + (f'<p style="margin:8px 0 0;font-size:12px;color:#71717a">{e(note)}</p>' if note else ""))
+
+
+def _limits_note(downloads):
+    limits = {d.get("limit") for d in downloads if d.get("limit")}
+    days = {d.get("days") for d in downloads if d.get("days")}
+    parts = []
+    if len(limits) == 1:
+        parts.append(f"Each link works {limits.pop()} times")
+    if len(days) == 1:
+        parts.append(f"{'and expires' if parts else 'Links expire'} {days.pop()} days after purchase")
+    return (" ".join(parts) + ". Keep this email so you can download again.") if parts else "Keep this email so you can download again."
+
+
+def _text(heading, intro, items, total, currency, downloads=None):
     lines = [heading, "", intro, ""] + [f"{i['quantity']} x {i['title']}  {_money(i['price'] * i['quantity'], currency)}" for i in items]
     if total is not None:
         lines += ["", f"Total: {_money(total, currency)}"]
+    if downloads:
+        lines += ["", "Your downloads:"] + [f"- {d['name']}: {d['url']}" for d in downloads] + ["", _limits_note(downloads)]
     return "\n".join(lines)
 
 
-def order_receipt(site, order):
+def order_receipt(site, order, downloads=None):
+    """downloads: [{name, url, limit?, days?}] for digital products in the order."""
     cur = get(site, "currency") or "USD"
     heading = f"Thanks for your order #{order['number']}"
-    intro = f"Hi {html.escape(order.get('customerName') or 'there')}, we've received your payment and are getting your order ready."
+    who = html.escape(order.get('customerName') or 'there')
+    all_digital = downloads and all(i.get("digital") for i in order["items"])
+    if all_digital:
+        intro = f"Hi {who}, your order is ready. Download your files below."
+    elif downloads:
+        intro = f"Hi {who}, we've received your order. Your downloads are below; we're getting the rest of your order ready."
+    elif not float(order.get("total") or 0):
+        intro = f"Hi {who}, we've received your order and are getting it ready."
+    else:
+        intro = f"Hi {who}, we've received your payment and are getting your order ready."
     return (f"Order #{order['number']} confirmed",
-            _layout(site, heading, intro, order["items"], order["total"], cur, "Questions? Just reply to this email."),
-            _text(heading, intro, order["items"], order["total"], cur))
+            _layout(site, heading, intro, order["items"], order["total"], cur, "Questions? Just reply to this email.", downloads),
+            _text(heading, intro, order["items"], order["total"], cur, downloads))
+
+
+def order_downloads(site, order, downloads):
+    """Re-send the download links for an order (from the dashboard)."""
+    cur = get(site, "currency") or "USD"
+    heading = f"Your downloads for order #{order['number']}"
+    intro = "Here are your download links again."
+    digital = [i for i in order["items"] if i.get("digital")] or order["items"]
+    return (f"Your downloads for order #{order['number']}",
+            _layout(site, heading, intro, digital, None, cur, "Questions? Just reply to this email.", downloads),
+            _text(heading, intro, digital, None, cur, downloads))
 
 
 def order_shipped(site, order, tracking=None):
@@ -117,7 +167,8 @@ def order_shipped(site, order, tracking=None):
 def owner_new_order(site, order):
     cur = get(site, "currency") or "USD"
     heading = f"New order #{order['number']}: {_money(order['total'], cur)}"
-    intro = f"{html.escape(order.get('customerName') or '')} ({html.escape(order.get('customerEmail') or 'no email')}) paid via {html.escape(order.get('paymentProvider') or 'checkout')}."
+    paid = "placed a free order" if order.get("paymentProvider") == "free" else f"paid via {html.escape(order.get('paymentProvider') or 'checkout')}"
+    intro = f"{html.escape(order.get('customerName') or '')} ({html.escape(order.get('customerEmail') or 'no email')}) {paid}."
     return (heading, _layout(site, heading, intro, order["items"], order["total"], cur, "Sent by Yancey for"),
             _text(heading, intro, order["items"], order["total"], cur))
 

@@ -17,8 +17,13 @@
  *   await Yancey.discount("WELCOME10")          -> { subtotal, discount: { code, amount }, total } or throws
  *   await Yancey.checkout("stripe" | "paypal", { email, discountCode, acceptsMarketing })
  *                                                // redirects to Stripe (card, Apple Pay, Google Pay) or PayPal
+ *   await Yancey.checkout("free", { email, name }) // $0 carts (free products or a 100% code): no payment, email required;
+ *                                                // goes straight to your success page
+ *   await Yancey.total({ discountCode })         -> the server's total for the cart; 0 means use "free"
  *   Cart-recovery emails link back with ?yancey_cart=…; the cart is restored automatically.
- *   await Yancey.handleReturn()                 -> call on your success page; confirms PayPal payments, clears the cart
+ *   await Yancey.handleReturn()                 -> call on your success page; confirms PayPal payments, clears the cart.
+ *                                                Resolves to { orderId, number, downloads: [{ name, url, size, remaining, expiresAt }] }
+ *                                                (downloads = personal links for digital products; they're also in the receipt email)
  */
 (function () {
   var me = document.currentScript || document.querySelector("script[data-site][data-project]");
@@ -142,23 +147,53 @@
     var success = abs(opts.successUrl || cfg.successUrl);
     var cancel = abs(opts.cancelUrl || location.href);
     var extra = { email: opts.email, discountCode: opts.discountCode || undefined, acceptsMarketing: !!opts.acceptsMarketing };
+    if (provider === "free") {
+      if (!opts.email) throw new Error("Enter your email address to get your order");
+      var free = await call("/free/checkout", Object.assign({ siteId: cfg.site, items: items, successUrl: success, name: opts.name }, extra));
+      cart.clear();
+      location.href = free.url;
+      return free;
+    }
     var res = provider === "paypal"
       ? await call("/paypal/create", Object.assign({ siteId: cfg.site, items: items, returnUrl: success, cancelUrl: cancel }, extra))
       : await call("/stripe/session", Object.assign({ siteId: cfg.site, items: items, successUrl: success, cancelUrl: cancel }, extra));
     location.href = res.url;
   }
 
+  async function total(opts) {
+    opts = opts || {};
+    return (await call("/discount", { siteId: cfg.site, items: opts.items || cart.items(), code: opts.discountCode || undefined })).total;
+  }
+
+  var wait = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+
+  /** Order status + download links, for the buyer who placed it (needs the key from the success URL). */
+  async function order(checkoutId, key, waitMs) {
+    var deadline = Date.now() + (waitMs == null ? 15000 : waitMs);
+    for (;;) {  // Stripe's webhook can land a few seconds after the buyer is back
+      var o = await call("/order", { checkoutId: checkoutId, key: key });
+      if (o.status === "completed" || o.status === "expired" || Date.now() > deadline) return o;
+      await wait(1500);
+    }
+  }
+
   /** On your success page. PayPal returns with ?token=<orderId>; Stripe with ?checkout=<id> (the webhook records the order). */
   async function handleReturn() {
     var params = new URLSearchParams(location.search);
     if (params.get("token") && params.get("PayerID") !== null) {
-      var order = await call("/paypal/capture", { paypalOrderId: params.get("token") });
+      var captured = await call("/paypal/capture", { paypalOrderId: params.get("token") });
       cart.clear();
-      return Object.assign({ provider: "paypal" }, order);
+      return Object.assign({ provider: "paypal", downloads: [] }, captured);
     }
-    if (params.get("checkout")) { cart.clear(); return { provider: "stripe", orderId: params.get("checkout") }; }
+    if (params.get("checkout")) {
+      cart.clear();
+      var base = { orderId: params.get("checkout"), downloads: [] };
+      if (!params.get("key")) return Object.assign({ provider: "stripe" }, base);
+      try { return Object.assign(base, await order(params.get("checkout"), params.get("key"))); }
+      catch (e) { return base; }  // the order email still has everything
+    }
     return null;
   }
 
-  window.Yancey = { cart: cart, products: function () { return products(); }, product: product, collection: collection, discount: discount, checkout: checkout, handleReturn: handleReturn, config: function () { return call("/config", {}); }, settings: cfg };
+  window.Yancey = { cart: cart, products: function () { return products(); }, product: product, collection: collection, discount: discount, checkout: checkout, total: total, order: order, handleReturn: handleReturn, config: function () { return call("/config", {}); }, settings: cfg };
 })();

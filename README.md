@@ -15,7 +15,8 @@ A Shopify-style admin for **all of your websites** in one place. Switch between 
 | **Finance** | Per-store sales, refunds, discounts, net and payment-method split, monthly chart, CSV for your accountant; Stripe/PayPal balances, fees and payouts | Yancey orders, Stripe + PayPal reporting APIs (read-only) |
 | **Sales channels** | Online store (embed snippet), Google & YouTube and TikTok (product feed) | yancey.js, Merchant Center free listings |
 | **Infrastructure** | Domain & DNS, Deploys | Cloudflare, Appwrite Sites |
-| **Checkout** | Cards, Apple Pay, Google Pay, PayPal | Stripe Checkout, PayPal |
+| **Checkout** | Cards, Apple Pay, Google Pay, PayPal, and free checkout for $0 carts | Stripe Checkout, PayPal |
+| **Digital delivery** | Sell or give away files: private storage, personal download links with limits and expiry, links in the receipt and on the thank-you page | Appwrite Storage + file tokens |
 
 ### Roadmap (shown in-app as "soon")
 
@@ -73,7 +74,7 @@ Store emails (receipts, campaigns) are sent from each store's own domain, never 
 | Functions | `site-ops` (admin-only, runs automations hourly) and `checkout` (public, at `https://checkout.realniggafoods.com`), both deploying from `main` |
 | DNS (Cloudflare) | `@`, `www` and `checkout` are `CNAME appwrite.network` (DNS only); a CAA record lets Appwrite issue certificates; DMARC, SPF and Google verification are kept |
 | Already set | site `VITE_*` variables, `ADMIN_TEAM_ID`, `APPWRITE_SITES_CNAME_TARGET`, `UNSUBSCRIBE_SECRET` (both functions), `CHECKOUT_PUBLIC_URL` |
-| Still to add | `CLOUDFLARE_API_TOKEN`, `GOOGLE_OAUTH_CLIENT_ID` and `GOOGLE_OAUTH_CLIENT_SECRET` (site-ops); `RESEND_API_KEY`, Stripe and PayPal keys (both); `STRIPE_WEBHOOK_SECRET` (checkout) |
+| Still to add | `CHECKOUT_PUBLIC_URL` (checkout function, for download links); `CLOUDFLARE_API_TOKEN`, `GOOGLE_OAUTH_CLIENT_ID` and `GOOGLE_OAUTH_CLIENT_SECRET` (site-ops); `RESEND_API_KEY`, Stripe and PayPal keys (both); `STRIPE_WEBHOOK_SECRET` (checkout) |
 
 Free-plan limits that shaped this: 2 functions, no cron (hourly interval instead), and 3 web platforms.
 
@@ -159,10 +160,32 @@ Refresh tokens live in the `connections` table, which has no client permissions,
 await Yancey.products();                 // active products for this site
 Yancey.cart.add(productId);              // cart lives in localStorage; listen for "yancey:cart"
 await Yancey.checkout("stripe");         // or "paypal", which redirects to pay
-const order = await Yancey.handleReturn(); // on your success page: confirms PayPal and clears the cart
+await Yancey.checkout("free", { email }); // $0 carts: no payment (await Yancey.total() tells you which)
+const order = await Yancey.handleReturn(); // on your success page: confirms PayPal, clears the cart; order.downloads = links
 ```
 
 **Test before launching:** use Stripe test mode (card `4242 4242 4242 4242`) and a PayPal sandbox buyer account. Then switch to live keys and `PAYPAL_ENV=live`.
+
+## Free checkout and digital delivery
+
+```
+ Product editor ── files ──► private "downloads" bucket (nobody can read it directly)
+ Checkout (free, Stripe or PayPal) ──► order created ──► one personal link per file: <checkout domain>/download?t=…
+   buyer opens link ──► page with a Download button ──► counted (limit / expiry checked) ──► 10-minute Appwrite file token ──► file
+```
+
+- **Digital products:** in **Products → (product) → Digital downloads**, add files (up to 50 MB each on the free plan). Optionally set *Downloads per file* and *Links expire after (days)*. Adding the first file turns off stock tracking. Orders made only of digital products are marked **Fulfilled** right away.
+- **Where buyers get their links:** on your success page (`Yancey.handleReturn()` returns `downloads`) and in the receipt email. Orders with downloads always get a receipt, even if receipts are switched off, once the store's email is set up.
+- **Free checkout:** carts that total $0 (free products, or a 100% discount code) go through `Yancey.checkout("free", { email })`. No payment provider is involved; the buyer's email is required. Stripe and PayPal refuse $0 carts and point to free checkout. To stop bots, each email can claim a given free product once, and free orders hold at most 10 items.
+- **In the dashboard:** an order's **Downloads** panel shows how often each link was used. You can copy a link, reset its count (or extend an expired one by 7 days), turn it off, or **Email links again**. Refunding a paid order or voiding a free one turns its links off.
+- **Why a button instead of a direct download:** email security scanners open links automatically. A plain link would use up the buyer's downloads before they click.
+- **Success URL:** Stripe and free checkout send buyers back with `?checkout=<id>&key=<secret>`. The key lets only that buyer see the order's links.
+
+### Set up
+1. **Run `python appwrite/setup.py` again.** It adds the private `downloads` bucket, the `downloads` table, the new product, order and checkout columns, and `free` as a payment provider.
+2. **Redeploy the `checkout` function** with its new scopes, `files.read` and `tokens.write` (in `appwrite.json`). Set `CHECKOUT_PUBLIC_URL` on it, e.g. `https://checkout.realniggafoods.com`. Download links point there. Optionally set `APPWRITE_PUBLIC_ENDPOINT` if `APPWRITE_FUNCTION_API_ENDPOINT` isn't reachable from browsers.
+3. **Redeploy `site-ops`** (for *Email links again*; it already has `CHECKOUT_PUBLIC_URL`).
+4. Optional: set `VITE_APPWRITE_DOWNLOADS_BUCKET_ID` if you named the bucket something other than `downloads`.
 
 ## Email (receipts, order alerts, shipping notices)
 
@@ -232,7 +255,8 @@ appwrite/functions/site-ops/src/automations.py   scheduled cart / welcome / win-
 appwrite/functions/checkout/src/
   main.py                  public checkout routes + Stripe webhook
   payments.py              Stripe Checkout and PayPal Orders v2
-  store.py                 cart pricing, idempotent order creation
+  store.py                 cart pricing, idempotent order creation, free checkout guard
+appwrite/shared/downloads.py  personal download links for digital products (both functions)
 appwrite/functions/site-ops/src/
   main.py                  router, auth check, Cloudflare + Appwrite Sites hosting
   google_apis.py           Search Console + GA4

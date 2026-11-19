@@ -47,7 +47,9 @@
       "logging": true,
       "scopes": [
         "rows.read",
-        "rows.write"
+        "rows.write",
+        "files.read",
+        "tokens.write"
       ]
     }
   ],

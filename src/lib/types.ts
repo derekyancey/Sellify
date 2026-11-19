@@ -42,6 +42,15 @@ export interface Product extends Base {
   handle?: string; vendor?: string; productType?: string; tags?: string[];
   images?: ProductImage[]; variants?: Variant[]; seoTitle?: string; seoDescription?: string;
   tracksInventory?: boolean; costPerItem?: number; externalId?: string; source?: string;
+  // digital products: files in the private downloads bucket, delivered by personal links after checkout
+  digitalFiles?: DigitalFile[]; downloadLimit?: number | null; downloadDays?: number | null;
+}
+export interface DigitalFile { fileId: string; name: string; size: number }
+
+/** One buyer's personal link to one file of an order (created by the checkout function). */
+export interface Download extends Base {
+  siteId: string; orderId: string; productId?: string; fileId: string; name: string; size: number; token: string;
+  downloadCount: number; maxDownloads?: number | null; expiresAt?: string | null; lastDownloadAt?: string | null; revoked?: boolean;
 }
 
 export interface Customer extends Base {
@@ -75,8 +84,8 @@ export interface Automation extends Base {
 
 export type FinancialStatus = "pending" | "paid" | "partially_refunded" | "refunded" | "voided";
 export type FulfillmentStatus = "unfulfilled" | "partial" | "fulfilled" | "cancelled";
-export type PaymentProvider = "manual" | "stripe" | "paypal" | "shopify";
-export interface LineItem { productId: string | null; variantId?: string | null; title: string; quantity: number; price: number; sku?: string | null; discount?: number | null }
+export type PaymentProvider = "manual" | "stripe" | "paypal" | "shopify" | "free";
+export interface LineItem { productId: string | null; variantId?: string | null; title: string; quantity: number; price: number; sku?: string | null; discount?: number | null; digital?: boolean }
 export interface Order extends Base {
   siteId: string;
   number: number;
@@ -150,7 +159,7 @@ export interface Campaign extends Base {
 
 export interface Checkout extends Base {
   siteId: string;
-  provider: "stripe" | "paypal";
+  provider: "stripe" | "paypal" | "free";
   providerRef?: string;
   items: { productId: string; title: string; quantity: number; price: number }[];
   total: number;
@@ -161,9 +170,9 @@ export interface Checkout extends Base {
   recoveryEmailedAt?: string;
 }
 
-export type TableName = "sites" | "products" | "orders" | "customers" | "collections" | "discounts" | "segments" | "templates" | "campaigns" | "checkouts" | "automations";
+export type TableName = "sites" | "products" | "orders" | "customers" | "collections" | "discounts" | "segments" | "templates" | "campaigns" | "checkouts" | "automations" | "downloads";
 interface TableMap {
   sites: Site; products: Product; orders: Order; customers: Customer; collections: Collection; discounts: Discount;
-  segments: Segment; templates: EmailTemplate; campaigns: Campaign; checkouts: Checkout; automations: Automation;
+  segments: Segment; templates: EmailTemplate; campaigns: Campaign; checkouts: Checkout; automations: Automation; downloads: Download;
 }
 export type RowOf<T extends TableName> = TableMap[T];

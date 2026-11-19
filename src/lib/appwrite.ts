@@ -7,6 +7,7 @@ export const config = {
   databaseId: env.VITE_APPWRITE_DATABASE_ID || "yancey",
   functionId: env.VITE_APPWRITE_FUNCTION_ID || "site-ops",
   bucketId: env.VITE_APPWRITE_BUCKET_ID || "files",
+  downloadsBucketId: env.VITE_APPWRITE_DOWNLOADS_BUCKET_ID || "downloads",  // private: digital products
   checkoutPublicUrl: (env.VITE_CHECKOUT_PUBLIC_URL || "").replace(/\/$/, ""),   // the checkout function's domain
   pagespeedKey: env.VITE_PAGESPEED_API_KEY || "",
 };

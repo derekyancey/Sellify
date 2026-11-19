@@ -1,4 +1,4 @@
-import type { Campaign, Checkout, Collection, Customer, Discount, EmailTemplate, Order, Product, Site } from "./types";
+import type { Campaign, Checkout, Collection, Customer, Discount, Download, EmailTemplate, Order, Product, Site } from "./types";
 import { starterTemplate } from "./emailStarter";
 
 // Deterministic pseudo-random so demo numbers stay stable between reloads.
@@ -79,7 +79,26 @@ export function buildDemo() {
         total: p.price * q, currency: s.currency, status: i % 2 ? "expired" : "open", email: i === 3 ? undefined : pick(cs).email });
     }
   }
-  return { sites, products, customers, orders, collections, discounts, templates, campaigns, checkouts, segments: [] };
+  // Digital products: a free guide (email for a download) and a paid course, plus one order of each.
+  const downloads: Download[] = [];
+  const guide: Product = { $id: "demo_guide", $createdAt: ago(20), siteId: "site_coffee", title: "Home Brewing Guide (PDF)", price: 0, inventory: 0, status: "active",
+    tracksInventory: false, productType: "Digital", digitalFiles: [{ fileId: "demo-guide", name: "northline-brewing-guide.pdf", size: 3_400_000 }], downloadLimit: 5 };
+  const course: Product = { $id: "demo_course", $createdAt: ago(20), siteId: "site_coffee", title: "Latte Art Video Course", price: 29, inventory: 0, status: "active",
+    tracksInventory: false, productType: "Digital", downloadLimit: 3, downloadDays: 30,
+    digitalFiles: [{ fileId: "demo-c1", name: "01-milk-texture.mp4", size: 41_000_000 }, { fileId: "demo-c2", name: "02-pouring-hearts.mp4", size: 38_500_000 }] };
+  products.push(guide, course);
+  const buyer = customers.find(c => c.siteId === "site_coffee")!;
+  const top = Math.max(...orders.filter(o => o.siteId === "site_coffee").map(o => o.number));
+  const digitalOrder = (n: number, p: Product, total: number, provider: Order["paymentProvider"], days: number): Order =>
+    ({ $id: `demo_dl_${n}`, $createdAt: ago(days), siteId: "site_coffee", number: top + n, customerId: buyer.$id, customerName: buyer.name, customerEmail: buyer.email ?? "",
+      items: [{ productId: p.$id, title: p.title, quantity: 1, price: p.price, digital: true }], total, financialStatus: "paid", fulfillmentStatus: "fulfilled",
+      paymentProvider: provider, paymentRef: provider === "free" ? `free-demo_dl_${n}` : "pi_demo_course" });
+  orders.unshift(digitalOrder(2, course, 29, "stripe", 0), digitalOrder(1, guide, 0, "free", 1));
+  for (const [o, p, used] of [[orders[1], guide, 1], [orders[0], course, 0]] as const)
+    for (const f of p.digitalFiles!) downloads.push({ $id: `dl_${f.fileId}`, $createdAt: o.$createdAt, siteId: o.siteId, orderId: o.$id, productId: p.$id, fileId: f.fileId,
+      name: f.name, size: f.size, token: "demo-" + f.fileId, downloadCount: used, maxDownloads: p.downloadLimit, lastDownloadAt: used ? o.$createdAt : null,
+      expiresAt: p.downloadDays ? new Date(Date.parse(o.$createdAt) + p.downloadDays * 864e5).toISOString() : null });
+  return { sites, products, customers, orders, collections, discounts, templates, campaigns, checkouts, downloads, segments: [] };
 }
 
 /* ---------- Mock responses for the Python "site-ops" function in demo mode ---------- */
@@ -96,6 +115,7 @@ export function demoOps(path: string, body: any): any {
     case "/email/status": return { status: "verified", records: demoEmailRecords(domain, "verified") };
     case "/email/test": return { ok: true, id: "em_demo", to: body.site?.ownerEmail };
     case "/email/order": return { ok: true, id: "em_demo" };
+    case "/email/downloads": return { ok: true, id: "em_demo", links: 1 };
     case "/automations/preview": return { dryRun: true, budgetLeft: 50, results: [
       { siteId: body.siteId, type: "abandoned_cart", eligible: 2, sent: 0 }, { siteId: body.siteId, type: "welcome", eligible: 3, sent: 0 }, { siteId: body.siteId, type: "winback", eligible: 1, sent: 0 }] };
     case "/automations/run": return { dryRun: false, budgetLeft: 44, results: [

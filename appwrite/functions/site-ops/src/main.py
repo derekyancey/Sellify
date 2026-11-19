@@ -36,6 +36,7 @@ import requests
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # works however the runtime loads this file
 import automations  # noqa: E402
 import crawler  # noqa: E402
+import downloads  # noqa: E402
 import finance  # noqa: E402
 import emails  # noqa: E402
 import google_apis  # noqa: E402
@@ -485,6 +486,23 @@ def email_order(b):
     return {"ok": True, "id": res.get("id")}
 
 
+def email_downloads(b):
+    """Re-send an order's download links (Orders → order → Downloads → Resend)."""
+    site, order = need(b, "site", "order")
+    if not emails.can_send(site):
+        raise HttpError("Finish email setup for this site first (Settings → Email)", 409)
+    if not order.get("customerEmail"):
+        raise HttpError("This order has no customer email")
+    if not downloads.base_url():
+        raise HttpError("Set CHECKOUT_PUBLIC_URL on the site-ops function so download links can be built", 500)
+    links = downloads.for_order(_db(), order["$id"])
+    if not links:
+        raise HttpError("This order has no downloads", 404)
+    subject, body_html, text = emails.order_downloads(site, order, links)
+    res = emails.send(site, order["customerEmail"], subject, body_html, text)
+    return {"ok": True, "id": res.get("id"), "links": len(links)}
+
+
 def email_recovery(b):
     site, checkout = need(b, "site", "checkout")
     if not emails.can_send(site):
@@ -602,6 +620,7 @@ ROUTES = {
     "/email/test": email_test,
     "/email/order": email_order,
     "/email/recovery": email_recovery,
+    "/email/downloads": email_downloads,
     "/email/campaign": email_campaign,
     "/import/products": _import("products"),
     "/import/customers": _import("customers"),

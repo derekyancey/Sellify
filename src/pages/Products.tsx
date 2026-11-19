@@ -1,20 +1,22 @@
-import { useState } from "react";
-import { ImageOff, Plus, Trash2, Upload } from "lucide-react";
+import { useRef, useState } from "react";
+import { FileDown, ImageOff, Plus, Trash2, Upload } from "lucide-react";
 import { Link } from "react-router-dom";
 import { storeSlug, useSite, useStorePath } from "../context/Site";
 import { create, list, remove, update } from "../lib/data";
-import { uploadFile } from "../lib/files";
+import { deleteDownload, downloadPreviewUrl, uploadDownload, uploadFile } from "../lib/files";
 import { useAsync } from "../lib/useAsync";
 import { money } from "../lib/format";
-import type { Product, ProductImage, Variant } from "../lib/types";
+import type { DigitalFile, Product, ProductImage, Variant } from "../lib/types";
 import { Badge, Button, Card, ErrorBox, Field, Input, Loading, Modal, PageHeader, Select, Table, Td, Textarea } from "../components/ui";
 import { downloadCsv } from "./Orders";
 
 type Draft = Omit<Product, "$id" | "$createdAt" | "siteId"> & { $id?: string };
 const newVariant = (): Variant => ({ id: "v" + Math.random().toString(36).slice(2, 12), title: "Default Title", price: 0, inventory: 0 });
 const blank = (): Draft => ({ title: "", description: "", price: 0, inventory: 0, status: "draft", sku: "", imageUrl: "", tracksInventory: true, variants: [newVariant()], images: [] });
+const fileSize = (b: number) => b >= 1e6 ? `${(b / 1e6).toFixed(1)} MB` : `${Math.max(1, Math.ceil(b / 1e3))} KB`;
 const statusTone = (s: string) => s === "active" ? "green" : s === "draft" ? "blue" : s === "unlisted" ? "yellow" : "gray";
 
+const priceIsFree = (p: Product) => variantsOf(p).every(v => !v.price);
 const variantsOf = (p: Product): Variant[] => p.variants?.length ? p.variants
   : [{ id: "default", title: "Default Title", price: p.price, compareAtPrice: p.compareAtPrice, sku: p.sku, inventory: p.inventory }];
 const priceLabel = (p: Product, currency: string) => {
@@ -56,7 +58,8 @@ export default function Products() {
               return (
                 <tr key={p.$id} onClick={() => setEditing({ ...p, variants: vs.map(v => ({ ...v })), images: p.images ?? (p.imageUrl ? [{ src: p.imageUrl }] : []) })} className="cursor-pointer hover:bg-zinc-50">
                   <Td className="w-12">{p.imageUrl ? <img src={p.imageUrl} alt="" loading="lazy" className="size-9 rounded-md object-cover" /> : <div className="grid size-9 place-items-center rounded-md bg-zinc-100 text-zinc-400"><ImageOff className="size-4" /></div>}</Td>
-                  <Td><div className="font-medium">{p.title}</div>{vs.length > 1 && <div className="text-xs text-zinc-500">{vs.length} variants</div>}</Td>
+                  <Td><div className="font-medium">{p.title}</div>
+                    <div className="text-xs text-zinc-500">{[vs.length > 1 && `${vs.length} variants`, p.digitalFiles?.length && `Digital · ${p.digitalFiles.length} file${p.digitalFiles.length > 1 ? "s" : ""}`, priceIsFree(p) && "Free"].filter(Boolean).join(" · ")}</div></Td>
                   <Td><Badge tone={statusTone(p.status)}>{p.status}</Badge></Td>
                   <Td>{p.tracksInventory === false ? <span className="text-zinc-500">Not tracked</span>
                     : <span className={p.inventory < 10 ? "font-medium text-red-600" : ""}>{p.inventory} in stock</span>}</Td>
@@ -82,6 +85,21 @@ function ProductForm({ initial, onClose, onSaved }: { initial: Draft; onClose():
   const vs = p.variants ?? [];
   const setV = (i: number, patch: Partial<Variant>) => set("variants", vs.map((v, j) => j === i ? { ...v, ...patch } : v));
   const imgs = p.images ?? [];
+  const files = p.digitalFiles ?? [];
+  const [uploading, setUploading] = useState(false);
+  const removed = useRef<string[]>([]);  // uploaded then removed in this edit: nobody has bought them, so delete on save
+  const addDownloads = async (list: FileList | null) => {
+    if (!list?.length) return;
+    setUploading(true); setErr(null);
+    try {
+      const added: DigitalFile[] = [];
+      for (const f of Array.from(list)) added.push(await uploadDownload(s.$id, f));
+      setP(x => ({ ...x, digitalFiles: [...(x.digitalFiles ?? []), ...added],
+        // digital products don't run out: stop tracking stock the first time a file is added
+        tracksInventory: (x.digitalFiles ?? []).length ? x.tracksInventory : false }));
+    } catch (e: any) { setErr(`Upload failed: ${e.message}`); }
+    finally { setUploading(false); }
+  };
   const optionName = vs.find(v => v.options)?.options ? Object.keys(vs.find(v => v.options)!.options!)[0] : "Option";
 
   const addImages = async (files: FileList | null) => {
@@ -102,9 +120,12 @@ function ProductForm({ initial, onClose, onSaved }: { initial: Draft; onClose():
       images: imgs, imageUrl: imgs[0]?.src ?? (p.imageUrl || undefined), variants: vs, tracksInventory: tracked,
       price: cheapest.price, compareAtPrice: cheapest.compareAtPrice ?? undefined, sku: vs[0].sku || undefined,
       inventory: tracked ? vs.reduce((t, v) => t + Math.max(0, v.inventory || 0), 0) : 0,
+      digitalFiles: files, downloadLimit: files.length ? p.downloadLimit || null : null, downloadDays: files.length ? p.downloadDays || null : null,
     };
     try {
       if (p.$id) await update("products", p.$id, data); else await create("products", { ...data, siteId: s.$id });
+      // Files removed from a saved product stay in storage: earlier buyers' links still point at them.
+      await Promise.all(removed.current.map(id => deleteDownload(id).catch(() => undefined)));
       onSaved();
     } catch (e: any) { setErr(e.message); setBusy(false); }
   };
@@ -155,6 +176,39 @@ function ProductForm({ initial, onClose, onSaved }: { initial: Draft; onClose():
           ))}
         </div>
         <label className="mt-2 flex items-center gap-2 text-sm"><input type="checkbox" checked={p.tracksInventory !== false} onChange={e => set("tracksInventory", e.target.checked)} />Track stock (turn off for digital products)</label>
+      </div>
+
+      <div className="rounded-lg border border-zinc-200 p-3">
+        <div className="mb-1 flex items-center justify-between text-sm font-medium"><span className="inline-flex items-center gap-1.5"><FileDown className="size-4" />Digital downloads</span>
+          <label className={"cursor-pointer text-xs underline " + (uploading ? "pointer-events-none opacity-50" : "")}>{uploading ? "Uploading…" : "Add files"}
+            <input type="file" multiple hidden onChange={e => { addDownloads(e.target.files); e.target.value = ""; }} /></label></div>
+        {files.length ? <>
+          <ul className="divide-y divide-zinc-100 text-sm">
+            {files.map(f => {
+              const url = downloadPreviewUrl(f.fileId);
+              return (
+                <li key={f.fileId} className="flex items-center gap-2 py-1.5">
+                  <span className="min-w-0 flex-1 truncate">{url ? <a className="underline" href={url} target="_blank" rel="noreferrer">{f.name}</a> : f.name}</span>
+                  <span className="text-xs text-zinc-500">{fileSize(f.size)}</span>
+                  <button onClick={() => {
+                    if (initial.digitalFiles?.some(x => x.fileId === f.fileId)) {
+                      if (!confirm(`Remove ${f.name}? Buyers who already have a link to it can still download it; new buyers won't get it.`)) return;
+                    } else removed.current.push(f.fileId);
+                    set("digitalFiles", files.filter(x => x.fileId !== f.fileId));
+                  }} className="p-1 text-zinc-400 hover:text-red-600" aria-label={`Remove ${f.name}`}><Trash2 className="size-4" /></button>
+                </li>
+              );
+            })}
+          </ul>
+          <div className="mt-2 grid grid-cols-2 gap-3">
+            <Field label="Downloads per file" hint="Blank = unlimited"><Input type="number" min={1} value={p.downloadLimit ?? ""} placeholder="Unlimited"
+              onChange={e => set("downloadLimit", e.target.value ? Math.max(1, Math.floor(+e.target.value)) : null)} /></Field>
+            <Field label="Links expire after (days)" hint="Blank = never"><Input type="number" min={1} value={p.downloadDays ?? ""} placeholder="Never"
+              onChange={e => set("downloadDays", e.target.value ? Math.max(1, Math.floor(+e.target.value)) : null)} /></Field>
+          </div>
+          <p className="mt-1 text-xs text-zinc-500">After checkout, buyers get a personal link to each file on the thank-you page and in their receipt. Files stay private: nobody can download them without a link.
+            {vs.every(v => !v.price) && " This product is free: buyers enter their email and get it without paying."}</p>
+        </> : <p className="text-xs text-zinc-500">Sell an ebook, course, music or any file (up to 50 MB each). Set the price to 0 to give it away for an email address.</p>}
       </div>
 
       <div className="grid grid-cols-2 gap-3">

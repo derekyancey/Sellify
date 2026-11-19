@@ -29,6 +29,26 @@ export async function uploadFile(siteId: string, file: File): Promise<StoredFile
   return { id: f.$id, name: file.name, size: f.sizeOriginal, mime: f.mimeType, createdAt: f.$createdAt, url: storage.getFileView({ bucketId: config.bucketId, fileId: f.$id }) };
 }
 
+/** Digital-product files go in the PRIVATE downloads bucket: only admins can read them; buyers get counted links. */
+export async function uploadDownload(siteId: string, file: File): Promise<{ fileId: string; name: string; size: number }> {
+  if (isDemo) {
+    if (file.size > 50_000_000) throw new Error("Files can be up to 50 MB.");
+    return { fileId: "demo-" + ID.unique(), name: file.name, size: file.size };  // demo: nothing is stored
+  }
+  const named = new File([file], prefix(siteId) + file.name.replace(/[^\w.\- ]+/g, "_"), { type: file.type });
+  const f = await storage.createFile({ bucketId: config.downloadsBucketId, fileId: ID.unique(), file: named });
+  return { fileId: f.$id, name: file.name, size: f.sizeOriginal };
+}
+
+export async function deleteDownload(fileId: string) {
+  if (isDemo || fileId.startsWith("demo-")) return;
+  await storage.deleteFile({ bucketId: config.downloadsBucketId, fileId });
+}
+
+/** Admin preview of a private file (uses the signed-in admin's session). */
+export const downloadPreviewUrl = (fileId: string) =>
+  isDemo || fileId.startsWith("demo-") ? null : storage.getFileDownload({ bucketId: config.downloadsBucketId, fileId });
+
 export async function deleteFile(id: string) {
   if (isDemo) { localStorage.setItem(DEMO_KEY, JSON.stringify(demoFiles().filter(f => f.id !== id))); return; }
   await storage.deleteFile({ bucketId: config.bucketId, fileId: id });

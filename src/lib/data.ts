@@ -6,7 +6,7 @@ import type { Order, RowOf, TableName } from "./types";
 /* ------------------------------------------------------------------ */
 /* Rows: Appwrite TablesDB in production, localStorage in demo mode    */
 /* ------------------------------------------------------------------ */
-const DEMO_KEY = "yancey-demo-v7";
+const DEMO_KEY = "yancey-demo-v8";
 type DemoDB = { [K in TableName]: RowOf<K>[] };
 
 function demoDb(): DemoDB {
@@ -18,14 +18,14 @@ function demoDb(): DemoDB {
   saveDemo(db);
   return db;
 }
-const emptyDb = () => ({ collections: [], discounts: [], segments: [], templates: [], campaigns: [], checkouts: [], automations: [] });
+const emptyDb = () => ({ collections: [], discounts: [], segments: [], templates: [], campaigns: [], checkouts: [], automations: [], downloads: [] });
 function saveDemo(db: DemoDB) { try { localStorage.setItem(DEMO_KEY, JSON.stringify(db)); } catch { /* ignore */ } }
 export function resetDemo() { try { localStorage.removeItem(DEMO_KEY); } catch { /* ignore */ } }
 
 // Some columns hold JSON in Appwrite (longtext); (de)serialize them here.
 const JSON_COLS: Partial<Record<TableName, string[]>> = {
   orders: ["items", "billingAddress", "shippingAddress", "tags"], checkouts: ["items"], segments: ["rules"],
-  products: ["images", "variants", "tags"], customers: ["address", "tags"],
+  products: ["images", "variants", "tags", "digitalFiles"], customers: ["address", "tags"],
 };
 const toRow = (t: TableName, data: any) => {
   const out = { ...data };
@@ -154,6 +154,11 @@ export async function pagespeed(url: string, strategy: "mobile" | "desktop") {
       .filter(a => a.details?.type === "opportunity" && a.score !== null && a.score < 0.9)
       .map(a => ({ title: a.title, savings: a.displayValue || "" })).slice(0, 8),
   };
+}
+
+/** Download links for one order (admins can read the downloads table; buyers never can). */
+export async function orderDownloads(orderId: string, siteId: string) {
+  return (await list("downloads", siteId)).filter(d => d.orderId === orderId);
 }
 
 /** Automations (run by site-ops every hour): preview (dry run) or run now. */

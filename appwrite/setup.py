@@ -30,6 +30,7 @@ from appwrite.services.users import Users
 
 DB_ID = os.environ.get("APPWRITE_DATABASE_ID", "yancey")
 BUCKET_ID = os.environ.get("APPWRITE_BUCKET_ID", "files")
+DOWNLOADS_BUCKET_ID = os.environ.get("APPWRITE_DOWNLOADS_BUCKET_ID", "downloads")
 TEAM_ID = os.environ.get("ADMIN_TEAM_ID", "admins")
 
 # column helpers: (kind, key, required, extra kwargs)
@@ -45,7 +46,8 @@ E = lambda key, elements, default: ("enum", key, False, {"elements": elements, "
 PRODUCT_STATUSES = ["active", "draft", "archived", "unlisted"]
 FINANCIAL_STATUSES = ["pending", "paid", "partially_refunded", "refunded", "voided"]
 FULFILLMENT_STATUSES = ["unfulfilled", "partial", "fulfilled", "cancelled"]
-PAYMENT_PROVIDERS = ["manual", "stripe", "paypal", "shopify"]
+PAYMENT_PROVIDERS = ["manual", "stripe", "paypal", "shopify", "free"]
+CHECKOUT_PROVIDERS = ["stripe", "paypal", "free"]
 
 # Changes to columns that already exist on older installs (safe to re-run).
 MIGRATIONS = [
@@ -55,6 +57,7 @@ MIGRATIONS = [
     ("orders", "financialStatus", lambda db: db.update_enum_column(DB_ID, "orders", "financialStatus", FINANCIAL_STATUSES, False, "pending")),
     ("orders", "fulfillmentStatus", lambda db: db.update_enum_column(DB_ID, "orders", "fulfillmentStatus", FULFILLMENT_STATUSES, False, "unfulfilled")),
     ("orders", "paymentProvider", lambda db: db.update_enum_column(DB_ID, "orders", "paymentProvider", PAYMENT_PROVIDERS, False, "manual")),
+    ("checkouts", "provider", lambda db: db.update_enum_column(DB_ID, "checkouts", "provider", CHECKOUT_PROVIDERS, False, "stripe")),
 ]
 
 SCHEMA = {
@@ -75,7 +78,9 @@ SCHEMA = {
                     # imported / richer catalog data (Shopify-compatible)
                     S("handle", 255), S("vendor", 255), S("productType", 255), LT("tags"), LT("images"), LT("variants"),
                     S("seoTitle", 255), S("seoDescription", 1024), B("tracksInventory", default=True), F("costPerItem", min=0),
-                    S("externalId", 64), S("source", 32)],
+                    S("externalId", 64), S("source", 32),
+                    # digital products: [{fileId, name, size}] in the private downloads bucket, plus per-file limits
+                    LT("digitalFiles"), I("downloadLimit", min=1), I("downloadDays", min=1)],
         "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"]), ("by_handle", TablesDBIndexType.KEY, ["siteId", "handle"])],
     },
     "customers": {
@@ -98,15 +103,26 @@ SCHEMA = {
                     D("placedAt"), S("externalId", 64), F("subtotal", min=0), F("shippingTotal", min=0), F("taxTotal", min=0),
                     F("refundedAmount", min=0), D("cancelledAt"), S("currency", 8), LT("billingAddress"), LT("shippingAddress"),
                     S("paymentMethod", 128), S("source", 32), LT("tags")],
-        "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"]), ("by_number", TablesDBIndexType.KEY, ["siteId", "number"])],
+        "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"]), ("by_number", TablesDBIndexType.KEY, ["siteId", "number"]),
+                    ("by_email", TablesDBIndexType.KEY, ["siteId", "customerEmail"])],
     },
     # Carts that were sent to Stripe/PayPal. Only the checkout function (server key) touches these.
     "checkouts": {
         "public_read": False,
-        "columns": [S("siteId", 36, True), E("provider", ["stripe", "paypal"], "stripe"), S("providerRef", 128), LT("items"),
+        "columns": [S("siteId", 36, True), E("provider", CHECKOUT_PROVIDERS, "stripe"), S("providerRef", 128), LT("items"),
                     F("total", True, min=0), S("currency", 8), E("status", ["open", "completed", "expired"], "open"), S("email", 255),
-                    S("discountCode", 32), S("discountId", 36), F("discountAmount", min=0), B("acceptsMarketing", default=False), D("recoveryEmailedAt")],
+                    S("discountCode", 32), S("discountId", 36), F("discountAmount", min=0), B("acceptsMarketing", default=False), D("recoveryEmailedAt"),
+                    S("accessKey", 64)],  # on the buyer's success URL; lets only them see the order's downloads
         "indexes": [("by_ref", TablesDBIndexType.KEY, ["providerRef"]), ("by_site", TablesDBIndexType.KEY, ["siteId"])],
+    },
+    # One personal download link per file per order. Admins can see and reset them; buyers only ever see their own token.
+    "downloads": {
+        "public_read": False,
+        "columns": [S("siteId", 36, True), S("orderId", 36, True), S("productId", 36), S("fileId", 36, True), S("name", 255),
+                    I("size", min=0), S("token", 64, True), I("downloadCount", min=0, default=0), I("maxDownloads", min=1), D("expiresAt"),
+                    D("lastDownloadAt"), B("revoked", default=False)],
+        "indexes": [("by_token", TablesDBIndexType.UNIQUE, ["token"]), ("by_order", TablesDBIndexType.KEY, ["orderId"]),
+                    ("by_site", TablesDBIndexType.KEY, ["siteId"])],
     },
     "collections": {
         "public_read": True,  # storefronts read these with Yancey.collection()
@@ -234,6 +250,10 @@ def main():
         file_security=False, maximum_file_size=10_000_000,
         allowed_file_extensions=["jpg", "jpeg", "png", "gif", "webp", "svg", "avif", "pdf", "mp4", "csv", "txt"]),
         lambda: Storage(client).get_bucket(BUCKET_ID))
+    ensure(f"bucket '{DOWNLOADS_BUCKET_ID}' (PRIVATE, for digital products; buyers get counted links)", lambda: Storage(client).create_bucket(
+        DOWNLOADS_BUCKET_ID, "Downloads", permissions=[Permission.read(admin), Permission.create(admin), Permission.update(admin), Permission.delete(admin)],
+        file_security=False, maximum_file_size=50_000_000),  # 50 MB is the free plan's per-file limit
+        lambda: Storage(client).get_bucket(DOWNLOADS_BUCKET_ID))
 
     email, password = os.environ.get("ADMIN_EMAIL"), os.environ.get("ADMIN_PASSWORD")
     if email:
