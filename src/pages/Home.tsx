@@ -109,7 +109,6 @@ function SetupChecklist({ site }: { site: Site }) {
   const steps = [
     { label: "Add your store's URL", done: !!site.domain, to: "/settings#url" },
     { label: "Confirm your email and verify your sending domain", done: site.emailStatus === "verified" && !!site.ownerEmail, to: "/settings#email" },
-    { label: "Connect the domain to Cloudflare", done: !!site.cloudflareZoneId, to: "/settings#connections" },
     { label: "Connect hosting (Appwrite Sites)", done: !!site.hostingSiteId, to: "/settings#connections" },
     { label: "Connect Google Analytics and Search Console", done: !!(site.ga4PropertyId && site.gscProperty), to: "/settings#connections" },
     { label: "Turn on payments (Stripe / PayPal)", done: payments, to: "/account" },

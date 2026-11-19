@@ -65,7 +65,6 @@ export const NAV: NavGroup[] = [
       approach: "Stripe Terminal (pay per transaction, no monthly fee) or a 'Tap to Pay' phone; orders land in Yancey like online ones." } },
   ] },
   { group: "Infrastructure", items: [
-    { to: "/domains", label: "Domain & DNS", icon: Globe },
     { to: "/deploys", label: "Deploys", icon: Rocket },
   ] },
 ];

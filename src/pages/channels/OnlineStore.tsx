@@ -16,7 +16,6 @@ export default function OnlineStore() {
         <Card title="Manage">
           <ul className="space-y-1 text-sm">
             <li><Link className="underline" to={sp("/deploys")}>Deploys</Link>: publish changes, see build history</li>
-            <li><Link className="underline" to={sp("/domains")}>Domain &amp; DNS</Link>: Cloudflare records and SSL</li>
             <li><Link className="underline" to={sp("/products/collections")}>Collections</Link>: what shows on your storefront pages</li>
             <li><Link className="underline" to={sp("/seo")}>SEO</Link>: crawl the store, page speed, sitemaps</li>
           </ul>
