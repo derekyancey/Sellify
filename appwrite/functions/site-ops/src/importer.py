@@ -396,9 +396,12 @@ def run(db, kind, site_id, rows, options=None, database_id=DB_DEFAULT):
         # keep customers' last-order date current (used by win-back automations); only for customers that exist
         cids = {customer_id(site_id, e): t for e, t in last.items()}
         known = w.existing("customers", list(cids))
-        bumps = [{"$id": cid, "lastOrderAt": t} for cid, t in cids.items()
+        # Appwrite's bulk upsert validates required columns even on update, so send them along.
+        bumps = [{"$id": cid, "siteId": site_id, "name": _a(known[cid], "name") or "Customer", "lastOrderAt": t} for cid, t in cids.items()
                  if cid in known and (not _a(known[cid], "lastOrderAt") or _a(known[cid], "lastOrderAt") < t)]
         if bumps:
-            w.upsert("customers", bumps)
+            _, bump_problems = w.upsert("customers", bumps)
+            result["problems"] = (result["problems"] + bump_problems)[:200]
+            result["problemCount"] += len(bump_problems)
         result["customersLinked"] = len(known)
     return result

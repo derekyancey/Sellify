@@ -1,7 +1,7 @@
 import { orderDate } from "../lib/types";
 import { useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Download, Plus, Trash2 } from "lucide-react";
+import { Download, Plus, Trash2, Upload } from "lucide-react";
 import { storeSlug, useSite, useStorePath } from "../context/Site";
 import { createOrder, list, ops, update } from "../lib/data";
 import { useAsync } from "../lib/useAsync";
@@ -91,6 +91,7 @@ export default function Orders({ drafts = false }: { drafts?: boolean }) {
   return (
     <>
       <PageHeader title={drafts ? "Draft orders" : "Orders"} subtitle={drafts ? "Manual orders waiting for payment. Mark them paid once you've been paid." : `${data?.length ?? 0} total`} actions={<>
+        {!drafts && <Link to={sp("/import")} className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium hover:bg-zinc-50"><Upload className="size-4" />Import</Link>}
         <Button onClick={() => downloadCsv(`${storeSlug(s)}-orders.csv`, rows.map(o => ({ order: o.number, date: orderDate(o), customer: o.customerName, email: o.customerEmail, total: o.total, payment: o.financialStatus, provider: o.paymentProvider ?? "manual", paymentRef: o.paymentRef ?? "", fulfillment: o.fulfillmentStatus, items: o.items.map(i => `${i.quantity}x ${i.title}`).join("; ") })))}><Download className="size-4" />Export</Button>
         <Button variant="primary" onClick={() => setCreating(true)}><Plus className="size-4" />{drafts ? "Create draft" : "Create order"}</Button>
       </>} />

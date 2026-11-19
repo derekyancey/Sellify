@@ -118,8 +118,9 @@ def run(db, storage, site_id, *, database_id, bucket, public_endpoint, project_i
             desc = _a(p, "description") or ""
             for old, new in mapping.items():
                 desc = desc.replace(old, new)
-            db.upsert_rows(database_id, "products", [{
-                "$id": _a(p, "$id"), "images": json.dumps(images), "variants": json.dumps(variants),
+            db.upsert_rows(database_id, "products", [{  # bulk upsert needs the required columns even on update
+                "$id": _a(p, "$id"), "siteId": _a(p, "siteId") or site_id, "title": _a(p, "title"), "price": _a(p, "price") or 0,
+                "images": json.dumps(images), "variants": json.dumps(variants),
                 "imageUrl": images[0]["src"] if images else _a(p, "imageUrl"), "description": desc or None}])
         if out_of_time:
             break
