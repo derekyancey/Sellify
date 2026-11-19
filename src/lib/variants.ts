@@ -60,3 +60,9 @@ export function defaultVariant(p: Product, wanted?: string | null) {
 
 /** Stock for a product or one of its variants. */
 export const stockOf = (p: Product, v?: Variant) => (v ? v.inventory : p.inventory);
+
+/** Every image of a product in gallery order: main image, extra images, then variant images not already listed. */
+export function galleryOf(p: Pick<Product, "imageUrl" | "images" | "variants">): string[] {
+  const all = [p.imageUrl, ...(p.images ?? []), ...(p.variants ?? []).map(v => v.imageUrl)].filter((u): u is string => !!u);
+  return [...new Set(all)];
+}

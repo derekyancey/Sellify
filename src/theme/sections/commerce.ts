@@ -1,8 +1,9 @@
 import type { Product, Variant } from "../../lib/types";
-import { defaultVariant, hasVariants, variantTitle } from "../../lib/variants";
+import { defaultVariant, galleryOf, hasVariants, priceRange, variantTitle } from "../../lib/variants";
 import type { RenderCtx, SectionCtx, SectionSchema } from "../types";
 import { ICONS, blockAttrs, bool, collectionCard, collectionProducts, collectionUrl, editable, esc, findCollection, findProduct, fmt, iconOptions, img, inline, num, pad, priceHtml, productCard, ratioFor, rich, schemeClass, str } from "../util";
 import { colorScheme, editorEmpty, headingSize, padding } from "./shared";
+import { OPTION_PREFIX, activeChips, applyFilters, facets, queryOf } from "../filters";
 
 const wrap = (s: SectionCtx, inner: string, extra = "") => {
   const hover = str(s.theme.settings.hover_effect, "lift");
@@ -173,10 +174,27 @@ ${bool(x.show_dynamic_checkout, true) ? `<button type="button" class="button but
   }).join("");
 }
 
+/** Product media: one slide per image; thumbnails or a stacked grid on desktop, swipe on mobile, optional zoom. */
+function gallery(p: Product, v: Variant | undefined, o: { layout: string; ratio?: string; zoom: boolean; link?: string; eager?: boolean }) {
+  const images = galleryOf(p);
+  const start = Math.max(0, images.indexOf(v?.imageUrl ?? ""));
+  if (images.length <= 1) {
+    const one = img(images[0], p.title, { ratio: o.ratio, placeholder: "product", eager: o.eager });
+    return `<div class="product__media gallery" data-product-media data-gallery${o.zoom && images.length ? " data-zoomable" : ""}><div class="gallery__slides"><div class="gallery__slide is-active" data-src="${esc(images[0] ?? "")}">${o.link ? `<a href="${esc(o.link)}">${one}</a>` : one}</div></div></div>`;
+  }
+  const slides = images.map((u, i) => `<div class="gallery__slide${i === start ? " is-active" : ""}" data-gallery-index="${i}" data-src="${esc(u)}">${img(u, `${p.title} – image ${i + 1}`, { ratio: o.ratio, eager: o.eager && i === start })}</div>`).join("");
+  const thumbs = o.layout === "thumbnails" ? `<div class="gallery__thumbs">${images.map((u, i) => `<button type="button" class="gallery__thumb${i === start ? " is-active" : ""}" data-thumb="${i}" aria-label="Show image ${i + 1}"><img src="${esc(u)}" alt="" loading="lazy"></button>`).join("")}</div>` : "";
+  const dots = `<div class="gallery__dots" aria-hidden="true">${images.map((_, i) => `<span class="${i === start ? "is-active" : ""}"></span>`).join("")}</div>`;
+  return `<div class="product__media gallery gallery--${esc(o.layout)}" data-product-media data-gallery${o.zoom ? " data-zoomable" : ""}>
+<div class="gallery__slides">${slides}</div>${dots}${thumbs}</div>`;
+}
+
 const productSettings = [
   { type: "select" as const, id: "media_size", label: "Desktop media width", default: "55%", options: [{ value: "45%", label: "Small" }, { value: "55%", label: "Medium" }, { value: "65%", label: "Large" }] },
   { type: "radio" as const, id: "media_position", label: "Desktop media position", default: "left", options: [{ value: "left", label: "Left" }, { value: "right", label: "Right" }] },
   { type: "select" as const, id: "image_ratio", label: "Image ratio", default: "square", options: [{ value: "adapt", label: "Adapt to image" }, { value: "portrait", label: "Portrait" }, { value: "square", label: "Square" }] },
+  { type: "select" as const, id: "gallery_layout", label: "Desktop gallery layout", default: "thumbnails", options: [{ value: "thumbnails", label: "Main image with thumbnails" }, { value: "stacked", label: "Stacked grid" }], info: "On mobile, images are always a swipeable slider." },
+  { type: "checkbox" as const, id: "enable_zoom", label: "Enable image zoom", default: true },
 ];
 const defaultProductBlocks = [{ type: "title" }, { type: "price" }, { type: "variant_picker" }, { type: "inventory" }, { type: "quantity_selector" }, { type: "buy_buttons" }, { type: "description" }, { type: "trust" }, { type: "collapsible_tab", settings: { heading: "Shipping & returns", icon: "truck" } }, { type: "share" }];
 
@@ -188,7 +206,7 @@ const mainProduct: SectionSchema = {
   render(s) {
     const st = s.settings, p = s.route.product ?? sampleProduct(s), v = defaultVariant(p, s.route.variant);
     return wrap(s, `<div class="page-width"><div class="product product--${esc(str(st.media_position, "left"))}" style="--media-w:${esc(str(st.media_size, "55%"))}" data-product="${esc(p.$id)}" data-currency="${esc(s.data.site.currency || "USD")}" data-product-image="${esc(p.imageUrl ?? "")}" data-update-url${variantData(p)}>
-<div class="product__media" data-product-media>${img(v?.imageUrl || p.imageUrl, p.title, { ratio: ratioFor(st.image_ratio) === "adapt" ? undefined : ratioFor(st.image_ratio), placeholder: "product", eager: true })}</div>
+${gallery(p, v, { layout: str(st.gallery_layout, "thumbnails"), ratio: ratioFor(st.image_ratio) === "adapt" ? undefined : ratioFor(st.image_ratio), zoom: bool(st.enable_zoom, true), eager: true })}
 <div class="product__info${bool(st.sticky_info, true) ? " is-sticky" : ""}">${productInfo(s, p, false, v)}</div></div></div>`);
   },
 };
@@ -201,7 +219,7 @@ const featuredProduct: SectionSchema = {
   render(s) {
     const st = s.settings, p = findProduct(s, st.product) ?? sampleProduct(s), v = defaultVariant(p);
     return wrap(s, `<div class="page-width"><div class="product product--${esc(str(st.media_position, "left"))}" style="--media-w:${esc(str(st.media_size, "55%"))}" data-product="${esc(p.$id)}" data-currency="${esc(s.data.site.currency || "USD")}" data-product-image="${esc(p.imageUrl ?? "")}"${variantData(p)}>
-<div class="product__media" data-product-media><a href="/products/${esc(p.$id)}">${img(v?.imageUrl || p.imageUrl, p.title, { ratio: ratioFor(st.image_ratio) === "adapt" ? undefined : ratioFor(st.image_ratio), placeholder: "product" })}</a></div>
+${gallery(p, v, { layout: str(st.gallery_layout, "thumbnails"), ratio: ratioFor(st.image_ratio) === "adapt" ? undefined : ratioFor(st.image_ratio), zoom: bool(st.enable_zoom, true), link: `/products/${p.$id}` })}
 <div class="product__info">${productInfo(s, p, true, v)}</div></div></div>`);
   },
 };
@@ -244,6 +262,9 @@ const collectionGrid: SectionSchema = {
     { type: "range", id: "products_per_page", label: "Products per page", min: 4, max: 48, step: 4, default: 16 },
     { type: "range", id: "columns", label: "Columns on desktop", min: 1, max: 6, step: 1, default: 4 },
     { type: "select", id: "columns_mobile", label: "Columns on mobile", default: "2", options: [{ value: "1", label: "1 column" }, { value: "2", label: "2 columns" }] },
+    { type: "header", label: "Filtering and sorting" },
+    { type: "checkbox", id: "enable_filtering", label: "Enable filtering", default: true, info: "Filter by availability, price and product options like size or color." },
+    { type: "select", id: "filter_layout", label: "Desktop filter layout", default: "vertical", options: [{ value: "vertical", label: "Sidebar" }, { value: "horizontal", label: "Above products" }], visible_if: st => st.enable_filtering !== false },
     { type: "checkbox", id: "enable_sorting", label: "Enable sorting", default: true },
     { type: "header", label: "Product card" }, ratioSetting,
     { type: "checkbox", id: "quick_add", label: "Enable quick add button", default: true },
@@ -252,21 +273,59 @@ const collectionGrid: SectionSchema = {
   presets: [{ name: "Product grid" }],
   render(s) {
     const st = s.settings;
+    const params = s.route.params ?? {};
+    const isSearch = s.route.template === "search";
     let list: Product[];
     let heading = "";
-    if (s.route.template === "search") {
+    if (isSearch) {
       const q = (s.route.query ?? "").trim().toLowerCase();
       const desc = bool(s.theme.settings.search_descriptions, true);
-      list = q ? collectionProducts(s).filter(p => p.title.toLowerCase().includes(q) || (desc && (p.description ?? "").toLowerCase().includes(q))) : [];
+      list = q ? collectionProducts(s).filter(p => p.title.toLowerCase().includes(q) || (desc && (p.description ?? "").toLowerCase().includes(q))
+        || (p.variants ?? []).some(v => v.sku?.toLowerCase() === q) || p.sku?.toLowerCase() === q) : [];
       heading = `<h1 class="h2">${q ? `Results for “${esc(s.route.query)}”` : "Search our store"}</h1>
 <form action="/search" class="inline-form" style="margin-bottom:24px"><input class="input" type="search" name="q" value="${esc(s.route.query ?? "")}" placeholder="Search" aria-label="Search"><button class="button">Search</button></form>`;
     } else list = collectionProducts(s, s.route.collection);
-    const sorted = sortProducts(list, s.route.sort).slice(0, num(st.products_per_page, 16));
+
+    const filtering = bool(st.enable_filtering, true) && list.length > 0;
+    const filtered = filtering ? applyFilters(list, params) : list;
+    const per = num(st.products_per_page, 16), pages = Math.max(1, Math.ceil(filtered.length / per));
+    const page = Math.min(pages, Math.max(1, Math.floor(Number(params.page?.[0]) || 1)));
+    const shown = sortProducts(filtered, s.route.sort).slice((page - 1) * per, page * per);
+    const base = s.route.path.split("?")[0];
+
     const sorts = [["manual", "Featured"], ["price-asc", "Price, low to high"], ["price-desc", "Price, high to low"], ["title-asc", "Alphabetically, A-Z"], ["created-desc", "Date, new to old"]];
-    const toolbar = `<div class="collection-toolbar"><span class="subdued">${list.length} product${list.length === 1 ? "" : "s"}</span>${bool(st.enable_sorting, true) && s.route.template !== "search" ? `<label style="display:flex;align-items:center;gap:8px">Sort by <select class="select" data-sort>${sorts.map(([v, l]) => `<option value="${v}"${(s.route.sort ?? "manual") === v ? " selected" : ""}>${l}</option>`).join("")}</select></label>` : ""}</div>`;
-    const body = sorted.length ? grid(s, sorted, { cols: num(st.columns, 4), colsM: num(st.columns_mobile, 2), ratio: ratioFor(st.image_ratio), quickAdd: bool(st.quick_add, true) })
-      : `<div class="empty-state"><p>${s.route.template === "search" && s.route.query ? "No products match your search." : "No products found."}</p><a class="button" href="/collections/all">Continue shopping</a></div>`;
-    return wrap(s, `<div class="page-width">${heading}${toolbar}${body}</div>`);
+    const sortSel = bool(st.enable_sorting, true) && !isSearch ? `<label class="sort-by">Sort by <select class="select" data-sort data-path="${esc(s.route.path)}">${sorts.map(([v, l]) => `<option value="${v}"${(s.route.sort ?? "manual") === v ? " selected" : ""}>${l}</option>`).join("")}</select></label>` : "";
+
+    let facetsHtml = "", chipsHtml = "", toggle = "";
+    if (filtering) {
+      const fs = facets(list, params);
+      const cur = s.data.site.currency || "USD";
+      const max = Math.ceil(Math.max(...list.map(p => priceRange(p).max)));
+      const nActive = activeChips(s.route, params).chips.length;
+      const group = (title: string, body: string, open: boolean) => `<details class="facet"${open ? " open" : ""}><summary>${esc(title)}<span class="chev">${ICONS.chevron}</span></summary><div class="facet__body">${body}</div></details>`;
+      const check = (name: string, value: string, label: string, count: number, checked: boolean) =>
+        `<label class="facet__check"><input type="checkbox" name="${esc(name)}" value="${esc(value)}"${checked ? " checked" : ""}${count ? "" : " disabled"}><span>${esc(label)}</span><span class="subdued">(${count})</span></label>`;
+      const inStock = list.filter(p => p.inventory > 0).length;
+      facetsHtml = `<form class="facets" data-filters action="${esc(base)}">
+${s.route.sort ? `<input type="hidden" name="sort" value="${esc(s.route.sort)}">` : ""}${isSearch ? `<input type="hidden" name="q" value="${esc(s.route.query ?? "")}">` : ""}
+${group("Availability", check("filter.v.availability", "1", "In stock", inStock, !!params["filter.v.availability"]?.includes("1")), true)}
+${group("Price", `<div class="facet__price"><label><span class="visually-hidden">From</span><input class="input" type="number" min="0" name="filter.v.price.gte" placeholder="From" value="${esc(params["filter.v.price.gte"]?.[0] ?? "")}"></label><span>–</span><label><span class="visually-hidden">To</span><input class="input" type="number" min="0" name="filter.v.price.lte" placeholder="${max}" value="${esc(params["filter.v.price.lte"]?.[0] ?? "")}"></label></div><p class="subdued" style="font-size:.8rem;margin:6px 0 0">Highest price is ${fmt(s, max)} (${esc(cur)})</p>`, !!(params["filter.v.price.gte"] || params["filter.v.price.lte"]))}
+${fs.map(f => group(f.name, f.values.map(v => check(OPTION_PREFIX + f.key, v.value, v.value, v.count, v.active)).join(""), true)).join("")}
+<noscript><button class="button button--small">Apply</button></noscript></form>`;
+      const { chips, clear } = activeChips(s.route, params);
+      chipsHtml = chips.length ? `<div class="chips">${chips.map(c => `<a class="chip" href="${esc(c.href)}">${esc(c.label)} <span aria-hidden="true">×</span><span class="visually-hidden">Remove filter</span></a>`).join("")}<a class="link-arrow" href="${esc(clear)}">Clear all</a></div>` : "";
+      toggle = `<button type="button" class="button button--secondary button--small facets-toggle" data-facets-toggle>Filter${nActive ? ` (${nActive})` : ""}</button>`;
+    }
+    const toolbar = `<div class="collection-toolbar">${toggle}<span class="subdued">${filtered.length} product${filtered.length === 1 ? "" : "s"}</span>${sortSel}</div>`;
+    const body = shown.length ? grid(s, shown, { cols: num(st.columns, 4), colsM: num(st.columns_mobile, 2), ratio: ratioFor(st.image_ratio), quickAdd: bool(st.quick_add, true) })
+      : `<div class="empty-state"><p>${list.length && filtered.length === 0 ? "No products match these filters." : isSearch && s.route.query ? "No products match your search." : "No products found."}</p>${list.length && !filtered.length ? `<a class="button" href="${esc(activeChips(s.route, params).clear)}">Clear filters</a>` : `<a class="button" href="/collections/all">Continue shopping</a>`}</div>`;
+    const pager = pages > 1 ? `<nav class="pagination" aria-label="Pagination">${page > 1 ? `<a href="${esc(base + queryOf(params, { page: page > 2 ? [String(page - 1)] : [] }))}" aria-label="Previous page">${ICONS.left}</a>` : ""}
+${Array.from({ length: pages }, (_, i) => i + 1).map(n => n === page ? `<span aria-current="page">${n}</span>` : `<a href="${esc(base + queryOf(params, { page: n > 1 ? [String(n)] : [] }))}">${n}</a>`).join("")}
+${page < pages ? `<a href="${esc(base + queryOf(params, { page: [String(page + 1)] }))}" aria-label="Next page">${ICONS.right}</a>` : ""}</nav>` : "";
+    const layout = str(st.filter_layout, "vertical");
+    return wrap(s, `<div class="page-width">${heading}${filtering
+      ? `<div class="collection collection--${esc(layout)}">${facetsHtml}<div class="collection__main">${toolbar}${chipsHtml}${body}${pager}</div></div>`
+      : `${toolbar}${body}${pager}`}</div>`);
   },
 };
 

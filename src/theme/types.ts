@@ -119,6 +119,7 @@ export interface Route {
   variant?: string;            // ?variant=<id> on product pages
   collection?: Collection;
   query?: string;              // search terms
+  params?: Record<string, string[]>;  // all query-string values (filters, page…)
   sort?: string;
   path: string;
 }

@@ -52,6 +52,10 @@ export function buildDemo() {
       }));
       Object.assign(p, withRollups(p));
     }
+    for (const p of products.filter(p => p.siteId === s.$id && p.imageUrl)) {
+      const word = encodeURIComponent(p.title.split(" ")[0]);
+      p.images = [`https://placehold.co/600x600/d6d3d1/292524?text=${word}+2`, `https://placehold.co/600x600/a8a29e/1c1917?text=${word}+3`];
+    }
     const siteProducts = products.filter(p => p.siteId === s.$id);
     const siteCustomers: Customer[] = Array.from({ length: siteProducts.length ? 18 : 0 }, () => {
       const name = `${pick(first)} ${pick(last)}`;

@@ -1,5 +1,6 @@
 import type { Collection, Product } from "../lib/types";
 import type { Route, ThemeDoc } from "./types";
+import { paramsOf } from "./filters";
 
 /** The pseudo collection behind /collections/all. */
 export const allCollection = (products: Product[], siteId: string): Collection =>
@@ -10,7 +11,7 @@ export function routeFor(url: string, theme: ThemeDoc, products: Product[], coll
   const u = new URL(url, "https://store.invalid");
   const path = u.pathname.replace(/\/index\.html$/, "/").replace(/\/+$/, "") || "/";
   const parts = path.split("/").filter(Boolean).map(decodeURIComponent);
-  const base = { path: path + u.search, sort: u.searchParams.get("sort") ?? undefined };
+  const base = { path: path + u.search, sort: u.searchParams.get("sort") ?? undefined, params: paramsOf(u.search) };
   if (!parts.length) return { ...base, template: "index" };
   const [kind, handle] = parts;
   if (kind === "products" && handle) {

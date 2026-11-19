@@ -8,6 +8,7 @@ export interface StoreApi {
   checkout(provider: "stripe" | "paypal", opts: { discountCode?: string; note?: string }): Promise<void>;
   buyNow(productId: string, quantity: number, variantId?: string): Promise<void>;
   discount(code: string): Promise<string>;           // resolves to a message to show
+  search?(q: string): { kind: string; title: string; url: string; image?: string; price?: string }[];
   subscribe(email: string): Promise<void>;
   navigate(url: string): void;
 }
@@ -44,6 +45,13 @@ export function installBehaviors(doc: Document, api: StoreApi) {
     const el = <T extends HTMLElement = HTMLElement>(sel: string) => t.closest<T>(sel);
     let b: HTMLElement | null;
 
+    if (el("[data-facets-toggle]")) { $("form[data-filters]")?.classList.toggle("is-open"); return; }
+    if ((b = el("[data-thumb]"))) { showSlide(b.closest<HTMLElement>("[data-gallery]")!, Number(b.dataset.thumb), false); return; }
+    if ((b = el("[data-gallery][data-zoomable] .gallery__slide")) && !t.closest("a")) {
+      const g = b.closest<HTMLElement>("[data-gallery]")!;
+      lightbox(g, $$(".gallery__slide", g).indexOf(b));
+      return;
+    }
     if ((b = el("[data-add-to-cart]"))) {
       e.preventDefault();
       const id = b.dataset.addToCart!, vid = b.dataset.variant || undefined;
@@ -105,14 +113,72 @@ export function installBehaviors(doc: Document, api: StoreApi) {
   doc.addEventListener("change", e => {
     const t = e.target as HTMLElement;
     if (t.matches("[data-sort]")) {
-      const u = new URL(win.location.href);
+      const u = new URL((t as HTMLElement).dataset.path || win.location.pathname + win.location.search, "https://store.invalid");
       const v = (t as HTMLSelectElement).value;
       if (v === "manual") u.searchParams.delete("sort"); else u.searchParams.set("sort", v);
+      u.searchParams.delete("page");
       api.navigate(u.pathname + u.search);
     }
     if (t.matches("[data-line-input]")) setLine((t as HTMLInputElement).dataset.lineInput!, Math.max(0, Number((t as HTMLInputElement).value) || 0));
     if (t.matches("[data-option]")) selectVariant(t.closest<HTMLElement>("[data-product]"));
+    const filters = t.closest<HTMLFormElement>("form[data-filters]");
+    if (filters) {
+      const q = new URLSearchParams();
+      new FormData(filters).forEach((v, k) => { if (String(v).trim() !== "") q.append(k, String(v)); });
+      const qs = q.toString();
+      api.navigate((filters.getAttribute("action") || win.location.pathname) + (qs ? `?${qs}` : ""));
+    }
   });
+
+  /* ---------------- product gallery */
+  function showSlide(g: HTMLElement, i: number, scroll = true) {
+    const slides = $$(".gallery__slide", g);
+    if (!slides[i]) return;
+    slides.forEach((x, n) => x.classList.toggle("is-active", n === i));
+    $$(".gallery__thumb", g).forEach((x, n) => x.classList.toggle("is-active", n === i));
+    $$(".gallery__dots span", g).forEach((x, n) => x.classList.toggle("is-active", n === i));
+    const track = $(".gallery__slides", g);
+    if (scroll && track && track.scrollWidth > track.clientWidth) track.scrollTo({ left: slides[i].offsetLeft - track.offsetLeft, behavior: "smooth" });
+  }
+  function showImage(prod: HTMLElement, src: string) {
+    const g = $("[data-gallery]", prod); if (!g) return;
+    const i = $$(".gallery__slide", g).findIndex(x => x.dataset.src === src);
+    if (i >= 0) showSlide(g, i);
+    else { const img = $<HTMLImageElement>(".gallery__slide.is-active img", g); if (img) img.src = src; }
+  }
+  function lightbox(g: HTMLElement, start: number) {
+    const srcs = $$(".gallery__slide", g).map(x => x.dataset.src!).filter(Boolean);
+    if (!srcs.length) return;
+    let i = start;
+    const box = doc.createElement("div");
+    box.className = "lightbox"; box.setAttribute("role", "dialog"); box.setAttribute("aria-label", "Image viewer");
+    const icon = (d: string) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="${d}"/></svg>`;
+    const draw = () => {
+      box.innerHTML = `<img src="${srcs[i].replace(/"/g, "&quot;")}" alt="">
+<button data-lb-close aria-label="Close">${icon("M6 6l12 12M18 6 6 18")}</button>
+${srcs.length > 1 ? `<button data-lb-prev aria-label="Previous image">${icon("m15 6-6 6 6 6")}</button><button data-lb-next aria-label="Next image">${icon("m9 6 6 6-6 6")}</button><div class="lightbox__count">${i + 1} / ${srcs.length}</div>` : ""}`;
+    };
+    const close = () => { box.parentNode?.removeChild(box); doc.removeEventListener("keydown", key, true); doc.documentElement.style.overflow = ""; };
+    const key = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { e.stopPropagation(); close(); }
+      if (e.key === "ArrowRight") { i = (i + 1) % srcs.length; draw(); }
+      if (e.key === "ArrowLeft") { i = (i - 1 + srcs.length) % srcs.length; draw(); }
+    };
+    box.addEventListener("click", e => {
+      const t = e.target as HTMLElement;
+      if (t.closest("[data-lb-next]")) { i = (i + 1) % srcs.length; draw(); }
+      else if (t.closest("[data-lb-prev]")) { i = (i - 1 + srcs.length) % srcs.length; draw(); }
+      else close();
+    });
+    draw(); doc.body.appendChild(box); doc.addEventListener("keydown", key, true);
+    doc.documentElement.style.overflow = "hidden";
+  }
+  doc.addEventListener("scroll", e => {
+    const track = e.target as HTMLElement;
+    if (!(track instanceof win.HTMLElement) || !track.classList?.contains("gallery__slides")) return;
+    const i = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+    $$(".gallery__dots span", track.parentElement!).forEach((x, n) => x.classList.toggle("is-active", n === i));
+  }, true);
 
   /** Cart line keys are "productId:variantId". */
   const setLine = (key: string, q: number) => { const [pid, vid] = key.split(":"); return api.setQuantity(pid, q, vid || undefined); };
@@ -149,8 +215,7 @@ export function installBehaviors(doc: Document, api: StoreApi) {
       if (btn.hasAttribute("data-add-to-cart")) { btn.disabled = sold; btn.textContent = !v ? "Unavailable" : sold ? "Sold out" : "Add to cart"; }
       else btn.hidden = sold;
     }
-    const image = $<HTMLImageElement>("[data-product-media] img", prod), src = v?.imageUrl || prod.dataset.productImage;
-    if (image && src && image.getAttribute("src") !== src) image.src = src;
+    if (v?.imageUrl) showImage(prod, v.imageUrl);
     if (v && prod.hasAttribute("data-update-url")) {
       try { const u = new URL(win.location.href); u.searchParams.set("variant", v.id); win.history.replaceState(null, "", u.pathname + u.search + u.hash); } catch { /* preview iframe */ }
     }
@@ -174,6 +239,28 @@ export function installBehaviors(doc: Document, api: StoreApi) {
       const q = (f.elements.namedItem("q") as HTMLInputElement).value.trim();
       api.navigate(`/search${q ? `?q=${encodeURIComponent(q)}` : ""}`);
     }
+  });
+
+  /* predictive search */
+  let searchTimer = 0;
+  doc.addEventListener("input", e => {
+    const input = e.target as HTMLInputElement;
+    if (!input.matches?.("[data-predictive-input]") || !api.search) return;
+    win.clearTimeout(searchTimer);
+    searchTimer = win.setTimeout(() => {
+      const box = input.closest("[data-search-modal]")?.querySelector<HTMLElement>("[data-predictive]");
+      if (!box) return;
+      const q = input.value.trim();
+      if (!q) { box.innerHTML = ""; return; }
+      const results = api.search!(q);
+      const esc = (v: unknown) => String(v ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]!));
+      const group = (kind: string, title: string) => {
+        const rows = results.filter(r => r.kind === kind);
+        return rows.length ? `<div class="predictive__group"><h3>${title}</h3>${rows.map(r => `<a class="predictive__item" href="${esc(r.url)}">${kind === "product" ? `<span class="predictive__img">${r.image ? `<img src="${esc(r.image)}" alt="" loading="lazy">` : ""}</span>` : ""}<span class="predictive__title">${esc(r.title)}</span>${r.price ? `<span class="predictive__price">${esc(r.price)}</span>` : ""}</a>`).join("")}</div>` : "";
+      };
+      box.innerHTML = `${group("product", "Products")}<div class="predictive__side">${group("collection", "Collections")}${group("page", "Pages")}</div>
+<a class="predictive__all" href="/search?q=${encodeURIComponent(q)}">${results.length ? "Search for" : "No quick matches. Search for"} “${esc(q)}” →</a>`;
+    }, 120);
   });
 
   doc.addEventListener("keydown", e => { if (e.key === "Escape") { setCart(false); const m = $("[data-search-modal]"); if (m) m.hidden = true; } });

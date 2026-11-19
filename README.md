@@ -207,7 +207,15 @@ Open a product → **Variants → Add options like size or color**. Type values 
 - **Checkout** prices and stock-checks every line by variant on the server, and paid orders decrement that variant's stock. Order lines, receipts, Stripe and PayPal show "House Blend — 2lb / Ground".
 - **Storefront:** the product page's *Variant picker* block (pills or dropdown, sold-out values crossed out) switches price, stock, image and the URL (`?variant=`) live. Product cards show "From $X" and *Choose options* instead of quick add. `yancey.js` cart lines carry `variantId`: `Yancey.cart.add(productId, qty, variantId)`.
 - **Inventory**, **Create order** and the **product feed** work per variant. The feed lists each variant with `item_group_id`, plus `size`/`color` when options use those names.
-- Setup: re-run `python appwrite/setup.py` (adds the `options` and `variants` columns to products) and redeploy both functions.
+- Setup: re-run `python appwrite/setup.py` (adds the `options`, `variants` and `images` columns to products) and redeploy both functions.
+
+**Product media:** each product has a gallery (upload, drop files, or paste URLs; drag to reorder; the first image is the main one). Variants pick their image from the gallery. On the storefront the product page shows main image + thumbnails or a stacked grid on desktop, a swipeable slider with dots on mobile, and a zoom lightbox (arrow keys, Escape). Choosing a variant jumps to its image. Product cards show the second image on hover (Theme settings → Product cards).
+
+## Storefront search and filters
+
+- **Collection and search pages** filter by availability, price range and every product option (Size, Color…, with counts), using Shopify's URL scheme (`?filter.v.option.size=M&filter.v.price.lte=40`). Active filters show as removable chips with *Clear all*; there's pagination and sorting. In the theme editor: *Product grid → Enable filtering*, sidebar or horizontal layout. On phones the filters sit behind a *Filter* button.
+- **Predictive search:** the header search suggests products (with image and price), collections and pages as customers type. It also matches SKUs and option values. Turn it off under *Header → Show search suggestions*.
+- **Editor on smaller screens:** below 1024px wide, a selected section's settings open in the left panel with a back arrow.
 
 ## Online store: themes and the theme editor
 

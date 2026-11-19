@@ -42,7 +42,7 @@ export async function deployStorefront(site: Site, theme: Theme, force = false) 
   const page = (path: string) => {
     const route = routeFor(path, theme.data, products, collections, site.$id);
     // Hide the page until storefront.js renders it if the server fell back to another URL's HTML.
-    const guard = `<script>if((location.pathname.replace(/\\/+$/,"")||"/")!==${JSON.stringify(path)})document.documentElement.style.visibility="hidden"</script>`;
+    const guard = `<script>if((location.pathname.replace(/\\/+$/,"")||"/")!==${JSON.stringify(path)}||/[?&](filter\\.|sort=|page=|q=|variant=)/.test(location.search))document.documentElement.style.visibility="hidden"</script>`;
     return renderDocument({ theme: theme.data, editor: false, route, data }, guard, storefrontScripts(site));
   };
   for (const path of paths) files[path === "/" ? "index.html" : `${path.slice(1)}/index.html`] = page(path);

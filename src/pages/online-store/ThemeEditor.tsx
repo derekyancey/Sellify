@@ -10,6 +10,8 @@ import { SECTIONS, blockSchema, fromPreset, themeSettings } from "../../theme/re
 import { bodyClass, headHtml, pageTitle, renderSection, renderSections } from "../../theme/render";
 import { routeFor } from "../../theme/routes";
 import { allCollection } from "../../theme/routes";
+import { paramsOf } from "../../theme/filters";
+import { predictiveSearch } from "../../theme/search";
 import { blankPage } from "../../theme/presets";
 import type { CartLine, RenderCtx, RenderData, Route, SettingValue, ThemeDoc } from "../../theme/types";
 import { slug } from "../../theme/util";
@@ -70,7 +72,7 @@ export default function ThemeEditor() {
   const [draft, setDraft] = useState<ThemeDoc | null>(null);
 
   const [template, setTemplate] = useState(params.get("template") || "index");
-  const [pick, setPick] = useState<{ product?: string; variant?: string; collection?: string; query?: string }>({});
+  const [pick, setPick] = useState<{ product?: string; variant?: string; collection?: string; query?: string; search?: string }>({});
   const [tab, setTab] = useState<"sections" | "settings">("sections");
   const [themeGroup, setThemeGroup] = useState<string | null>(null);
   const [selected, setSelected] = useState<Sel>(null);
@@ -87,6 +89,12 @@ export default function ThemeEditor() {
   const [media, setMedia] = useState<{ current: string; onPick(u: string): void } | null>(null);
   const [menus, setMenus] = useState<string | null>(null);
   const [pageMenu, setPageMenu] = useState(false);
+  const [wide, setWide] = useState(() => typeof window === "undefined" || window.matchMedia("(min-width: 1024px)").matches);
+  useEffect(() => {
+    const m = window.matchMedia("(min-width: 1024px)");
+    const on = () => setWide(m.matches);
+    m.addEventListener("change", on); return () => m.removeEventListener("change", on);
+  }, []);
 
   /* ------------------------------------------------ load */
   useEffect(() => {
@@ -146,7 +154,9 @@ export default function ThemeEditor() {
     const product = type === "product" ? products.find(p => p.$id === pick.product) ?? products.find(p => p.status === "active") : undefined;
     const collection = type === "collection" ? (pick.collection === "all" ? allCollection(products, s.$id) : collections.find(c => c.handle === pick.collection) ?? collections[0] ?? allCollection(products, s.$id)) : undefined;
     const path = product ? `/products/${product.$id}` : collection ? `/collections/${collection.handle}` : template === "index" ? "/" : template.startsWith("page.") ? `/pages/${template.slice(5)}` : `/${template}`;
-    return { template, product, variant: pick.variant, collection, query: type === "search" ? pick.query ?? "" : undefined, path };
+    const search = pick.search ?? "";
+    const params = paramsOf(search);
+    return { template, product, variant: pick.variant, collection, query: type === "search" ? pick.query ?? "" : undefined, path: path + search, params, sort: params.sort?.[0] };
   }, [template, pick, products, collections, s.$id]);
 
   const cartLines: CartLine[] = useMemo(() => cart.map(l => {
@@ -200,7 +210,7 @@ export default function ThemeEditor() {
     if (!doc) return;
     const r = routeFor(url, doc, products, collections, s.$id);
     setTemplate(r.template); setSelected(null);
-    setPick({ product: r.product?.$id, variant: r.variant, collection: r.collection?.handle, query: r.query });
+    setPick({ product: r.product?.$id, variant: r.variant, collection: r.collection?.handle, query: r.query, search: new URL(url, "https://x").search });
   };
 
   const changeTemplate = (k: string) => { setTemplate(k); setSelected(null); setPageMenu(false); setParams(p => { p.set("template", k); return p; }, { replace: true }); };
@@ -230,6 +240,7 @@ export default function ThemeEditor() {
     discount: async (code: string) => `Discount codes are checked at checkout (${code.toUpperCase()}).`,
     subscribe: async () => { /* preview only */ },
     navigate: onNavigate,
+    search: (q: string) => doc ? predictiveSearch(q, { products, collections, currency: s.currency || "USD" }, doc) : [],
   }), [doc, products, collections]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* ------------------------------------------------ keyboard */
@@ -271,6 +282,31 @@ export default function ThemeEditor() {
     const c = { ...ctx, editor: false, theme: { ...doc, settings: themeSettings(doc) } };
     return `<!doctype html><html><head>${headHtml(c)}<style>[data-reveal]{opacity:1!important;transform:none!important}body{pointer-events:none}</style></head><body class="color-scheme-1">${renderSection(c, id, section, "template")}</body></html>`;
   };
+
+  const selectionPanel = (
+    <>
+              {selSection && selLoc && selected ? (selected.blockId && selSection.blocks[selected.blockId] ? (
+                <BlockPanel key={selected.blockId} section={selSection} blockId={selected.blockId} onBack={() => setSelected({ sectionId: selected.sectionId })}
+                  onSetting={(k, v: SettingValue) => hist.commit(ops.setBlockSetting(doc, selLoc, selected.sectionId, selected.blockId!, k, v), `${selected.blockId}:${k}`)}
+                  onToggle={() => doAction("hide", selected.sectionId, selected.blockId)} onDuplicate={() => doAction("duplicate", selected.sectionId, selected.blockId)}
+                  onRemove={() => doAction("remove", selected.sectionId, selected.blockId)} />
+              ) : (
+                <SectionPanel key={selected.sectionId} section={selSection}
+                  onSetting={(k, v) => hist.commit(ops.setSectionSetting(doc, selLoc, selected.sectionId, k, v), `${selected.sectionId}:${k}`)}
+                  onRename={name => hist.commit(ops.setSectionProp(doc, selLoc, selected.sectionId, { name: name || undefined }), `${selected.sectionId}:name`)}
+                  onCss={css => hist.commit(ops.setSectionProp(doc, selLoc, selected.sectionId, { custom_css: css }), `${selected.sectionId}:css`)}
+                  onToggle={() => doAction("hide", selected.sectionId)} onDuplicate={() => doAction("duplicate", selected.sectionId)} onRemove={() => doAction("remove", selected.sectionId)}
+                  onAddBlock={anchor => setAddBlock({ where: selLoc.where, sectionId: selected.sectionId, anchor })} />
+              )) : (
+                <div className="p-6 text-center text-sm text-zinc-500">
+                  <MousePointerClick className="mx-auto mb-2 size-6 text-zinc-300" />
+                  Select a section or block in the sidebar or the preview to edit its settings.
+                  <p className="mt-3 text-xs">Tip: double-click text in the preview to edit it in place.</p>
+                </div>
+              )}
+    </>
+  );
+  const narrowSettings = !wide && !!selected && !!selSection;
 
   const iconBtn = (active: boolean) => cx("grid size-8 place-items-center rounded-lg", active ? "bg-zinc-200 text-zinc-900" : "text-zinc-600 hover:bg-zinc-100");
 
@@ -359,6 +395,10 @@ export default function ThemeEditor() {
             </nav>
             {/* left panel */}
             <aside className="flex w-72 shrink-0 flex-col border-r border-zinc-200 bg-white">
+              {narrowSettings ? <>
+                <button onClick={() => setSelected(null)} className="flex h-11 shrink-0 items-center gap-1.5 border-b border-zinc-200 px-4 text-left text-sm font-semibold hover:bg-zinc-50"><ArrowLeft className="size-4" />{templateTitle(template)}</button>
+                <div className="flex-1 overflow-y-auto">{selectionPanel}</div>
+              </> : <>
               <div className="flex h-11 shrink-0 items-center border-b border-zinc-200 px-4 text-sm font-semibold">{tab === "sections" ? templateTitle(template) : "Theme settings"}</div>
               <div className="flex-1 overflow-y-auto">
                 {tab === "sections" ? <>
@@ -405,6 +445,7 @@ export default function ThemeEditor() {
                     onScheme={(id, sc) => hist.commit(ops.setScheme(doc, id, sc), `scheme:${id}`)} />
                 )}
               </div>
+              </>}
             </aside>
           </>}
 
@@ -418,28 +459,10 @@ export default function ThemeEditor() {
             {toast && <div className="pointer-events-none absolute bottom-5 left-1/2 -translate-x-1/2 rounded-lg bg-zinc-900 px-4 py-2 text-sm text-white shadow-lg">{toast}</div>}
           </div>
 
-          {/* right panel: settings of the selection */}
-          {!full && (
+          {/* right panel: settings of the selection (on narrow screens they open in the left panel instead) */}
+          {!full && wide && (
             <aside className="hidden w-80 shrink-0 overflow-y-auto border-l border-zinc-200 bg-white lg:block">
-              {selSection && selLoc && selected ? (selected.blockId && selSection.blocks[selected.blockId] ? (
-                <BlockPanel key={selected.blockId} section={selSection} blockId={selected.blockId} onBack={() => setSelected({ sectionId: selected.sectionId })}
-                  onSetting={(k, v: SettingValue) => hist.commit(ops.setBlockSetting(doc, selLoc, selected.sectionId, selected.blockId!, k, v), `${selected.blockId}:${k}`)}
-                  onToggle={() => doAction("hide", selected.sectionId, selected.blockId)} onDuplicate={() => doAction("duplicate", selected.sectionId, selected.blockId)}
-                  onRemove={() => doAction("remove", selected.sectionId, selected.blockId)} />
-              ) : (
-                <SectionPanel key={selected.sectionId} section={selSection}
-                  onSetting={(k, v) => hist.commit(ops.setSectionSetting(doc, selLoc, selected.sectionId, k, v), `${selected.sectionId}:${k}`)}
-                  onRename={name => hist.commit(ops.setSectionProp(doc, selLoc, selected.sectionId, { name: name || undefined }), `${selected.sectionId}:name`)}
-                  onCss={css => hist.commit(ops.setSectionProp(doc, selLoc, selected.sectionId, { custom_css: css }), `${selected.sectionId}:css`)}
-                  onToggle={() => doAction("hide", selected.sectionId)} onDuplicate={() => doAction("duplicate", selected.sectionId)} onRemove={() => doAction("remove", selected.sectionId)}
-                  onAddBlock={anchor => setAddBlock({ where: selLoc.where, sectionId: selected.sectionId, anchor })} />
-              )) : (
-                <div className="p-6 text-center text-sm text-zinc-500">
-                  <MousePointerClick className="mx-auto mb-2 size-6 text-zinc-300" />
-                  Select a section or block in the sidebar or the preview to edit its settings.
-                  <p className="mt-3 text-xs">Tip: double-click text in the preview to edit it in place.</p>
-                </div>
-              )}
+              {selectionPanel}
             </aside>
           )}
         </div>

@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { ImageOff, Plus, X } from "lucide-react";
+import { useRef, useState } from "react";
+import { ImageOff, Loader2, Plus, Upload, X } from "lucide-react";
+import { uploadFile } from "../lib/files";
 import { storeSlug, useSite } from "../context/Site";
 import { create, list, remove, update } from "../lib/data";
 import { useAsync } from "../lib/useAsync";
@@ -10,7 +11,7 @@ import { Badge, Button, Card, ErrorBox, Field, Input, Loading, Modal, PageHeader
 import { downloadCsv } from "./Orders";
 
 type Draft = Omit<Product, "$id" | "$createdAt" | "siteId">;
-const blank: Draft = { title: "", description: "", price: 0, inventory: 0, status: "draft", sku: "", imageUrl: "" };
+const blank: Draft = { title: "", description: "", price: 0, inventory: 0, status: "draft", sku: "", imageUrl: "", images: [] };
 
 export default function Products() {
   const { site } = useSite(); const s = site!;
@@ -84,7 +85,6 @@ function ProductForm({ initial, onClose, onSaved }: { initial: Draft & { $id?: s
         <div className="space-y-3">
           <Field label="Title"><Input value={p.title} onChange={e => set("title", e.target.value)} /></Field>
           <Field label="Description"><Textarea rows={3} value={p.description ?? ""} onChange={e => set("description", e.target.value)} /></Field>
-          <Field label="Image URL" hint="Paste a URL (e.g. from Content → Files)."><Input value={p.imageUrl ?? ""} onChange={e => set("imageUrl", e.target.value)} /></Field>
         </div>
         <div className="space-y-3">
           <Field label="Status">
@@ -92,9 +92,10 @@ function ProductForm({ initial, onClose, onSaved }: { initial: Draft & { $id?: s
               <option value="active">Active (on your site)</option><option value="draft">Draft</option><option value="archived">Archived</option>
             </Select>
           </Field>
-          {p.imageUrl && <img src={p.imageUrl} alt="" className="aspect-square w-full rounded-lg border border-zinc-200 object-cover" />}
         </div>
       </div>
+      <MediaManager siteId={s.$id} images={[p.imageUrl, ...(p.images ?? [])].filter((u): u is string => !!u)}
+        onChange={list => setP(x => ({ ...x, imageUrl: list[0] ?? "", images: list.slice(1) }))} />
 
       {!multi && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -122,7 +123,7 @@ function ProductForm({ initial, onClose, onSaved }: { initial: Draft & { $id?: s
               <Plus className="size-4" />{options.length ? "Add another option" : "Add options like size or color"}
             </button>
           )}
-          {multi && variants.length > 0 && <VariantTable variants={variants} currency={s.currency} onChange={setVariant} onAll={patch => setP(x => ({ ...x, variants: (x.variants ?? []).map(v => ({ ...v, ...patch })) }))} />}
+          {multi && variants.length > 0 && <VariantTable variants={variants} currency={s.currency} gallery={[p.imageUrl, ...(p.images ?? [])].filter((u): u is string => !!u)} onChange={setVariant} onAll={patch => setP(x => ({ ...x, variants: (x.variants ?? []).map(v => ({ ...v, ...patch })) }))} />}
           {variants.length >= MAX_VARIANTS && <p className="text-xs text-amber-700">Products can have up to {MAX_VARIANTS} variants.</p>}
         </div>
       </section>
@@ -160,7 +161,7 @@ function OptionEditor({ option, index, onChange, onRemove }: { option: ProductOp
   );
 }
 
-function VariantTable({ variants, currency, onChange, onAll }: { variants: Variant[]; currency: string; onChange(id: string, patch: Partial<Variant>): void; onAll(patch: Partial<Variant>): void }) {
+function VariantTable({ variants, currency, gallery, onChange, onAll }: { variants: Variant[]; currency: string; gallery: string[]; onChange(id: string, patch: Partial<Variant>): void; onAll(patch: Partial<Variant>): void }) {
   const [bulk, setBulk] = useState("");
   const [bulkStock, setBulkStock] = useState("");
   const num = (v: string) => (v === "" ? undefined : Math.max(0, +v));
@@ -176,7 +177,7 @@ function VariantTable({ variants, currency, onChange, onAll }: { variants: Varia
       <div className="-mx-3 overflow-x-auto">
         <table className="w-full min-w-[640px] text-left text-sm">
           <thead className="border-y border-zinc-200 bg-zinc-50 text-xs text-zinc-500">
-            <tr><th className="px-3 py-1.5 font-medium">Variant</th><th className="px-2 py-1.5 font-medium">Price</th><th className="px-2 py-1.5 font-medium">Compare-at</th><th className="px-2 py-1.5 font-medium">Available</th><th className="px-2 py-1.5 font-medium">SKU</th><th className="px-2 py-1.5 font-medium">Image URL</th></tr>
+            <tr><th className="px-3 py-1.5 font-medium">Variant</th><th className="px-2 py-1.5 font-medium">Price</th><th className="px-2 py-1.5 font-medium">Compare-at</th><th className="px-2 py-1.5 font-medium">Available</th><th className="px-2 py-1.5 font-medium">SKU</th><th className="px-2 py-1.5 font-medium">Image</th></tr>
           </thead>
           <tbody className="divide-y divide-zinc-100">
             {variants.map(v => (
@@ -191,12 +192,73 @@ function VariantTable({ variants, currency, onChange, onAll }: { variants: Varia
                 <td className="px-2 py-1.5"><Input className="w-24" type="number" min={0} step="0.01" value={v.compareAtPrice ?? ""} onChange={e => onChange(v.id, { compareAtPrice: num(e.target.value) })} /></td>
                 <td className="px-2 py-1.5"><Input className={cx("w-20", v.inventory <= 0 && "text-red-600")} type="number" min={0} value={v.inventory} onChange={e => onChange(v.id, { inventory: Math.max(0, Math.floor(+e.target.value)) })} /></td>
                 <td className="px-2 py-1.5"><Input className="w-28" value={v.sku ?? ""} onChange={e => onChange(v.id, { sku: e.target.value })} /></td>
-                <td className="px-2 py-1.5"><Input className="w-40" value={v.imageUrl ?? ""} placeholder="Uses product image" onChange={e => onChange(v.id, { imageUrl: e.target.value || undefined })} /></td>
+                <td className="px-2 py-1.5">
+                  <div className="flex gap-1">
+                    {gallery.length > 0 ? gallery.map((u, i) => (
+                      <button key={u} type="button" title={i === 0 ? "Main image" : `Image ${i + 1}`} onClick={() => onChange(v.id, { imageUrl: v.imageUrl === u ? undefined : u })}
+                        className={cx("size-8 overflow-hidden rounded border", v.imageUrl === u ? "border-zinc-900 ring-2 ring-zinc-900/20" : "border-zinc-200 opacity-70 hover:opacity-100")}>
+                        <img src={u} alt="" className="size-full object-cover" />
+                      </button>
+                    )) : <span className="text-xs text-zinc-400">Add images above</span>}
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
     </div>
+  );
+}
+
+/** Product images: upload, paste a URL, reorder, choose the main one (the first). */
+function MediaManager({ siteId, images, onChange }: { siteId: string; images: string[]; onChange(list: string[]): void }) {
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [url, setUrl] = useState("");
+  const [drag, setDrag] = useState<number | null>(null);
+  const input = useRef<HTMLInputElement>(null);
+  const add = (urls: string[]) => onChange([...images, ...urls.filter(u => !images.includes(u))]);
+  const upload = async (files: FileList | null) => {
+    if (!files?.length) return;
+    setBusy(true); setErr(null);
+    try { const out: string[] = []; for (const f of Array.from(files)) if (f.type.startsWith("image/")) out.push((await uploadFile(siteId, f)).url); add(out); }
+    catch (e: any) { setErr(e.message); } finally { setBusy(false); }
+  };
+  const move = (from: number, to: number) => { const l = [...images]; const [x] = l.splice(from, 1); l.splice(to, 0, x); onChange(l); };
+  return (
+    <section className="rounded-xl border border-zinc-200" onDragOver={e => { if (e.dataTransfer.types.includes("Files")) e.preventDefault(); }}
+      onDrop={e => { if (e.dataTransfer.files.length) { e.preventDefault(); upload(e.dataTransfer.files); } }}>
+      <div className="flex items-center justify-between border-b border-zinc-100 px-3 py-2">
+        <h3 className="text-sm font-semibold">Media</h3>
+        <span className="text-xs text-zinc-500">Drag to reorder. The first image is the main one.</span>
+      </div>
+      <div className="p-3">
+        {err && <div className="mb-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{err}</div>}
+        <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
+          {images.map((u, i) => (
+            <div key={u} draggable onDragStart={() => setDrag(i)} onDragEnd={() => setDrag(null)}
+              onDragOver={e => { if (drag !== null) e.preventDefault(); }} onDrop={e => { e.preventDefault(); e.stopPropagation(); if (drag !== null && drag !== i) move(drag, i); setDrag(null); }}
+              className={cx("group relative aspect-square cursor-grab overflow-hidden rounded-lg border bg-zinc-50", i === 0 ? "col-span-2 row-span-2 border-zinc-300" : "border-zinc-200", drag === i && "opacity-40")}>
+              <img src={u} alt="" className="size-full object-cover" />
+              {i === 0 && <span className="absolute left-1.5 top-1.5 rounded bg-white/90 px-1.5 py-0.5 text-[10px] font-semibold">Main</span>}
+              <div className="absolute inset-x-1 bottom-1 hidden justify-between gap-1 group-hover:flex">
+                {i > 0 ? <button type="button" onClick={() => move(i, 0)} className="rounded bg-white/90 px-1.5 py-0.5 text-[10px] font-medium hover:bg-white">Make main</button> : <span />}
+                <button type="button" onClick={() => onChange(images.filter(x => x !== u))} className="rounded bg-white/90 p-0.5 text-red-600 hover:bg-white" aria-label="Remove image"><X className="size-3.5" /></button>
+              </div>
+            </div>
+          ))}
+          <button type="button" onClick={() => input.current?.click()} disabled={busy}
+            className="flex aspect-square flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-zinc-300 text-xs text-zinc-500 hover:border-zinc-400 hover:bg-zinc-50">
+            {busy ? <Loader2 className="size-5 animate-spin" /> : <Upload className="size-5" />}{busy ? "Uploading…" : "Add images"}
+          </button>
+        </div>
+        <input ref={input} type="file" accept="image/*" multiple hidden onChange={e => { upload(e.target.files); e.target.value = ""; }} />
+        <div className="mt-2 flex gap-2">
+          <Input placeholder="…or paste an image URL (https://…)" value={url} onChange={e => setUrl(e.target.value)} />
+          <Button disabled={!/^https?:\/\//.test(url)} onClick={() => { add([url.trim()]); setUrl(""); }}>Add URL</Button>
+        </div>
+      </div>
+    </section>
   );
 }

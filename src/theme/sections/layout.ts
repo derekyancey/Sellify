@@ -48,6 +48,7 @@ const header: SectionSchema = {
       { value: "none", label: "None" }, { value: "scroll-up", label: "On scroll up" }, { value: "always", label: "Always" }] },
     { type: "checkbox", id: "show_border", label: "Show separator line", default: true },
     { type: "checkbox", id: "show_search", label: "Show search icon", default: true },
+    { type: "checkbox", id: "predictive_search", label: "Show search suggestions as customers type", default: true, visible_if: st => st.show_search !== false },
     { type: "checkbox", id: "show_account", label: "Show account icon", default: false },
     { type: "url", id: "account_url", label: "Account link", visible_if: st => !!st.show_account },
   ],
@@ -79,8 +80,9 @@ const header: SectionSchema = {
   </div>
 </div>
 <div class="search-modal ${schemeClass(st.color_scheme)}" hidden data-search-modal><div class="page-width"><form action="/search" method="get" role="search">
-  <input class="input" type="search" name="q" placeholder="Search" aria-label="Search" value="${esc(s.route.query ?? "")}"><button class="button" type="submit">Search</button>
-  <button type="button" class="icon-btn" data-close-search aria-label="Close">${ICONS.close}</button></form></div></div>
+  <input class="input" type="search" name="q" placeholder="Search" aria-label="Search" autocomplete="off" data-predictive-input value="${esc(s.route.query ?? "")}"><button class="button" type="submit">Search</button>
+  <button type="button" class="icon-btn" data-close-search aria-label="Close">${ICONS.close}</button></form>
+  ${bool(st.predictive_search, true) ? `<div class="predictive" data-predictive aria-live="polite"></div>` : ""}</div></div>
 </header>`;
   },
 };

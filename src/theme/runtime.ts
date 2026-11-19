@@ -17,6 +17,7 @@ import { bodyClass, headHtml, pageTitle, renderSections } from "./render";
 import { routeFor } from "./routes";
 import type { CartLine, RenderCtx, ThemeDoc } from "./types";
 import { money } from "./util";
+import { predictiveSearch } from "./search";
 
 interface YanceyApi {
   settings: { site: string };
@@ -59,6 +60,7 @@ async function start() {
     },
     subscribe: email => Y.subscribe(email).then(() => undefined),
     navigate: url => { location.href = url; },
+    search: q => theme ? predictiveSearch(q, { products, collections, currency: site.currency }, theme, theme.settings.search_descriptions !== false) : [],
   });
 
   if (!theme) { reveal(); return; }

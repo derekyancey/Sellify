@@ -49,6 +49,7 @@ export const THEME_SETTINGS: ThemeSettingGroup[] = [
   { id: "cards", name: "Product cards", settings: [
     { type: "select", id: "card_style", label: "Style", default: "standard", options: [{ value: "standard", label: "Standard" }, { value: "card", label: "Card" }, { value: "minimal", label: "Minimal" }] },
     { type: "select", id: "card_align", label: "Text alignment", default: "left", options: [{ value: "left", label: "Left" }, { value: "center", label: "Center" }] },
+    { type: "checkbox", id: "show_secondary_image", label: "Show second image on hover", default: true },
     { type: "range", id: "card_radius", label: "Corner radius", min: 0, max: 30, step: 2, unit: "px", default: 8 },
     { type: "checkbox", id: "card_shadow", label: "Show shadow", default: false },
   ] },

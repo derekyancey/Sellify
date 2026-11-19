@@ -99,7 +99,7 @@
 
   // options / variants are stored as JSON text.
   function parseProduct(p) {
-    ["options", "variants"].forEach(function (k) {
+    ["options", "variants", "images"].forEach(function (k) {
       if (typeof p[k] === "string") { try { p[k] = JSON.parse(p[k]); } catch (e) { p[k] = []; } }
       if (!Array.isArray(p[k])) p[k] = [];
     });

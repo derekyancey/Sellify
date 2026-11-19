@@ -7,7 +7,7 @@ import type { Order, RowOf, TableName } from "./types";
 /* ------------------------------------------------------------------ */
 /* Rows: Appwrite TablesDB in production, localStorage in demo mode    */
 /* ------------------------------------------------------------------ */
-const DEMO_KEY = "yancey-demo-v8";
+const DEMO_KEY = "yancey-demo-v9";
 type DemoDB = { [K in TableName]: RowOf<K>[] };
 
 function demoDb(): DemoDB {
@@ -24,7 +24,7 @@ function saveDemo(db: DemoDB) { try { localStorage.setItem(DEMO_KEY, JSON.string
 export function resetDemo() { try { localStorage.removeItem(DEMO_KEY); } catch { /* ignore */ } }
 
 // Some columns hold JSON in Appwrite (longtext); (de)serialize them here.
-const JSON_COLS: Partial<Record<TableName, string[]>> = { products: ["options", "variants"], orders: ["items"], checkouts: ["items"], segments: ["rules"], themes: ["data"] };
+const JSON_COLS: Partial<Record<TableName, string[]>> = { products: ["options", "variants", "images"], orders: ["items"], checkouts: ["items"], segments: ["rules"], themes: ["data"] };
 const toRow = (t: TableName, data: any) => {
   const out = { ...data };
   for (const c of JSON_COLS[t] ?? []) if (out[c] !== undefined && typeof out[c] !== "string") out[c] = JSON.stringify(out[c]);

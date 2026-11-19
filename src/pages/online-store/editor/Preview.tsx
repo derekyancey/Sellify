@@ -152,6 +152,7 @@ export default function Preview(p: Props) {
         discount: c => props.current.api.discount(c),
         subscribe: e => props.current.api.subscribe(e),
         navigate: u => props.current.onNavigate(u),
+        search: q => props.current.api.search?.(q) ?? [],
       });
 
       const targetOf = (t: EventTarget | null): Sel => {
@@ -181,7 +182,7 @@ export default function Preview(p: Props) {
         if (t.closest("[contenteditable=true]")) return;
         const a = t.closest<HTMLAnchorElement>("a[href]");
         if (props.current.inspector) {
-          const allowed = t.closest("summary, .pill, [data-option], [data-prev], [data-next], [data-dot], [data-qty-minus], [data-qty-plus], [data-close-cart], [data-close-details], [data-close-search]");
+          const allowed = t.closest("summary, .pill, [data-option], [data-thumb], [data-facets-toggle], .facet__check, [data-prev], [data-next], [data-dot], [data-qty-minus], [data-qty-plus], [data-close-cart], [data-close-details], [data-close-search]");
           const sel = targetOf(t);
           if (sel) props.current.onSelect(sel);
           if (!allowed) { e.preventDefault(); e.stopPropagation(); }

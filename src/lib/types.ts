@@ -45,7 +45,8 @@ export interface Product extends Base {
   sku?: string;
   inventory: number;
   status: ProductStatus;
-  imageUrl?: string;
+  imageUrl?: string;            // main image (also the first in the gallery)
+  images?: string[];            // more images, shown after imageUrl in the product gallery
   options?: ProductOption[];    // empty / missing = no variants
   variants?: Variant[];         // price/compareAtPrice/inventory above are roll-ups when present
 }

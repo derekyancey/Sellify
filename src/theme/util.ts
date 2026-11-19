@@ -113,10 +113,11 @@ export function productCard(ctx: RenderCtx, p: Product, o: { ratio?: string; qui
   const sale = p.compareAtPrice && p.compareAtPrice > p.price;
   const sold = p.inventory <= 0;
   const badgePos = str(ts.badge_position, "bottom-left");
+  const second = bool(ts.show_secondary_image, true) && p.imageUrl ? (p.images ?? []).find(u => u && u !== p.imageUrl) : undefined;
   const badge = sold ? `<span class="badge badge--sold ${badgePos}">Sold out</span>` : sale && bool(ts.show_sale_badge, true) ? `<span class="badge badge--sale ${badgePos}">Sale</span>` : "";
   return `<div class="card card--${esc(str(ts.card_style, "standard"))}">
   <a class="card__link" href="${productUrl(p)}" aria-label="${esc(p.title)}"></a>
-  <div class="card__media">${img(p.imageUrl, p.title, { ratio: o.ratio ?? "1/1", placeholder: "product" })}${badge}</div>
+  <div class="card__media">${img(p.imageUrl, p.title, { ratio: o.ratio ?? "1/1", placeholder: "product" })}${second ? `<div class="card__second">${img(second, "", { ratio: o.ratio ?? "1/1" })}</div>` : ""}${badge}</div>
   <div class="card__info">
     <h3 class="card__title">${esc(p.title)}</h3>
     ${priceHtml(ctx, p, undefined, { from: true })}
