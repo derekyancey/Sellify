@@ -32,7 +32,6 @@ export default function Account() {
 export function IntegrationStatus() {
   const { data, error, loading } = useAsync(() => ops("/health"), []);
   const items = [
-    ["cloudflare", "Cloudflare", "CLOUDFLARE_API_TOKEN"],
     ["hosting", "Hosting (Appwrite Sites) custom domains", "APPWRITE_SITES_CNAME_TARGET"],
     ["googleOAuth", "Google sign-in for stores (Analytics + Search Console)", "GOOGLE_OAUTH_CLIENT_ID and GOOGLE_OAUTH_CLIENT_SECRET on site-ops"],
     ["stripe", "Stripe (cards, Apple Pay, Google Pay)", "STRIPE_SECRET_KEY on both functions, and STRIPE_WEBHOOK_SECRET on checkout"],

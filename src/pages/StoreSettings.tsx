@@ -96,13 +96,12 @@ function StoreUrl({ site, others, save, sp }: { site: Site; others: Site[]; save
     const patch: Partial<Site> = { domain };
     if (site.domain) {
       const resets = [
-        site.cloudflareZoneId && "the Cloudflare connection (the new domain has its own zone)",
         site.emailDomainId && "email verification (you'll verify the new domain)",
         site.gscProperty === `sc-domain:${site.domain}` && "the Search Console property (switched to the new domain)",
       ].filter(Boolean);
       if (!confirm(`Change ${site.domain} to ${domain}?${resets.length ? `\n\nThis resets:\n• ${resets.join("\n• ")}` : ""}\n\nYour products, orders and customers are not affected.`)) return;
       Object.assign(patch, {
-        cloudflareZoneId: undefined, emailDomainId: undefined, emailStatus: "none",
+        emailDomainId: undefined, emailStatus: "none",
         senderAddress: site.senderAddress ? `${site.senderAddress.split("@")[0]}@${domain}` : undefined,
         gscProperty: !site.gscProperty || site.gscProperty === `sc-domain:${site.domain}` ? `sc-domain:${domain}` : site.gscProperty,
       });
@@ -120,7 +119,6 @@ function StoreUrl({ site, others, save, sp }: { site: Site; others: Site[]; save
         <div className="flex flex-wrap items-center gap-3">
           <Globe className="size-5 text-zinc-400" />
           <a href={`https://${site.domain}`} target="_blank" rel="noreferrer" className="text-lg font-medium hover:underline">{site.domain}</a>
-          <Badge tone={site.cloudflareZoneId ? "green" : "yellow"}>{site.cloudflareZoneId ? "On Cloudflare" : "Not connected"}</Badge>
           <Button className="ml-auto" onClick={() => setEditing(true)}>Change URL</Button>
         </div>
       ) : (
@@ -134,8 +132,7 @@ function StoreUrl({ site, others, save, sp }: { site: Site; others: Site[]; save
         <div className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-900">
           <div className="font-medium">{done} saved. Next:</div>
           <ol className="mt-1 list-decimal pl-5">
-            <li><a className="underline" href="#connections">Connect it to Cloudflare</a> (Find or Add below). If the domain is at Namecheap, switch its nameservers to Cloudflare's.</li>
-            <li>Pick the Appwrite site that hosts it, then <Link className="underline" to={sp("/domains")}>Domain &amp; DNS → Point to Appwrite Sites</Link>.</li>
+            <li><a className="underline" href="#connections">Pick the Appwrite site that hosts it</a>. DNS stays in Cloudflare, where you manage it.</li>
             <li><a className="underline" href="#email">Verify it for email</a>.</li>
           </ol>
         </div>
@@ -145,8 +142,8 @@ function StoreUrl({ site, others, save, sp }: { site: Site; others: Site[]; save
 }
 
 function Connections({ site, save }: { site: Site; save(p: Partial<Site>): Promise<void> }) {
-  const [d, setD] = useState({ cloudflareZoneId: site.cloudflareZoneId ?? "", hostingSiteId: site.hostingSiteId ?? "" });
-  useEffect(() => setD({ cloudflareZoneId: site.cloudflareZoneId ?? "", hostingSiteId: site.hostingSiteId ?? "" }), [site]);
+  const [d, setD] = useState({ hostingSiteId: site.hostingSiteId ?? "" });
+  useEffect(() => setD({ hostingSiteId: site.hostingSiteId ?? "" }), [site]);
   const [err, setErr] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -154,24 +151,11 @@ function Connections({ site, save }: { site: Site; save(p: Partial<Site>): Promi
   const set = (k: keyof typeof d, v: string) => setD(x => ({ ...x, [k]: v }));
   const dirty = (Object.keys(d) as (keyof typeof d)[]).some(k => (d[k] || "") !== (site[k] || ""));
 
-  const zone = async (create: boolean) => {
-    setErr(null); setNote(null);
-    try {
-      const res = await ops(create ? "/cloudflare/zones/create" : "/cloudflare/zones/find", { domain: site.domain });
-      const z = create ? res.zone : res.zones?.[0];
-      if (z) { set("cloudflareZoneId", z.id); setNote(create ? `Added ${site.domain} to Cloudflare. If it's registered at Namecheap, set its nameservers to: ${z.name_servers.join(", ")}` : `Found ${site.domain} on Cloudflare (${z.status}). Click Save.`); }
-      else setNote(`${site.domain} isn't in your Cloudflare account yet. Click "Add to Cloudflare".`);
-    } catch (e: any) { setErr(e.message); }
-  };
-
   return (
     <div className="space-y-3">
       {err && <ErrorBox error={err} />}
       {note && <div className="rounded-lg bg-sky-50 px-3 py-2 text-sm text-sky-900">{note}</div>}
       <div className="grid gap-3 sm:grid-cols-2">
-        <Field label="Cloudflare zone" hint={<span className="flex gap-3"><button type="button" className="underline" onClick={() => zone(false)}>Find by domain</button><button type="button" className="underline" onClick={() => zone(true)}>Add to Cloudflare</button></span>}>
-          <Input value={d.cloudflareZoneId} onChange={e => set("cloudflareZoneId", e.target.value)} placeholder="Zone ID" />
-        </Field>
         <Field label="Hosting (Appwrite site)" hint="The Appwrite site that serves this store's website.">
           {hostSites.loading ? <Loading /> : hostSites.data?.sites.length ? (
             <Select value={d.hostingSiteId} onChange={e => set("hostingSiteId", e.target.value)}>
@@ -182,7 +166,7 @@ function Connections({ site, save }: { site: Site; save(p: Partial<Site>): Promi
       </div>
       <Button variant="primary" disabled={!dirty} loading={busy} onClick={async () => {
         setBusy(true); setErr(null);
-        try { await save({ cloudflareZoneId: d.cloudflareZoneId || undefined, hostingSiteId: d.hostingSiteId || undefined }); setNote("Connections saved."); }
+        try { await save({ hostingSiteId: d.hostingSiteId || undefined }); setNote("Connections saved."); }
         catch (e: any) { setErr(e.message); } finally { setBusy(false); }
       }}>Save connections</Button>
       <GoogleConnect site={site} save={save} />

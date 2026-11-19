@@ -17,7 +17,6 @@ import Products from "./pages/Products";
 import Customers from "./pages/Customers";
 import Analytics from "./pages/Analytics";
 import Seo from "./pages/Seo";
-import Domains from "./pages/Domains";
 import Deploys from "./pages/Deploys";
 import Planned from "./pages/Planned";
 import Abandoned from "./pages/orders/Abandoned";
@@ -86,7 +85,6 @@ function StoreRoutes() {
         <Route path="analytics" element={<Analytics />} />
         <Route path="finance" element={<Finance />} />
         <Route path="seo" element={needsUrl(<Seo />)} />
-        <Route path="domains" element={needsUrl(<Domains />)} />
         <Route path="deploys" element={<Deploys />} />
         <Route path="channels/online-store" element={needsUrl(<OnlineStore />)} />
         <Route path="channels/google" element={needsUrl(<Feed key="google" platform="google" />)} />
