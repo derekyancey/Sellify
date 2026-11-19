@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link2, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react";
 import { useSite } from "../context/Site";
-import { ops } from "../lib/data";
+import { ops, update } from "../lib/data";
 import { useAsync } from "../lib/useAsync";
 import { Badge, Button, Card, ErrorBox, Field, Input, Loading, Modal, NeedsSetup, PageHeader, Select, Table, Td } from "../components/ui";
 
@@ -10,8 +10,32 @@ const TYPES = ["A", "AAAA", "CNAME", "TXT", "MX", "NS", "CAA", "SRV"];
 
 export default function Domains() {
   const { site } = useSite(); const s = site!;
-  if (!s.cloudflareZoneId) return <><PageHeader title="Domain & DNS" /><NeedsSetup what="Cloudflare" /></>;
+  if (!s.cloudflareZoneId) return <AutoConnect key={s.$id} />;
   return <DomainsInner key={s.$id} />;
+}
+
+/** No zone saved yet: look the store's domain up in the Cloudflare account and link it automatically. */
+function AutoConnect() {
+  const { site, reload } = useSite(); const s = site!;
+  const found = useAsync(async () => {
+    if (!s.domain) return { reason: "no-domain" as const };
+    const res = await ops<{ zones: { id: string; name: string; status: string }[] }>("/cloudflare/zones/find", { domain: s.domain });
+    const z = res.zones?.[0];
+    if (!z) return { reason: "not-found" as const };
+    await update("sites", s.$id, { cloudflareZoneId: z.id });
+    await reload();
+    return { reason: "linked" as const };
+  }, [s.$id, s.domain]);
+
+  return (
+    <>
+      <PageHeader title="Domain & DNS" subtitle={s.domain || undefined} />
+      {found.loading || found.data?.reason === "linked" ? <Loading /> :
+        found.error ? <NeedsSetup what="Cloudflare">Couldn't look up {s.domain} on Cloudflare: {found.error}{/CLOUDFLARE_API_TOKEN/.test(found.error) && " Add the token on the site-ops function (see Account)."}</NeedsSetup> :
+        found.data?.reason === "no-domain" ? <NeedsSetup what="Cloudflare">Set this store's domain in store settings first; the Cloudflare zone is then picked up automatically.</NeedsSetup> :
+        <NeedsSetup what="Cloudflare"><>{s.domain} wasn't found in the Cloudflare account the API token can see. Check the token has Zone:Read for all zones, then <button className="underline" onClick={found.reload}>try again</button>.</></NeedsSetup>}
+    </>
+  );
 }
 
 function DomainsInner() {

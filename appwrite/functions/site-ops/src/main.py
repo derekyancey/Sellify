@@ -152,7 +152,13 @@ def cf_zone(b):
 
 def cf_zones_find(b):
     (domain,) = need(b, "domain")
-    zones = cf("GET", "/zones", params={"name": domain})
+    # The store domain may be a subdomain (www.shop.example.com); the zone is the closest parent on Cloudflare.
+    labels = domain.strip().lower().rstrip(".").removeprefix("https://").removeprefix("http://").split("/")[0].split(".")
+    zones = []
+    for i in range(len(labels) - 1):
+        zones = cf("GET", "/zones", params={"name": ".".join(labels[i:])})
+        if zones:
+            break
     return {"zones": [{k: z.get(k) for k in ("id", "name", "status", "name_servers")} for z in zones]}
 
 

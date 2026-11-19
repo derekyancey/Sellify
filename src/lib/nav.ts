@@ -24,12 +24,6 @@ export const NAV: NavGroup[] = [
       { to: "/products/gift-cards", label: "Gift cards", planned: {
         what: "Sell and redeem gift cards at checkout.",
         approach: "Custom: a gift card is a product whose paid order issues a code in a giftCards table; checkout redeems it like a discount with a running balance. No third-party cost." } },
-      { to: "/products/purchase-orders", label: "Purchase orders", planned: {
-        what: "Order stock from suppliers and receive it into inventory.",
-        approach: "Custom tables (suppliers, purchaseOrders) in Appwrite; receiving a PO increments inventory. PDF export via the browser's print-to-PDF." } },
-      { to: "/products/transfers", label: "Transfers", planned: {
-        what: "Move stock between locations.",
-        approach: "Custom: add a locations table and per-location stock; only worth it once you have more than one stock location." } },
     ] },
     { to: "/customers", label: "Customers", icon: Users, children: [
       { to: "/customers/segments", label: "Segments" },
