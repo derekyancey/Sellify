@@ -359,14 +359,28 @@ class Store:
         return paths, redirects
 
 
+def _is_served(path, served):
+    if path in served:
+        return True
+    r = parse_path(path)
+    if r["type"] == "product" and r.get("collection"):  # /collections/{c}/products/{p} shows product p, like Shopify
+        return f"/products/{r['handle']}" in served and (r["collection"] == "all" or f"/collections/{r['collection']}" in served)
+    if r["type"] == "blog" and r.get("tag"):            # /blogs/{blog}/tagged/{tag}
+        return f"/blogs/{r['blog']}" in served
+    return False
+
+
 def resolve(path, served, redirects, hops=5):
-    """Follow redirects from `path`; returns (status, final_path). status: same | redirect | broken_redirect | missing."""
+    """Follow redirects from `path` the way storefronts do (Yancey.redirect(): exact path with query first, then the
+    page itself, then the path without query). Returns (status, final): same | redirect | broken_redirect | missing."""
     seen, cur = [], normalize_path(path)
     for _ in range(hops):
         base = cur.split("?")[0]
-        if cur in served or base in served:
-            return ("same" if not seen else "redirect"), cur
-        target = redirects.get(cur) or redirects.get(base)
+        target = redirects.get(cur) if cur != base else None
+        if not target:
+            if _is_served(base, served):
+                return ("same" if not seen else "redirect"), cur
+            target = redirects.get(base)
         if not target:
             break
         if re.match(r"^https?://", target):
