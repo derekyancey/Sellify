@@ -73,7 +73,7 @@ SCHEMA = {
         "columns": [S("siteId", 36, True), S("title", 255, True), LT("description"), F("price", True, min=0), F("compareAtPrice", min=0),
                     S("sku", 64), I("inventory", min=0, default=0), E("status", PRODUCT_STATUSES, "draft"), S("imageUrl", 2048),
                     # imported / richer catalog data (Shopify-compatible)
-                    S("handle", 255), S("vendor", 255), S("productType", 255), LT("tags"), LT("images"), LT("variants"),
+                    S("handle", 255), S("subtitle", 255), S("vendor", 255), S("productType", 255), LT("tags"), LT("images"), LT("variants"),
                     S("seoTitle", 255), S("seoDescription", 1024), B("tracksInventory", default=True), F("costPerItem", min=0),
                     S("externalId", 64), S("source", 32)],
         "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"]), ("by_handle", TablesDBIndexType.KEY, ["siteId", "handle"])],

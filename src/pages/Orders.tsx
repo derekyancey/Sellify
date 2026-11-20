@@ -1,4 +1,4 @@
-import { orderDate } from "../lib/types";
+import { fullTitle, orderDate } from "../lib/types";
 import { useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Download, Plus, Trash2, Upload } from "lucide-react";
@@ -177,7 +177,7 @@ function CreateOrder({ onClose, onCreated, draft }: { onClose(): void; onCreated
   const add = (pid: string) => {
     const p = refs.data?.products.find(p => p.$id === pid); if (!p) return;
     setItems(it => it.some(i => i.productId === pid) ? it.map(i => i.productId === pid ? { ...i, quantity: i.quantity + 1 } : i)
-      : [...it, { productId: p.$id, title: p.title, price: p.price, quantity: 1 }]);
+      : [...it, { productId: p.$id, title: fullTitle(p), price: p.price, quantity: 1 }]);
   };
   const save = async () => {
     const c = refs.data?.customers.find(c => c.$id === customerId);
@@ -203,7 +203,7 @@ function CreateOrder({ onClose, onCreated, draft }: { onClose(): void; onCreated
         <Field label="Add product">
           <Select value="" onChange={e => add(e.target.value)}>
             <option value="">Choose…</option>
-            {refs.data!.products.filter(p => p.status === "active").map(p => <option key={p.$id} value={p.$id}>{p.title} — {money(p.price, s.currency)} ({p.inventory} in stock)</option>)}
+            {refs.data!.products.filter(p => p.status === "active").map(p => <option key={p.$id} value={p.$id}>{fullTitle(p)} — {money(p.price, s.currency)} ({p.inventory} in stock)</option>)}
           </Select>
         </Field>
         {items.length > 0 && (

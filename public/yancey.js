@@ -13,6 +13,8 @@
  *   window.addEventListener("yancey:cart", e => e.detail)   // fires on every cart change
  *   await Yancey.config()                       -> { stripe: bool, paypal: bool }
  *   await Yancey.product("handle-or-id")         -> one product (works for unlisted ones too), with .variants and .images
+ *                                                // .title is the name ("Replica 3"); .subtitle is optional small text to show
+ *                                                // under it ("Title Presets"). Every product from these calls has both.
  *   await Yancey.collection("best-sellers")     -> { title, description, image, seoTitle, seoDescription, products } (in the collection's sort order)
  *   await Yancey.discount("WELCOME10")          -> { subtotal, discount: { code, amount }, total } or throws
  *   await Yancey.checkout("stripe" | "paypal", { email, discountCode, acceptsMarketing })

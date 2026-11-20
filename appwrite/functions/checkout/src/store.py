@@ -85,7 +85,7 @@ class Store:
             if tracked and stock < q:
                 raise HttpError(f"Only {max(0, stock)} of {a(p, 'title')} left in stock", 409)
             price = float(v["price"]) if v else float(a(p, "price"))
-            title = a(p, "title") + (f" - {v['title']}" if v and v.get("title") and v["title"] != "Default Title" else "")
+            title = a(p, "title") + (f" - {a(p, 'subtitle')}" if a(p, "subtitle") else "") + (f" - {v['title']}" if v and v.get("title") and v["title"] != "Default Title" else "")
             lines.append({"productId": pid, "variantId": v["id"] if v else None, "title": title, "quantity": q, "price": round(price, 2),
                           "imageUrl": (v or {}).get("image") or a(p, "imageUrl") or None, "tracked": tracked})
         subtotal = round(sum(l["price"] * l["quantity"] for l in lines), 2)

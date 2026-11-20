@@ -24,7 +24,7 @@ def build(site, products):
             continue
         price, compare = float(a(p, "price")), float(a(p, "compareAtPrice") or 0)
         fields = {
-            "g:id": a(p, "$id"), "g:title": a(p, "title")[:150],
+            "g:id": a(p, "$id"), "g:title": (a(p, "title") + (f" - {a(p, 'subtitle')}" if a(p, "subtitle") else ""))[:150],
             "g:description": (a(p, "description") or a(p, "title"))[:5000],
             "g:link": product_url(site, p), "g:image_link": a(p, "imageUrl"),
             "g:availability": "in_stock" if (a(p, "inventory") or 0) > 0 else "out_of_stock",

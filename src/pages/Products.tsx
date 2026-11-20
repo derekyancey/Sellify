@@ -6,7 +6,7 @@ import { create, list, remove, update } from "../lib/data";
 import { uploadFile } from "../lib/files";
 import { useAsync } from "../lib/useAsync";
 import { money } from "../lib/format";
-import type { Collection, Product, ProductImage, Variant } from "../lib/types";
+import { fullTitle, type Collection, type Product, type ProductImage, type Variant } from "../lib/types";
 import { isSmart, matchesRules, syncCollections } from "../lib/collections";
 import { Badge, Button, Card, ErrorBox, Field, Input, Loading, Modal, PageHeader, Select, Table, Td, Textarea } from "../components/ui";
 import { downloadCsv } from "./Orders";
@@ -32,14 +32,14 @@ export default function Products() {
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("all");
   const rows = (data ?? []).filter(p => (status === "all" || p.status === status)
-    && (!q || `${p.title} ${p.sku ?? ""} ${p.vendor ?? ""} ${(p.tags ?? []).join(" ")} ${variantsOf(p).map(v => v.sku).join(" ")}`.toLowerCase().includes(q.toLowerCase())));
+    && (!q || `${p.title} ${p.subtitle ?? ""} ${p.sku ?? ""} ${p.vendor ?? ""} ${(p.tags ?? []).join(" ")} ${variantsOf(p).map(v => v.sku).join(" ")}`.toLowerCase().includes(q.toLowerCase())));
 
   return (
     <>
       <PageHeader title="Products" subtitle={`${data?.length ?? 0} products`} actions={<>
         <Link to={sp("/import")} className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium hover:bg-zinc-50"><Upload className="size-4" />Import</Link>
         <Button onClick={() => downloadCsv(`${storeSlug(s)}-products.csv`, rows.flatMap(p => variantsOf(p).map(v => ({
-          handle: p.handle ?? "", title: p.title, status: p.status, vendor: p.vendor ?? "", type: p.productType ?? "", tags: (p.tags ?? []).join(", "),
+          handle: p.handle ?? "", title: p.title, subtitle: p.subtitle ?? "", status: p.status, vendor: p.vendor ?? "", type: p.productType ?? "", tags: (p.tags ?? []).join(", "),
           variant: v.title, sku: v.sku ?? "", price: v.price, compareAtPrice: v.compareAtPrice ?? "", inventory: p.tracksInventory === false ? "not tracked" : v.inventory, image: p.imageUrl ?? "" }))))}>Export</Button>
         <Button variant="primary" onClick={() => setEditing(blank())}><Plus className="size-4" />Add product</Button>
       </>} />
@@ -58,7 +58,7 @@ export default function Products() {
               return (
                 <tr key={p.$id} onClick={() => setEditing({ ...p, variants: vs.map(v => ({ ...v })), images: p.images ?? (p.imageUrl ? [{ src: p.imageUrl }] : []) })} className="cursor-pointer hover:bg-zinc-50">
                   <Td className="w-12">{p.imageUrl ? <img src={p.imageUrl} alt="" loading="lazy" className="size-9 rounded-md object-cover" /> : <div className="grid size-9 place-items-center rounded-md bg-zinc-100 text-zinc-400"><ImageOff className="size-4" /></div>}</Td>
-                  <Td><div className="font-medium">{p.title}</div>{vs.length > 1 && <div className="text-xs text-zinc-500">{vs.length} variants</div>}</Td>
+                  <Td><div className="font-medium">{p.title}</div>{p.subtitle && <div className="text-xs text-zinc-500">{p.subtitle}</div>}{vs.length > 1 && <div className="text-xs text-zinc-500">{vs.length} variants</div>}</Td>
                   <Td><Badge tone={statusTone(p.status)}>{p.status}</Badge></Td>
                   <Td>{p.tracksInventory === false ? <span className="text-zinc-500">Not tracked</span>
                     : <span className={p.inventory < 10 ? "font-medium text-red-600" : ""}>{p.inventory} in stock</span>}</Td>
@@ -90,7 +90,7 @@ function ProductForm({ initial, collections, onClose, onSaved }: { initial: Draf
 
   const addImages = async (files: FileList | null) => {
     if (!files) return;
-    try { for (const f of Array.from(files)) { const up = await uploadFile(s.$id, f); set("images", [...(p.images ?? []), { src: up.url, alt: p.title }]); } }
+    try { for (const f of Array.from(files)) { const up = await uploadFile(s.$id, f); set("images", [...(p.images ?? []), { src: up.url, alt: fullTitle(p) }]); } }
     catch (e: any) { setErr(e.message); }
   };
 
@@ -101,7 +101,7 @@ function ProductForm({ initial, collections, onClose, onSaved }: { initial: Draf
     const cheapest = vs.reduce((a, b) => (b.price < a.price ? b : a));
     const tracked = p.tracksInventory !== false;
     const data: any = {
-      title: p.title.trim(), description: p.description, status: p.status, vendor: p.vendor || undefined, productType: p.productType || undefined,
+      title: p.title.trim(), subtitle: p.subtitle?.trim() || null, description: p.description, status: p.status, vendor: p.vendor || undefined, productType: p.productType || undefined,
       tags: p.tags ?? [], seoTitle: p.seoTitle || undefined, seoDescription: p.seoDescription || undefined, handle: p.handle || undefined,
       images: imgs, imageUrl: imgs[0]?.src ?? (p.imageUrl || undefined), variants: vs, tracksInventory: tracked,
       price: cheapest.price, compareAtPrice: cheapest.compareAtPrice ?? undefined, sku: vs[0].sku || undefined,
@@ -126,8 +126,11 @@ function ProductForm({ initial, collections, onClose, onSaved }: { initial: Draf
     <Modal open title={p.$id ? "Edit product" : "Add product"} onClose={onClose}
       footer={<>{p.$id && <Button variant="ghost" className="mr-auto text-red-600" onClick={del}>Delete</Button>}<Button onClick={onClose}>Cancel</Button><Button variant="primary" loading={busy} onClick={save}>Save</Button></>}>
       {err && <ErrorBox error={err} />}
-      {p.source === "shopify" && <p className="rounded-lg bg-sky-50 px-3 py-2 text-xs text-sky-900">Imported from Shopify (handle <code>{p.handle}</code>). Re-importing a newer export overwrites these fields.</p>}
-      <Field label="Title"><Input value={p.title} onChange={e => set("title", e.target.value)} /></Field>
+      {p.source === "shopify" && <p className="rounded-lg bg-sky-50 px-3 py-2 text-xs text-sky-900">Imported from Shopify (handle <code>{p.handle}</code>). Re-importing a newer export overwrites these fields, except a title you've split into title and subtitle.</p>}
+      <div className="grid gap-3 sm:grid-cols-5">
+        <div className="sm:col-span-3"><Field label="Title"><Input value={p.title} onChange={e => set("title", e.target.value)} placeholder="e.g. Replica 3" /></Field></div>
+        <div className="sm:col-span-2"><Field label="Subtitle" hint="Shown under the title in small type."><Input value={p.subtitle ?? ""} onChange={e => set("subtitle", e.target.value)} placeholder="e.g. Title Presets" /></Field></div>
+      </div>
       <Field label="Description" hint="HTML is kept as-is."><Textarea rows={4} value={p.description ?? ""} onChange={e => set("description", e.target.value)} /></Field>
 
       <div>
@@ -193,7 +196,7 @@ function ProductForm({ initial, collections, onClose, onSaved }: { initial: Draf
       )}
       <details className="text-sm"><summary className="cursor-pointer font-medium">Search engine listing</summary>
         <div className="mt-2 space-y-2">
-          <Field label="SEO title"><Input value={p.seoTitle ?? ""} onChange={e => set("seoTitle", e.target.value)} placeholder={p.title} /></Field>
+          <Field label="SEO title"><Input value={p.seoTitle ?? ""} onChange={e => set("seoTitle", e.target.value)} placeholder={fullTitle(p)} /></Field>
           <Field label="SEO description"><Textarea rows={2} value={p.seoDescription ?? ""} onChange={e => set("seoDescription", e.target.value)} /></Field>
         </div>
       </details>

@@ -191,6 +191,8 @@ def map_products(site_id, rows, existing=None):
             "imageUrl": images[0]["src"] if images else None, "images": json.dumps(images), "variants": json.dumps(variants),
             "seoTitle": cut(g(head, "SEO Title"), 255), "seoDescription": cut(g(head, "SEO Description"), 1024),
             "costPerItem": first["costPerItem"], "externalId": cut(h, 64), "source": "shopify",
+            # A title split into title + subtitle in Yancey is kept; re-importing would otherwise restore Shopify's long title.
+            **({"title": _a(prev, "title"), "subtitle": _a(prev, "subtitle")} if prev and _a(prev, "subtitle") else {}),
         })
     return out, problems
 
@@ -241,10 +243,18 @@ def map_customers(site_id, rows, existing=None, subscribers_only=False, now=None
 def map_orders(site_id, rows, products=None):
     """products: existing product rows for this store (to link line items by SKU / title)."""
     by_sku, by_title = {}, {}
+    # Match names loosely (case, spaces and punctuation ignored) so "Replica 3 Title Presets" in a Shopify order still
+    # finds a product stored as title "Replica 3" + subtitle "Title Presets".
+    key = lambda s: re.sub(r"[^0-9a-z]+", "", (s or "").lower())
+    title_only = {}
     for p in products or []:
         pid, title = _a(p, "$id"), (_a(p, "title") or "")
         vs = _json(_a(p, "variants"), [])
-        by_title[title.lower()] = (pid, vs[0]["id"] if vs else None, vs)
+        hit = (pid, vs[0]["id"] if vs else None, vs)
+        by_title[key(title + (_a(p, "subtitle") or ""))] = hit
+        title_only.setdefault(key(title), hit)
+    for k, hit in title_only.items():  # bare titles only where no product's full name already claims that key
+        by_title.setdefault(k, hit)
         for v in vs:
             if v.get("sku"):
                 by_sku[v["sku"].lower()] = (pid, v["id"])
@@ -252,12 +262,11 @@ def map_orders(site_id, rows, products=None):
     def link(name, sku):
         if sku and sku.lower() in by_sku:
             return by_sku[sku.lower()]
-        n = name.lower()
-        if n in by_title:
-            return by_title[n][:2]
+        if key(name) in by_title:
+            return by_title[key(name)][:2]
         if " - " in name:
             base, var = name.rsplit(" - ", 1)
-            hit = by_title.get(base.lower())
+            hit = by_title.get(key(base))
             if hit:
                 v = next((v for v in hit[2] if v.get("title", "").lower() == var.lower()), None)
                 return hit[0], (v or {}).get("id") or hit[1]

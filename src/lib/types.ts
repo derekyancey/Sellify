@@ -31,6 +31,8 @@ export interface Variant {
 export interface Product extends Base {
   siteId: string;
   title: string;
+  /** Short descriptor shown under the title in small type, e.g. "Title Presets" under "Replica 3". */
+  subtitle?: string;
   description?: string;
   price: number;
   compareAtPrice?: number;
@@ -96,6 +98,9 @@ export interface Order extends Base {
   cancelledAt?: string; currency?: string; billingAddress?: Address | null; shippingAddress?: Address | null;
   paymentMethod?: string; source?: string; tags?: string[];
 }
+
+/** Title and subtitle as one line ("Replica 3 - Title Presets"), for orders, receipts, feeds and dropdowns. */
+export const fullTitle = (p: { title: string; subtitle?: string | null }) => p.subtitle ? `${p.title} - ${p.subtitle}` : p.title;
 
 /** When the order was placed: the original Shopify date for imported orders. */
 export const orderDate = (o: Order) => o.placedAt || o.$createdAt;

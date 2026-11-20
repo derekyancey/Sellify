@@ -234,10 +234,10 @@ function ProductsCard({ c, members, products, sales, currency, onSort, onIds }: 
   const smart = c.type === "smart";
   const sort = c.sortOrder ?? "manual";
   const canReorder = sort === "manual";
-  const shown = members.filter(p => !q || p.title.toLowerCase().includes(q.toLowerCase()));
+  const shown = members.filter(p => !q || (p.title + " " + (p.subtitle ?? "")).toLowerCase().includes(q.toLowerCase()));
   const ids = members.map(p => p.$id);
   const move = (from: number, to: number) => { const next = ids.slice(); const [x] = next.splice(from, 1); next.splice(to, 0, x); onIds(next); };
-  const picker = products.filter(p => !ids.includes(p.$id) && (!q || `${p.title} ${p.productType ?? ""} ${(p.tags ?? []).join(" ")}`.toLowerCase().includes(q.toLowerCase())));
+  const picker = products.filter(p => !ids.includes(p.$id) && (!q || `${p.title} ${p.subtitle ?? ""} ${p.productType ?? ""} ${(p.tags ?? []).join(" ")}`.toLowerCase().includes(q.toLowerCase())));
 
   return (
     <Card title={`Products (${members.length})`} actions={
@@ -255,7 +255,7 @@ function ProductsCard({ c, members, products, sales, currency, onSort, onIds }: 
         <div className="max-h-96 divide-y divide-zinc-100 overflow-y-auto rounded-lg border border-zinc-200">
           {picker.length ? picker.map(p => (
             <button key={p.$id} onClick={() => onIds([...ids, p.$id])} className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-zinc-50">
-              <Thumb p={p} /><span className="flex-1">{p.title}{p.status !== "active" && <span className="ml-1 text-xs text-zinc-400">({p.status})</span>}</span><Plus className="size-4 text-zinc-400" />
+              <Thumb p={p} /><span className="flex-1">{p.title}{p.subtitle && <span className="ml-1.5 text-xs text-zinc-500">{p.subtitle}</span>}{p.status !== "active" && <span className="ml-1 text-xs text-zinc-400">({p.status})</span>}</span><Plus className="size-4 text-zinc-400" />
             </button>
           )) : <div className="p-6 text-center text-sm text-zinc-500">No more products to add.</div>}
         </div>
@@ -270,7 +270,7 @@ function ProductsCard({ c, members, products, sales, currency, onSort, onIds }: 
                 {draggable && <GripVertical className="size-4 shrink-0 cursor-grab text-zinc-400" />}
                 <span className="w-6 text-right text-xs tabular-nums text-zinc-400">{i + 1}</span>
                 <Thumb p={p} />
-                <span className="min-w-0 flex-1 truncate">{p.title}</span>
+                <span className="min-w-0 flex-1 truncate">{p.title}{p.subtitle && <span className="ml-1.5 text-xs text-zinc-500">{p.subtitle}</span>}</span>
                 {p.status !== "active" && <Badge tone={p.status === "unlisted" ? "yellow" : "gray"}>{p.status}</Badge>}
                 {sort === "best-selling" && <span className="text-xs tabular-nums text-zinc-500">{sales.get(p.$id) ?? 0} sold</span>}
                 <span className="text-xs tabular-nums text-zinc-500">{money(Math.min(...(p.variants?.length ? p.variants.map(v => v.price) : [p.price])), currency)}</span>

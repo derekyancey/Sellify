@@ -42,7 +42,7 @@ export default function Inventory() {
               const v = value(p.$id, p.inventory);
               return (
                 <tr key={p.$id} className={cx(edits[p.$id] !== undefined && edits[p.$id] !== p.inventory && "bg-amber-50/60")}>
-                  <Td className="font-medium">{p.title}</Td><Td className="text-zinc-500">{p.sku}</Td>
+                  <Td><div className="font-medium">{p.title}</div>{p.subtitle && <div className="text-xs text-zinc-500">{p.subtitle}</div>}</Td><Td className="text-zinc-500">{p.sku}</Td>
                   <Td><Input type="number" min={0} value={v} className={cx("w-24", v < threshold && "text-red-600")} onChange={e => setEdits({ ...edits, [p.$id]: +e.target.value })} /></Td>
                   <Td className="whitespace-nowrap">
                     {[-1, 1, 10].map(d => <Button key={d} variant="ghost" className="px-2" onClick={() => setEdits({ ...edits, [p.$id]: Math.max(0, v + d) })}>{d > 0 ? `+${d}` : d}</Button>)}
