@@ -31,6 +31,7 @@ import OnlineStore from "./pages/channels/OnlineStore";
 import Feed from "./pages/channels/Feed";
 import Automations from "./pages/marketing/Automations";
 import { plannedPages } from "./lib/nav";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 function Guarded() {
   const { user, loading } = useAuth();
@@ -108,6 +109,7 @@ function NoUrl() {
 
 export default function App() {
   return (
+    <ErrorBoundary fullPage>
     <BrowserRouter>
       <AuthProvider>
         <Routes>
@@ -116,5 +118,6 @@ export default function App() {
         </Routes>
       </AuthProvider>
     </BrowserRouter>
+    </ErrorBoundary>
   );
 }
