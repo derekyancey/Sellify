@@ -6,7 +6,7 @@ import type { Order, RowOf, TableName } from "./types";
 /* ------------------------------------------------------------------ */
 /* Rows: Appwrite TablesDB in production, localStorage in demo mode    */
 /* ------------------------------------------------------------------ */
-const DEMO_KEY = "yancey-demo-v7";
+const DEMO_KEY = "yancey-demo-v8";
 type DemoDB = { [K in TableName]: RowOf<K>[] };
 
 function demoDb(): DemoDB {
@@ -24,7 +24,7 @@ export function resetDemo() { try { localStorage.removeItem(DEMO_KEY); } catch {
 
 // Some columns hold JSON in Appwrite (longtext); (de)serialize them here.
 const JSON_COLS: Partial<Record<TableName, string[]>> = {
-  orders: ["items", "billingAddress", "shippingAddress", "tags"], checkouts: ["items"], segments: ["rules"],
+  orders: ["items", "billingAddress", "shippingAddress", "tags"], checkouts: ["items"], segments: ["rules"], collections: ["rules"],
   products: ["images", "variants", "tags"], customers: ["address", "tags"],
 };
 const toRow = (t: TableName, data: any) => {

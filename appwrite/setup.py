@@ -110,7 +110,9 @@ SCHEMA = {
     },
     "collections": {
         "public_read": True,  # storefronts read these with Yancey.collection()
-        "columns": [S("siteId", 36, True), S("title", 255, True), S("handle", 128, True), LT("description"), SA("productIds")],
+        "columns": [S("siteId", 36, True), S("title", 255, True), S("handle", 128, True), LT("description"), SA("productIds"),
+                    E("type", ["manual", "smart"], "manual"), LT("rules"), S("sortOrder", 32), S("imageUrl", 2048),
+                    B("published", default=True), S("seoTitle", 255), S("seoDescription", 1024)],
         "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"]), ("by_handle", TablesDBIndexType.UNIQUE, ["siteId", "handle"])],
     },
     "discounts": {

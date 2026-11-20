@@ -13,7 +13,7 @@
  *   window.addEventListener("yancey:cart", e => e.detail)   // fires on every cart change
  *   await Yancey.config()                       -> { stripe: bool, paypal: bool }
  *   await Yancey.product("handle-or-id")         -> one product (works for unlisted ones too), with .variants and .images
- *   await Yancey.collection("best-sellers")     -> { title, description, products }
+ *   await Yancey.collection("best-sellers")     -> { title, description, image, seoTitle, seoDescription, products } (in the collection's sort order)
  *   await Yancey.discount("WELCOME10")          -> { subtotal, discount: { code, amount }, total } or throws
  *   await Yancey.checkout("stripe" | "paypal", { email, discountCode, acceptsMarketing })
  *                                                // redirects to Stripe (card, Apple Pay, Google Pay) or PayPal
@@ -93,10 +93,12 @@
 
   // Active products for listings; collections (by id) may also include unlisted ones, which are buyable by link.
   async function products(ids) {
-    var q = [{ method: "equal", attribute: "siteId", values: [cfg.site] }, { method: "limit", values: [100] }];
-    q.push(ids ? { method: "equal", attribute: "$id", values: ids.length ? ids : ["-"] } : { method: "equal", attribute: "status", values: ["active"] });
-    var list = (await rows("products", q)).map(parse);
-    return ids ? list.filter(function (p) { return p.status === "active" || p.status === "unlisted"; }) : list;
+    var base = [{ method: "equal", attribute: "siteId", values: [cfg.site] }, { method: "limit", values: [100] }];
+    if (!ids) return (await rows("products", base.concat([{ method: "equal", attribute: "status", values: ["active"] }]))).map(parse);
+    var list = [];
+    for (var i = 0; i < ids.length; i += 100) // Appwrite caps a query at 100 values
+      list = list.concat(await rows("products", base.concat([{ method: "equal", attribute: "$id", values: ids.slice(i, i + 100) }])));
+    return list.map(parse).filter(function (p) { return p.status === "active" || p.status === "unlisted"; });
   }
 
   async function product(handleOrId) {
@@ -109,12 +111,13 @@
 
   async function collection(handle) {
     var found = await rows("collections", [{ method: "equal", attribute: "siteId", values: [cfg.site] }, { method: "equal", attribute: "handle", values: [handle] }, { method: "limit", values: [1] }]);
-    if (!found.length) throw new Error("Collection not found: " + handle);
+    if (!found.length || found[0].published === false) throw new Error("Collection not found: " + handle);
     var c = found[0];
     var list = await products(c.productIds || []);
     var order = c.productIds || [];
     list.sort(function (a, b) { return order.indexOf(a.$id) - order.indexOf(b.$id); });
-    return { title: c.title, description: c.description, handle: c.handle, products: list };
+    return { title: c.title, description: c.description, handle: c.handle, image: c.imageUrl || null,
+      seoTitle: c.seoTitle || c.title, seoDescription: c.seoDescription || null, products: list };
   }
 
   function discount(code, items) {

@@ -64,7 +64,8 @@ export function buildDemo() {
     const sp = products.filter(p => p.siteId === s.$id);
     collections.push(
       { $id: id(), $createdAt: ago(60), siteId: s.$id, title: "Best sellers", handle: "best-sellers", description: "", productIds: sp.slice(0, 3).map(p => p.$id) },
-      { $id: id(), $createdAt: ago(30), siteId: s.$id, title: "Gifts under $30", handle: "gifts-under-30", description: "", productIds: sp.filter(p => p.price < 30).map(p => p.$id) });
+      { $id: id(), $createdAt: ago(30), siteId: s.$id, title: "Gifts under $30", handle: "gifts-under-30", description: "", productIds: sp.filter(p => p.price < 30).map(p => p.$id),
+        type: "smart", sortOrder: "price-asc", rules: { match: "all", conditions: [{ field: "price", op: "lt", values: ["30"] }] }, published: true });
     discounts.push(
       { $id: id(), $createdAt: ago(40), siteId: s.$id, code: "WELCOME10", type: "percent", value: 10, usedCount: 14, active: true },
       { $id: id(), $createdAt: ago(20), siteId: s.$id, code: "SAVE5", type: "fixed", value: 5, minSubtotal: 40, usageLimit: 100, usedCount: 100, active: true });

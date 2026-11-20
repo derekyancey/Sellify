@@ -21,6 +21,7 @@ import Deploys from "./pages/Deploys";
 import Planned from "./pages/Planned";
 import Abandoned from "./pages/orders/Abandoned";
 import Collections from "./pages/products/Collections";
+import CollectionEditor from "./pages/products/CollectionEditor";
 import Inventory from "./pages/products/Inventory";
 import Segments from "./pages/customers/Segments";
 import Discounts from "./pages/Discounts";
@@ -72,6 +73,7 @@ function StoreRoutes() {
         <Route path="orders/abandoned" element={<Abandoned />} />
         <Route path="products" element={<Products />} />
         <Route path="products/collections" element={<Collections />} />
+        <Route path="products/collections/:id" element={<CollectionEditor />} />
         <Route path="products/inventory" element={<Inventory />} />
         <Route path="customers" element={<Customers />} />
         <Route path="customers/segments" element={<Segments />} />

@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { ImageOff, Plus, Trash2, Upload } from "lucide-react";
+import { ImageOff, Plus, Trash2, Upload, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { storeSlug, useSite, useStorePath } from "../context/Site";
 import { create, list, remove, update } from "../lib/data";
 import { uploadFile } from "../lib/files";
 import { useAsync } from "../lib/useAsync";
 import { money } from "../lib/format";
-import type { Product, ProductImage, Variant } from "../lib/types";
+import type { Collection, Product, ProductImage, Variant } from "../lib/types";
+import { isSmart, matchesRules, syncCollections } from "../lib/collections";
 import { Badge, Button, Card, ErrorBox, Field, Input, Loading, Modal, PageHeader, Select, Table, Td, Textarea } from "../components/ui";
 import { downloadCsv } from "./Orders";
 
@@ -26,6 +27,7 @@ export default function Products() {
   const { site } = useSite(); const s = site!;
   const sp = useStorePath();
   const { data, loading, error, reload } = useAsync(() => list("products", s.$id), [s.$id]);
+  const cols = useAsync(() => list("collections", s.$id), [s.$id]);
   const [editing, setEditing] = useState<Draft | null>(null);
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("all");
@@ -68,14 +70,16 @@ export default function Products() {
           </Table>
         )}
       </Card>
-      {editing && <ProductForm initial={editing} onClose={() => setEditing(null)} onSaved={() => { setEditing(null); reload(); }} />}
+      {editing && <ProductForm initial={editing} collections={cols.data ?? []} onClose={() => setEditing(null)} onSaved={() => { setEditing(null); reload(); cols.reload(); }} />}
     </>
   );
 }
 
-function ProductForm({ initial, onClose, onSaved }: { initial: Draft; onClose(): void; onSaved(): void }) {
+function ProductForm({ initial, collections, onClose, onSaved }: { initial: Draft; collections: Collection[]; onClose(): void; onSaved(): void }) {
   const { site } = useSite(); const s = site!;
   const [p, setP] = useState<Draft>(initial);
+  const manual = collections.filter(c => !isSmart(c));
+  const [inManual, setInManual] = useState<Set<string>>(() => new Set(initial.$id ? manual.filter(c => (c.productIds ?? []).includes(initial.$id!)).map(c => c.$id) : []));
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const set = <K extends keyof Draft>(k: K, v: Draft[K]) => setP(x => ({ ...x, [k]: v }));
@@ -104,11 +108,19 @@ function ProductForm({ initial, onClose, onSaved }: { initial: Draft; onClose():
       inventory: tracked ? vs.reduce((t, v) => t + Math.max(0, v.inventory || 0), 0) : 0,
     };
     try {
-      if (p.$id) await update("products", p.$id, data); else await create("products", { ...data, siteId: s.$id });
+      const id = p.$id ? (await update("products", p.$id, data), p.$id) : (await create("products", { ...data, siteId: s.$id })).$id;
+      for (const c of manual) {
+        const ids = c.productIds ?? [], want = inManual.has(c.$id);
+        if (want !== ids.includes(id)) await update("collections", c.$id, { productIds: want ? [...ids, id] : ids.filter(x => x !== id) });
+      }
+      await syncCollections(s.$id);
       onSaved();
     } catch (e: any) { setErr(e.message); setBusy(false); }
   };
-  const del = async () => { if (p.$id && confirm(`Delete "${p.title}"?`)) { await remove("products", p.$id); onSaved(); } };
+  const del = async () => { if (p.$id && confirm(`Delete "${p.title}"?`)) { await remove("products", p.$id); await syncCollections(s.$id).catch(() => {}); onSaved(); } };
+  const asProduct = { ...p, $id: p.$id ?? "", $createdAt: "", siteId: s.$id, price: Math.min(...vs.map(v => v.price)),
+    inventory: vs.reduce((t, v) => t + Math.max(0, v.inventory || 0), 0) } as Product;
+  const smartIn = collections.filter(c => isSmart(c) && matchesRules(asProduct, c.rules));
 
   return (
     <Modal open title={p.$id ? "Edit product" : "Add product"} onClose={onClose}
@@ -168,6 +180,17 @@ function ProductForm({ initial, onClose, onSaved }: { initial: Draft; onClose():
         <Field label="Vendor"><Input value={p.vendor ?? ""} onChange={e => set("vendor", e.target.value)} /></Field>
         <Field label="Tags" hint="Comma separated"><Input value={(p.tags ?? []).join(", ")} onChange={e => set("tags", e.target.value.split(",").map(t => t.trim()).filter(Boolean))} /></Field>
       </div>
+      {collections.length > 0 && (
+        <div className="text-sm">
+          <div className="mb-1 font-medium">Collections</div>
+          {manual.length > 0 && <div className="flex flex-wrap gap-x-4 gap-y-1">{manual.map(c => (
+            <label key={c.$id} className="flex items-center gap-1.5"><input type="checkbox" checked={inManual.has(c.$id)}
+              onChange={() => setInManual(x => { const n = new Set(x); if (n.has(c.$id)) n.delete(c.$id); else n.add(c.$id); return n; })} />{c.title}</label>))}</div>}
+          {smartIn.length > 0 && <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs text-zinc-600"><Zap className="size-3.5 text-amber-500" />Automatically in:
+            {smartIn.map(c => <Badge key={c.$id}>{c.title}</Badge>)}</div>}
+          {!manual.length && !smartIn.length && <p className="text-xs text-zinc-500">Not in any smart collection. Change its type or tags to match one.</p>}
+        </div>
+      )}
       <details className="text-sm"><summary className="cursor-pointer font-medium">Search engine listing</summary>
         <div className="mt-2 space-y-2">
           <Field label="SEO title"><Input value={p.seoTitle ?? ""} onChange={e => set("seoTitle", e.target.value)} placeholder={p.title} /></Field>

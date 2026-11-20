@@ -44,7 +44,7 @@ export default function Layout() {
                 {children && inSection && (
                   <div className="mb-1 ml-[1.1rem] mt-0.5 border-l border-zinc-700 pl-3">
                     {children.map(c => (
-                      <NavLink key={c.to} to={base + c.to} end onClick={() => setOpen(false)}
+                      <NavLink key={c.to} to={base + c.to} onClick={() => setOpen(false)}
                         className={({ isActive }) => cx("flex items-center justify-between rounded-md px-2 py-1 text-[13px]",
                           isActive ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-white")}>
                         {c.label}{c.planned && <span className="text-[10px] text-zinc-500">soon</span>}

@@ -100,12 +100,25 @@ export interface Order extends Base {
 /** When the order was placed: the original Shopify date for imported orders. */
 export const orderDate = (o: Order) => o.placedAt || o.$createdAt;
 
+export type CollectionField = "title" | "productType" | "vendor" | "tag" | "price" | "compareAtPrice" | "inventory" | "variantTitle" | "sku" | "status";
+export type CollectionOp = "is" | "is_not" | "contains" | "not_contains" | "starts_with" | "ends_with" | "empty" | "not_empty" | "eq" | "neq" | "gt" | "lt";
+export interface CollectionCondition { field: CollectionField; op: CollectionOp; values: string[] }
+export interface CollectionRules { match: "all" | "any"; conditions: CollectionCondition[] }
+export type CollectionSort = "manual" | "best-selling" | "title-asc" | "title-desc" | "price-desc" | "price-asc" | "created-desc" | "created-asc";
 export interface Collection extends Base {
   siteId: string;
   title: string;
   handle: string;
   description?: string;
+  /** Products in display order. For smart collections this is recalculated from `rules` whenever products change. */
   productIds: string[];
+  type?: "manual" | "smart";     // missing on older rows = manual
+  rules?: CollectionRules | null; // smart collections only
+  sortOrder?: CollectionSort;
+  imageUrl?: string;
+  published?: boolean;           // false hides it from the storefront
+  seoTitle?: string;
+  seoDescription?: string;
 }
 
 export type DiscountType = "percent" | "fixed";
