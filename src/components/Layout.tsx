@@ -6,6 +6,7 @@ import { useAuth } from "../context/Auth";
 import { useSite } from "../context/Site";
 import { isDemo } from "../lib/appwrite";
 import { cx } from "./ui";
+import ErrorBoundary from "./ErrorBoundary";
 
 export default function Layout() {
   const { user, logout } = useAuth();
@@ -106,7 +107,7 @@ export default function Layout() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl p-4 sm:p-6"><Outlet /></main>
+      <main className="mx-auto max-w-7xl p-4 sm:p-6"><ErrorBoundary key={fullPath}><Outlet /></ErrorBoundary></main>
     </div>
   );
 }
