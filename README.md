@@ -73,7 +73,7 @@ Store emails (receipts, campaigns) are sent from each store's own domain, never 
 | Functions | `site-ops` (admin-only, runs automations hourly) and `checkout` (public, at `https://checkout.realniggafoods.com`), both deploying from `main` |
 | DNS (Cloudflare) | `@`, `www` and `checkout` are `CNAME appwrite.network` (DNS only); a CAA record lets Appwrite issue certificates; DMARC, SPF and Google verification are kept |
 | Already set | site `VITE_*` variables, `ADMIN_TEAM_ID`, `APPWRITE_SITES_CNAME_TARGET`, `UNSUBSCRIBE_SECRET` (both functions), `CHECKOUT_PUBLIC_URL` |
-| Still to add | `CLOUDFLARE_API_TOKEN`, `GOOGLE_OAUTH_CLIENT_ID` and `GOOGLE_OAUTH_CLIENT_SECRET` (site-ops); `RESEND_API_KEY`, Stripe and PayPal keys (both); `STRIPE_WEBHOOK_SECRET` (checkout) |
+| Still to add | `CLOUDFLARE_API_TOKEN`, `GOOGLE_OAUTH_CLIENT_ID` and `GOOGLE_OAUTH_CLIENT_SECRET` (site-ops); `RESEND_API_KEY`, Stripe and PayPal keys (both); `STRIPE_WEBHOOK_SECRET` (checkout); `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET` (both, for digital downloads) |
 
 Free-plan limits that shaped this: 2 functions, no cron (hourly interval instead), and 3 web platforms.
 
@@ -188,6 +188,28 @@ Setup: create a Resend account, make an API key with **Full access** (it needs t
 - **Cart recovery:** abandoned carts come from expired Stripe sessions (enable the `checkout.session.expired` webhook event) and from unpaid carts older than an hour. The reminder email links back with `?yancey_cart=…`, and `yancey.js` restores the cart from it.
 
 Re-run `python appwrite/setup.py` after pulling: it adds the new tables (collections, discounts, segments, templates, campaigns), the new columns and the bucket.
+
+## Digital downloads (private Cloudflare R2)
+
+Download files for digital products are **not** in Appwrite Storage: the free plan allows one bucket, and `files` is public read.
+They live in a private Cloudflare R2 bucket. A product (or a variant) stores only a file ID; the object is `<siteId>/<fileId>`.
+Uploads go browser → R2 through a 15-minute presigned PUT signed by `site-ops` (admins only). Customers only ever get a
+file through the checkout function's signed, expiring download link, which redirects to a presigned GET that lasts minutes.
+
+One-time setup in the Cloudflare dashboard (account `7158a805…`):
+
+1. **R2 → Create bucket** `sellify-deliverables`. Leave public access off: no r2.dev URL, no custom domain.
+2. Bucket → **Settings → CORS policy**, so the dashboard can upload:
+   ```json
+   [{ "AllowedOrigins": ["https://realniggafoods.com", "https://www.realniggafoods.com"],
+      "AllowedMethods": ["PUT"], "AllowedHeaders": ["content-type"], "MaxAgeSeconds": 3600 }]
+   ```
+3. **R2 → Manage API tokens → Create API token**: *Object Read & Write*, applied to `sellify-deliverables` only.
+4. In Appwrite, on **both** `site-ops` and `checkout` (Functions → Settings → Environment variables), add
+   `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` (from step 3) and `R2_BUCKET=sellify-deliverables`,
+   then redeploy. These are secrets: never paste them in chat, code or git.
+
+Optional: `DELIVERABLES_MAX_BYTES` caps upload size (default 5 GB, R2's single-upload limit).
 
 ## Automations and product feeds
 

@@ -14,6 +14,7 @@ Routes (all POST with a JSON body, called via functions.createExecution from the
   /email/setup | /email/status | /email/test | /email/order | /email/recovery | /email/campaign
   /import/products | /import/customers | /import/orders   (Shopify CSV rows; idempotent upserts)
   /import/images | /import/summary
+  /deliverables/upload-url   (presigned PUT so the admin's browser uploads a download file straight to private R2)
   /finance/processors   (Stripe + PayPal balances, fees, payouts; read-only)
   /automations/preview | /automations/run   (also runs on this function's hourly schedule)
 
@@ -23,7 +24,8 @@ Secrets are function environment variables, never sent to the browser:
   GOOGLE_OAUTH_CLIENT_ID + GOOGLE_OAUTH_CLIENT_SECRET (per-store "Connect Google"), GOOGLE_SERVICE_ACCOUNT_JSON (optional fallback),
   STRIPE_SECRET_KEY, PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_ENV (for refunds),
   RESEND_API_KEY (email), UNSUBSCRIBE_SECRET + CHECKOUT_PUBLIC_URL (campaign unsubscribe links),
-  AUTOMATION_MAX_PER_RUN (default 50)
+  AUTOMATION_MAX_PER_RUN (default 50),
+  R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET (private storage for digital download files)
 """
 import json
 import os
@@ -42,6 +44,7 @@ import google_apis  # noqa: E402
 import google_oauth  # noqa: E402
 import imagecopy  # noqa: E402
 import importer  # noqa: E402
+import r2  # noqa: E402
 from errors import HttpError  # noqa: E402
 
 CF = "https://api.cloudflare.com/client/v4"
@@ -568,6 +571,26 @@ def import_summary(b):
             "orders": count("orders"), "imagesOnShopify": sum(len(imagecopy.pending_urls(p)) for p in products)}
 
 
+def deliverable_upload_url(b):
+    """Admin-only: a 15-minute presigned PUT into the private R2 bucket. Only the file ID goes on the product."""
+    site_id, name = need(b, "siteId", "name")
+    name, size = r2.safe_name(name), int(b.get("size") or 0)
+    if not r2.allowed(name):
+        raise HttpError(f"Download files must be one of: {', '.join(sorted(r2.EXTENSIONS))}")
+    if size > r2.MAX_BYTES:
+        raise HttpError(f"File is larger than {r2.MAX_BYTES // 1024 ** 2} MB")
+    try:
+        _db().get_row(os.environ.get("APPWRITE_DATABASE_ID", "yancey"), "sites", site_id)
+    except Exception:  # noqa: BLE001
+        raise HttpError("Unknown store", 404)
+    file_id = r2.new_file_id()
+    try:
+        url = r2.upload_url(site_id, file_id)
+    except r2.NotConfigured as e:
+        raise HttpError(str(e), 500)
+    return {"fileId": file_id, "name": name, "uploadUrl": url, "expiresIn": 900}
+
+
 def finance_processors(b):
     return finance.summary(max(1, min(int(b.get("days") or 30), 366)))
 
@@ -617,6 +640,7 @@ ROUTES = {
     "/import/orders": _import("orders"),
     "/import/images": import_images,
     "/import/summary": import_summary,
+    "/deliverables/upload-url": deliverable_upload_url,
     "/finance/processors": finance_processors,
     "/automations/preview": automations_preview,
     "/automations/run": automations_run,

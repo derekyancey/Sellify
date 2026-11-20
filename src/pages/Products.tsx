@@ -185,7 +185,7 @@ function ProductForm({ initial, onClose, onSaved }: { initial: Draft; onClose():
 
       <div>
         <div className="mb-1 text-sm font-medium">Download file</div>
-        <p className="mb-2 text-xs text-zinc-500">Stored privately. Buyers get a signed link that expires, never a public URL.</p>
+        <p className="mb-2 text-xs text-zinc-500">Stored in private storage. Buyers get a signed link that expires, never a public URL.</p>
         <DeliverableRow label={vs.length > 1 ? "All variants" : "File"} name={p.deliverableFileId ? p.deliverableName || "File attached" : null}
           busy={uploading === "product"} onPick={f => attach("product", f)} onClear={() => setP(x => ({ ...x, deliverableFileId: undefined, deliverableName: undefined }))} />
         {vs.length > 1 && <div className="mt-2 space-y-1">

@@ -30,12 +30,8 @@ from appwrite.services.users import Users
 
 DB_ID = os.environ.get("APPWRITE_DATABASE_ID", "yancey")
 BUCKET_ID = os.environ.get("APPWRITE_BUCKET_ID", "files")
-# Private bucket for paid digital downloads. Never public: only the admins team can read it, and customers
-# only ever get a file through the checkout function's signed, expiring /download link.
-DELIVERABLES_BUCKET_ID = os.environ.get("APPWRITE_DELIVERABLES_BUCKET_ID", "deliverables")
-DELIVERABLES_MAX_BYTES = int(os.environ.get("DELIVERABLES_MAX_BYTES", "50000000"))  # Appwrite free plan caps uploads at 50 MB
-DELIVERABLE_EXTENSIONS = ["zip", "rar", "7z", "pdf", "epub", "mp3", "wav", "mp4", "mov", "png", "jpg", "jpeg", "psd", "ai",
-                          "svg", "ttf", "otf", "csv", "txt", "xlsx", "docx", "pptx", "procreate", "brushset", "abr", "cube", "xmp", "dng"]
+# Paid digital download files do NOT live in Appwrite Storage: the free plan allows one bucket and "files" is
+# public read. They live in a private Cloudflare R2 bucket (see appwrite/shared/r2.py and the README).
 TEAM_ID = os.environ.get("ADMIN_TEAM_ID", "admins")
 
 # column helpers: (kind, key, required, extra kwargs)
@@ -82,7 +78,7 @@ SCHEMA = {
                     S("handle", 255), S("vendor", 255), S("productType", 255), LT("tags"), LT("images"), LT("variants"),
                     S("seoTitle", 255), S("seoDescription", 1024), B("tracksInventory", default=True), F("costPerItem", min=0),
                     S("externalId", 64), S("source", 32),
-                    # digital delivery: an Appwrite Storage file ID in the private deliverables bucket, never a URL.
+                    # digital delivery: a file ID in the private R2 deliverables bucket (object <siteId>/<id>), never a URL.
                     # A variant with its own file carries deliverableFileId inside the variants JSON instead.
                     S("deliverableFileId", 36), S("deliverableName", 255)],
         "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"]), ("by_handle", TablesDBIndexType.KEY, ["siteId", "handle"])],
@@ -253,18 +249,6 @@ def main():
         file_security=False, maximum_file_size=10_000_000,
         allowed_file_extensions=["jpg", "jpeg", "png", "gif", "webp", "svg", "avif", "pdf", "mp4", "csv", "txt"]),
         lambda: Storage(client).get_bucket(BUCKET_ID))
-    ensure(f"bucket '{DELIVERABLES_BUCKET_ID}' (private, for paid digital downloads)", lambda: Storage(client).create_bucket(
-        DELIVERABLES_BUCKET_ID, "Deliverables", permissions=[Permission.read(admin), Permission.create(admin), Permission.update(admin), Permission.delete(admin)],
-        file_security=False, maximum_file_size=DELIVERABLES_MAX_BYTES, allowed_file_extensions=DELIVERABLE_EXTENSIONS, antivirus=True, transformations=False),
-        lambda: Storage(client).get_bucket(DELIVERABLES_BUCKET_ID))
-    # Re-runs: make sure nobody has opened the bucket up (no Role.any / users read) since it was created.
-    bucket = Storage(client).get_bucket(DELIVERABLES_BUCKET_ID)
-    if any("any" in p or "users" in p or "guests" in p for p in (attr(bucket, "permissions") or attr(bucket, "_permissions") or [])):
-        Storage(client).update_bucket(DELIVERABLES_BUCKET_ID, "Deliverables",
-                                      permissions=[Permission.read(admin), Permission.create(admin), Permission.update(admin), Permission.delete(admin)],
-                                      file_security=False, maximum_file_size=DELIVERABLES_MAX_BYTES, allowed_file_extensions=DELIVERABLE_EXTENSIONS)
-        print(f"  ~ bucket '{DELIVERABLES_BUCKET_ID}' permissions reset to admins only")
-
     email, password = os.environ.get("ADMIN_EMAIL"), os.environ.get("ADMIN_PASSWORD")
     if email:
         print("Admin user")
@@ -298,7 +282,8 @@ def wait_for_columns(db, table, keys, timeout=60):
     """Columns are created asynchronously; indexes can only be built once they're 'available'."""
     deadline = time.time() + timeout
     while time.time() < deadline:
-        statuses = [attr(db.get_column(DB_ID, table, k), "status") for k in keys]
+        # newer SDKs return a ColumnStatus enum, older ones a plain string
+        statuses = [getattr(st, "value", st) for st in (attr(db.get_column(DB_ID, table, k), "status") for k in keys)]
         if all(s == "available" for s in statuses):
             return
         if any(s == "failed" for s in statuses):

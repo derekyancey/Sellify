@@ -27,7 +27,7 @@ export interface Variant {
   id: string; title: string; options?: Record<string, string>; sku?: string | null; price: number; compareAtPrice?: number | null;
   inventory: number; tracked?: boolean; barcode?: string | null; grams?: number; requiresShipping?: boolean; taxable?: boolean;
   costPerItem?: number | null; image?: string | null;
-  /** This variant's own download (overrides the product's file). Storage file ID in the private deliverables bucket. */
+  /** This variant's own download (overrides the product's file). File ID in the private R2 deliverables bucket. */
   deliverableFileId?: string | null; deliverableName?: string | null;
 }
 export interface Product extends Base {
@@ -44,7 +44,7 @@ export interface Product extends Base {
   handle?: string; vendor?: string; productType?: string; tags?: string[];
   images?: ProductImage[]; variants?: Variant[]; seoTitle?: string; seoDescription?: string;
   tracksInventory?: boolean; costPerItem?: number; externalId?: string; source?: string;
-  /** Digital delivery: Storage file ID in the private deliverables bucket (never a URL) and its file name. */
+  /** Digital delivery: File ID in the private R2 deliverables bucket (never a URL) and its file name. */
   deliverableFileId?: string; deliverableName?: string;
 }
 

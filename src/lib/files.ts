@@ -1,5 +1,6 @@
 import { ID, Query } from "appwrite";
 import { config, isDemo, storage } from "./appwrite";
+import { ops } from "./data";
 
 /** Public files (product photos, email images) in one Appwrite Storage bucket; names are prefixed "<siteId>--". */
 export interface StoredFile { id: string; name: string; size: number; mime: string; url: string; createdAt: string }
@@ -35,14 +36,17 @@ export async function deleteFile(id: string) {
 }
 
 /**
- * Digital products: upload to the PRIVATE deliverables bucket (admins only). Returns the file ID, never a URL:
- * customers only reach these files through the checkout function's signed, expiring download links.
+ * Digital products: upload to the PRIVATE R2 deliverables bucket. site-ops (admins only) signs a short-lived PUT URL,
+ * the browser sends the file straight to R2, and only the file ID is kept. Customers reach the file only through the
+ * checkout function's signed, expiring download links.
  */
 export interface Deliverable { id: string; name: string; size: number }
 export async function uploadDeliverable(siteId: string, file: File): Promise<Deliverable> {
-  const clean = file.name.replace(/[^\w.\- ]+/g, "_");
-  if (isDemo) return { id: "demo-" + ID.unique(), name: clean, size: file.size }; // demo mode keeps only the reference
-  const named = new File([file], prefix(siteId) + clean, { type: file.type });
-  const f = await storage.createFile({ bucketId: config.deliverablesBucketId, fileId: ID.unique(), file: named });
-  return { id: f.$id, name: clean, size: f.sizeOriginal };
+  if (isDemo) return { id: "demo" + ID.unique(), name: file.name.replace(/[^\w.\- ]+/g, "_"), size: file.size }; // demo keeps only the reference
+  const { fileId, name, uploadUrl } = await ops<{ fileId: string; name: string; uploadUrl: string }>("/deliverables/upload-url", { siteId, name: file.name, size: file.size });
+  let res: Response;
+  try { res = await fetch(uploadUrl, { method: "PUT", body: file, headers: { "content-type": file.type || "application/octet-stream" } }); }
+  catch { throw new Error("Could not reach file storage. Check the R2 bucket's CORS policy allows PUT from this dashboard."); }
+  if (!res.ok) throw new Error(`File storage rejected the upload (${res.status}).`);
+  return { id: fileId, name, size: file.size };
 }
