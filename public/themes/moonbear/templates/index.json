@@ -19,8 +19,8 @@
    },
    "media": [
     {
-     "video": "https://moonbear.shop/cdn/shop/videos/c/vp/61363da9107b416ea256b05272ee8e77/61363da9107b416ea256b05272ee8e77.HD-1080p-7.2Mbps-95826598.mp4?v=0",
-     "poster": "https://moonbear.shop/cdn/shop/files/preview_images/61363da9107b416ea256b05272ee8e77.thumbnail.0000000000_small.jpg?v=1790633245",
+     "video": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img8fc449d9233cc6142f4fd6e3aec0d8e8/view?project=6afd3365001c9a7ecfc6",
+     "poster": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img7c5f0adce165c96682a35d7cdfaca08b/view?project=6afd3365001c9a7ecfc6",
      "desktop": true,
      "mobile": true
     }
@@ -169,84 +169,84 @@
    "items": [
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/vice-logo.png?v=1785401582",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img457cce487976e3dc58de50781c3ca16c/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "88px"
      }
     },
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/Bulgari-Logo.webp?v=1786033402",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img171702ecf16bd212f78211196c031a05/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "92px"
      }
     },
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/McDonalds-logo.png?v=1785401616",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/imgc71cdb830263d854f5f20890c3516cda/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "94px"
      }
     },
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/143-1432148_nascar-logo-nascar-logo-white-png_2ee2e49e-052a-45e1-8b00-5a2f305e33b2.png?v=1786033449",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img3ca1bace5637565955470918887d5a8d/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "82px"
      }
     },
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/adidasnew_4f3edcf8-79ea-4579-ae87-4bbe067adfb1.png-2.png?v=1786033464",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img4044790f6c05d3d9ba8fa3e2c297ab74/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "54px"
      }
     },
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/shein-logo-1-p-800_349e4637-cf95-426b-8fd6-cc53240e9dff.png?v=1786033449",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img6dad755aad42d1b2e8ceddd0e76112b5/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "96px"
      }
     },
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/Collabx-logo.avif?v=1786033611",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/imgb118f10324a7a1ecdc3c9bf832ba097e/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "42px"
      }
     },
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/Samsung-Logo.png?v=1786033611",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img0501928929921a34a762a187aaf34947/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "94px"
      }
     },
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/schon-logo.png?v=1786033611",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img98df592b04d0cb3b84819d9159b5c6a8/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "94px"
      }
     },
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/flaunt-logo.png?v=1786033611",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/imgad1010919089faa8a0962350f6463bed/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "94px"
      }
     },
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/L_27Officiel_logo_copy.png?v=1786033775",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img7832def7680dfd092aa9b7e3797548a8/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "88px"
      }
     },
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/Warner-logo.svg?v=1786033923",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img234a9ec11680f7f48eae2873456c9d93/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "50px"
      }
@@ -489,37 +489,37 @@
     {
      "title": "Adobe After Effects",
      "href": "/collections/adobe-after-effects",
-     "image": "https://moonbear.shop/cdn/shop/collections/Adobe_After_Effects_CC_icon.svg-2_409189b7-d8fb-47be-ad69-0f74dbd6cfb8.webp?v=1785388662",
+     "image": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/imgeb5bc56fe2c5edc8da25d4513a0beedd/view?project=6afd3365001c9a7ecfc6",
      "showTitle": false
     },
     {
      "title": "Adobe Photoshop",
      "href": "/collections/adobe-photoshop",
-     "image": "https://moonbear.shop/cdn/shop/collections/Adobe_Photoshop_CC_icon.svg-2_96be5bc0-d7b7-49c2-85c8-ecaf7c84d8e2.webp?v=1785388662",
+     "image": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img71961401a4e5e4c195ebfd9cd411b891/view?project=6afd3365001c9a7ecfc6",
      "showTitle": false
     },
     {
      "title": "Adobe Premiere",
      "href": "/collections/adobe-premiere",
-     "image": "https://moonbear.shop/cdn/shop/collections/Adobe_Premiere_Pro_CC_icon_svg_e0c77ae3-c6ce-4cad-9d1b-afb0feaa3a74.webp?v=1785388660",
+     "image": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/imga2c3f944535bafe54122272fd8d7e20a/view?project=6afd3365001c9a7ecfc6",
      "showTitle": false
     },
     {
      "title": "DaVinci Resolve",
      "href": "/collections/davinci-resolve",
-     "image": "https://moonbear.shop/cdn/shop/collections/DaVinci_Resolve_17_logo.svg-2_04d87e3c-506b-43e8-bc60-dcc7ce6275f1.webp?v=1785388658",
+     "image": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img7af00b1bd0bc55607abf371a05f60d81/view?project=6afd3365001c9a7ecfc6",
      "showTitle": false
     },
     {
      "title": "CapCut",
      "href": "/collections/capcut",
-     "image": "https://moonbear.shop/cdn/shop/collections/CapCut-Logo_31f46c89-db4e-4d3d-a106-453dfa541d64.png?v=1785388664",
+     "image": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img74fe53224629dcf4c7978998451eb3eb/view?project=6afd3365001c9a7ecfc6",
      "showTitle": false
     },
     {
      "title": "Final Cut Pro",
      "href": "/collections/final-cut-pro",
-     "image": "https://moonbear.shop/cdn/shop/collections/2015_Final_Cut_Pro_Logo_ce85f703-290c-4760-aeba-ede8977d1405.png?v=1785388660",
+     "image": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img40c11cb9dc2384e43fc31d28af68c361/view?project=6afd3365001c9a7ecfc6",
      "showTitle": false
     }
    ],
@@ -559,7 +559,7 @@
     "children": [
      {
       "t": "icon",
-      "src": "https://moonbear.shop/cdn/shop/files/LunarStudio_Logo_-_White-1.png?v=1786038103",
+      "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img789f008af68d4b1e35ba0202b6176171/view?project=6afd3365001c9a7ecfc6",
       "style": {
        "--icon-width": "200px"
       }
@@ -605,7 +605,7 @@
     ]
    },
    "bg": {
-    "image": "https://moonbear.shop/cdn/shop/files/Screenshot_2026-09-28_at_6.56.35_PM.png?v=1790636206",
+    "image": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img348e1141bb05f7ce4f5cbb89aa58e141/view?project=6afd3365001c9a7ecfc6",
     "alt": ""
    }
   },
@@ -628,14 +628,14 @@
    },
    "media": [
     {
-     "video": "https://moonbear.shop/cdn/shop/videos/c/vp/76e11336d0564d41a091efd8569e6da6/76e11336d0564d41a091efd8569e6da6.HD-1080p-7.2Mbps-95828458.mp4?v=0",
-     "poster": "https://moonbear.shop/cdn/shop/files/preview_images/76e11336d0564d41a091efd8569e6da6.thumbnail.0000000000_small.jpg?v=1790635113",
+     "video": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/imgdcb18472c1f3c6ded706516a79d9cbff/view?project=6afd3365001c9a7ecfc6",
+     "poster": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img373fa300536f1ee100b7287babd45206/view?project=6afd3365001c9a7ecfc6",
      "desktop": true,
      "mobile": false
     },
     {
-     "video": "https://moonbear.shop/cdn/shop/videos/c/vp/6c2e166481934ff09fd72ebb0372551c/6c2e166481934ff09fd72ebb0372551c.HD-1080p-7.2Mbps-95828161.mp4?v=0",
-     "poster": "https://moonbear.shop/cdn/shop/files/preview_images/6c2e166481934ff09fd72ebb0372551c.thumbnail.0000000000_small.jpg?v=1790634741",
+     "video": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/imgb91c5468153327e77d10cf3cdb365f35/view?project=6afd3365001c9a7ecfc6",
+     "poster": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/imgbec81b056ab9cd9f83931a1110e5cbe8/view?project=6afd3365001c9a7ecfc6",
      "desktop": false,
      "mobile": true
     }
@@ -721,7 +721,7 @@
    },
    "media": [
     {
-     "image": "https://moonbear.shop/cdn/shop/files/Replica_3_-_Cover.jpg?v=1785388397",
+     "image": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img52eae15edf5bde3450a59d1ac7b989cf/view?project=6afd3365001c9a7ecfc6",
      "alt": "Cover image of Replica 3 Title Presets by moonbear.shop, showcasing a sleek, modern title design for video editing projects.",
      "desktop": true,
      "mobile": true
@@ -861,7 +861,7 @@
       "children": [
        {
         "t": "image",
-        "image": "https://moonbear.shop/cdn/shop/files/ShotClub_AI_-_Father_s_Day_37.jpg?v=1785388634",
+        "image": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img12be9de3074bfd273c616bda045f88a6/view?project=6afd3365001c9a7ecfc6",
         "alt": "Father's Day themed image from MoonBear's Shot Club AI Stock Image Library, featuring a father and child celebrating together.",
         "style": {
          "--ratio": "1.7777777777777777",
@@ -971,7 +971,7 @@
    "slides": [
     {
      "bg": {
-      "image": "https://moonbear.shop/cdn/shop/files/products_f3bbcc74-a383-47e2-a9f1-240d1c6a8feb.gif?v=1786216027",
+      "image": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/imgb5fd045f8db63b5c7f7daac9c2d996f6/view?project=6afd3365001c9a7ecfc6",
       "alt": ""
      },
      "content": {
@@ -1030,7 +1030,7 @@
     },
     {
      "bg": {
-      "image": "https://moonbear.shop/cdn/shop/files/frame-000039.jpg?v=1785388502",
+      "image": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/imgb8ba7dae8fed6dc99860cfb693a86d5b/view?project=6afd3365001c9a7ecfc6",
       "alt": "Minimalist title preset frame featuring clean, modern typography with the \"Portal\" design by moonbear.shop for stylish video titles."
      },
      "content": {
@@ -1089,7 +1089,7 @@
     },
     {
      "bg": {
-      "image": "https://moonbear.shop/cdn/shop/files/largebackground2_33499fe0-1c46-4fac-9543-8f07ac89c9aa.png?v=1785400182",
+      "image": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/imgb2f9ffdda417ff24489d654ebebd39cb/view?project=6afd3365001c9a7ecfc6",
       "alt": ""
      },
      "content": {
@@ -1167,7 +1167,7 @@
     {
      "title": "What Is the Soap Font for DaVinci Resolve?",
      "href": "/blogs/news/what-is-the-soap-font-for-davinci-resolve",
-     "image": "https://moonbear.shop/cdn/shop/articles/soapcover_0b08e712-2008-497c-b0a2-90fb876dbee4.webp?v=1787669125",
+     "image": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img701e85089cc5e6165b148841c8c63c31/view?project=6afd3365001c9a7ecfc6",
      "meta": [
       "August 21, 2026",
       "derek yancey"
@@ -1176,7 +1176,7 @@
     {
      "title": "What Are Apple Log LUTs for After Effects?",
      "href": "/blogs/news/what-are-apple-log-luts-for-after-effects",
-     "image": "https://moonbear.shop/cdn/shop/articles/After-01.webp?v=1787669253",
+     "image": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/imgff57b4a6b0b453a5bfed596fbac3fe4f/view?project=6afd3365001c9a7ecfc6",
      "meta": [
       "August 21, 2026",
       "derek yancey"
@@ -1185,7 +1185,7 @@
     {
      "title": "What Is LIQUID for Premiere Pro?",
      "href": "/blogs/news/what-is-liquid-for-premiere-pro",
-     "image": "https://moonbear.shop/cdn/shop/articles/LIQUID_V.1.jpg?v=1787669161",
+     "image": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img76f0d5249a75efa9a2ef8e7575df7f64/view?project=6afd3365001c9a7ecfc6",
      "meta": [
       "August 21, 2026",
       "derek yancey"
@@ -1273,84 +1273,84 @@
    "items": [
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/vice-logo.png?v=1785401582",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img457cce487976e3dc58de50781c3ca16c/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "88px"
      }
     },
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/Bulgari-Logo.webp?v=1786033402",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img171702ecf16bd212f78211196c031a05/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "92px"
      }
     },
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/McDonalds-logo.png?v=1785401616",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/imgc71cdb830263d854f5f20890c3516cda/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "94px"
      }
     },
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/143-1432148_nascar-logo-nascar-logo-white-png_2ee2e49e-052a-45e1-8b00-5a2f305e33b2.png?v=1786033449",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img3ca1bace5637565955470918887d5a8d/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "82px"
      }
     },
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/adidasnew_4f3edcf8-79ea-4579-ae87-4bbe067adfb1.png-2.png?v=1786033464",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img4044790f6c05d3d9ba8fa3e2c297ab74/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "54px"
      }
     },
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/shein-logo-1-p-800_349e4637-cf95-426b-8fd6-cc53240e9dff.png?v=1786033449",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img6dad755aad42d1b2e8ceddd0e76112b5/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "96px"
      }
     },
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/Collabx-logo.avif?v=1786033611",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/imgb118f10324a7a1ecdc3c9bf832ba097e/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "42px"
      }
     },
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/Samsung-Logo.png?v=1786033611",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img0501928929921a34a762a187aaf34947/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "94px"
      }
     },
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/schon-logo.png?v=1786033611",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img98df592b04d0cb3b84819d9159b5c6a8/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "94px"
      }
     },
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/flaunt-logo.png?v=1786033611",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/imgad1010919089faa8a0962350f6463bed/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "94px"
      }
     },
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/L_27Officiel_logo_copy.png?v=1786033775",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img7832def7680dfd092aa9b7e3797548a8/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "88px"
      }
     },
     {
      "t": "icon",
-     "src": "https://moonbear.shop/cdn/shop/files/Warner-logo.svg?v=1786033923",
+     "src": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img234a9ec11680f7f48eae2873456c9d93/view?project=6afd3365001c9a7ecfc6",
      "style": {
       "--icon-width": "50px"
      }

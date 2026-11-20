@@ -232,8 +232,8 @@
         "children": [
          {
           "t": "video",
-          "video": "https://moonbear.shop/cdn/shop/videos/c/vp/f71fe8f202a94ef7a0e9005993bc6fba/f71fe8f202a94ef7a0e9005993bc6fba.HD-1080p-2.5Mbps-91112568.mp4?v=0",
-          "poster": "https://moonbear.shop/cdn/shop/files/preview_images/f71fe8f202a94ef7a0e9005993bc6fba.thumbnail.0000000000_2500x.jpg?v=1786213968",
+          "video": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img6c4b597e4976657ccf43e8639bb09801/view?project=6afd3365001c9a7ecfc6",
+          "poster": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/imgc00c71e598baa6d244552c8de3ee5345/view?project=6afd3365001c9a7ecfc6",
           "style": {
            "--padding-block-start": "0px",
            "--padding-block-end": "0px",
@@ -280,8 +280,8 @@
         "children": [
          {
           "t": "video",
-          "video": "https://moonbear.shop/cdn/shop/videos/c/vp/63ad0ecfd3eb4df698f125b02011c083/63ad0ecfd3eb4df698f125b02011c083.HD-1080p-2.5Mbps-91112569.mp4?v=0",
-          "poster": "https://moonbear.shop/cdn/shop/files/preview_images/63ad0ecfd3eb4df698f125b02011c083.thumbnail.0000000000_2500x.jpg?v=1786213962",
+          "video": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/imgf159daa5f59325bed776a7250429d786/view?project=6afd3365001c9a7ecfc6",
+          "poster": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/imgf8030eeaa4bfba8f0b918e186f80268b/view?project=6afd3365001c9a7ecfc6",
           "style": {
            "--padding-block-start": "0px",
            "--padding-block-end": "0px",

@@ -51,7 +51,7 @@
      "children": [
       {
        "t": "image",
-       "image": "https://moonbear.shop/cdn/shop/files/DREAM-ER2Cover.webp?v=1785388513",
+       "image": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img7a45e182b356b6e6c5e70f2767e76d0c/view?project=6afd3365001c9a7ecfc6",
        "alt": "Star effect filter for cameras, DREAM-ER 2 by moonbear.shop, showing the filter's star-shaped light pattern.",
        "style": {
         "--ratio": "1.0",
@@ -229,7 +229,7 @@
       "children": [
        {
         "t": "image",
-        "image": "https://moonbear.shop/cdn/shop/files/frame-000238.jpg?v=1786215853",
+        "image": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/imgf6bda2ad0fa1fe1b712acc8fd7641d59/view?project=6afd3365001c9a7ecfc6",
         "alt": "",
         "style": {
          "--ratio": "1.7777777777777777",
@@ -293,7 +293,7 @@
       "children": [
        {
         "t": "image",
-        "image": "https://moonbear.shop/cdn/shop/files/frame-000268.jpg?v=1786215854",
+        "image": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img906c12e0204eca52b715aebeb70260a9/view?project=6afd3365001c9a7ecfc6",
         "alt": "",
         "style": {
          "--ratio": "1.7777777777777777",
@@ -473,7 +473,7 @@
         "children": [
          {
           "t": "image",
-          "image": "https://moonbear.shop/cdn/shop/files/Best_Sellers_-_DREAM-ER2_dbe637af-3719-45d7-9db9-122730450ed5.jpg?v=1786244645",
+          "image": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/imgdc0357547717ef305b163aaee824054d/view?project=6afd3365001c9a7ecfc6",
           "alt": "",
           "style": {
            "--ratio": "1",
@@ -540,7 +540,7 @@
     "children": [
      {
       "t": "image",
-      "image": "https://moonbear.shop/cdn/shop/files/Best_Sellers_-_dreamer2_9778767e-8435-4792-ab97-e856942fe52c.jpg?v=1786244645",
+      "image": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/imga2f3ffa61600292e0f79460096177aca/view?project=6afd3365001c9a7ecfc6",
       "alt": "",
       "style": {
        "--ratio": "1",
@@ -638,7 +638,7 @@
    },
    "media": [
     {
-     "image": "https://moonbear.shop/cdn/shop/files/frame-000388_91f8296d-6c85-440d-9d17-3a8ca899245b.jpg?v=1786215853",
+     "image": "https://nyc.cloud.appwrite.io/v1/storage/buckets/files/files/img4203d13ba07d03f8f3c6a99b266dfb71/view?project=6afd3365001c9a7ecfc6",
      "alt": "",
      "desktop": true,
      "mobile": true

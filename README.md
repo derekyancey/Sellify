@@ -207,7 +207,7 @@ Re-run `python appwrite/setup.py` after pulling: it adds the new tables (collect
 - **MoonBear** (`public/themes/moonbear`) is rebuilt from moonbear.shop (the Shopify theme export of April 14, 2026): the home page and all 13 custom product templates (CINEFILM, Replica 2, Replica 3, Halation, Complete Access, Title Presets bundle 2026, ShotClub AI, Palette, Dream-er 2, Invoice, Best sellers, Analogue FX and the default), with the same fonts (Inter, Geist Mono), color schemes, layout values and content. It is the MoonBear store's current theme.
 - **How it was imported:** `scripts/horizon_import.py` turns a page's rendered HTML into a template (`curl https://moonbear.shop/products/<handle> > page.html`, plus `<handle>.js` for the product's own title, description and images). It keeps the merchant's content and layout values, not Shopify's theme code; the store's own custom sections (ShotClub, before/after, AI blocks) keep their markup and styles. Re-run it after changing a page on Shopify.
 - **Going live on the store's domain:** `python scripts/build_storefront.py moonbear dist-storefront/moonbear` writes a standalone site. Host it on Appwrite Sites (static, fallback file `index.html`), add the domain as a Web platform in Appwrite, then point the domain at it.
-- **Media:** theme images and videos still load from moonbear.shop's Shopify CDN. Copy them to Appwrite Storage before closing the Shopify store.
+- **Media:** every theme image and video is in Appwrite Storage (`files` bucket, now allowing files up to 50 MB for the videos). After importing another Shopify page, run `python scripts/theme_media.py public/themes/<id>` with `APPWRITE_ENDPOINT`, `APPWRITE_PROJECT_ID` and `APPWRITE_API_KEY` set: it uploads any Shopify media the theme references (re-runs skip files already there) and rewrites the links.
 
 ## Moving from Shopify: Import data
 
@@ -239,6 +239,7 @@ public/themes/engine/      storefront theme engine (renders a theme's JSON templ
 public/themes/moonbear/    the MoonBear theme (moonbear.shop rebuilt)
 scripts/horizon_import.py  converts a live Shopify page into a theme template
 scripts/build_storefront.py packages a theme for a store's own domain
+scripts/theme_media.py     moves a theme's Shopify images and videos into Appwrite Storage
 examples/storefront.html   starter storefront page
 appwrite/setup.py          creates the database schema, team and admin user
 appwrite/shared/           code shared by functions (sync with appwrite/sync_shared.py)
