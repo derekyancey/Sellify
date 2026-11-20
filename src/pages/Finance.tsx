@@ -1,3 +1,4 @@
+import { orderDate } from "../lib/types";
 import { useMemo, useState } from "react";
 import { Download } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -22,7 +23,7 @@ export default function Finance() {
 
   const f = useMemo(() => {
     const since = daysAgo(days).toISOString();
-    const rows = (orders.data ?? []).filter(o => o.$createdAt >= since);
+    const rows = (orders.data ?? []).filter(o => orderDate(o) >= since);
     const paid = rows.filter(o => o.financialStatus === "paid"), refunded = rows.filter(o => o.financialStatus === "refunded");
     const sum = (xs: Order[], k: (o: Order) => number = o => o.total) => xs.reduce((t, o) => t + k(o), 0);
     const byProvider = PROVIDERS.map(p => {
@@ -31,7 +32,7 @@ export default function Finance() {
     });
     const months = new Map<string, { month: string; sales: number; refunds: number }>();
     for (const o of rows) {
-      const m = o.$createdAt.slice(0, 7);
+      const m = orderDate(o).slice(0, 7);
       const e = months.get(m) ?? { month: m, sales: 0, refunds: 0 };
       if (o.financialStatus === "paid") e.sales += o.total;
       if (o.financialStatus === "refunded") e.refunds += o.total;
@@ -45,7 +46,7 @@ export default function Finance() {
   }, [orders.data, days]);
 
   const exportCsv = () => downloadCsv(`${storeSlug(s)}-finance-${days}d.csv`, f.rows.map(o => ({
-    date: o.$createdAt.slice(0, 10), order: o.number, customer: o.customerName, email: o.customerEmail, status: o.financialStatus,
+    date: orderDate(o).slice(0, 10), order: o.number, customer: o.customerName, email: o.customerEmail, status: o.financialStatus,
     provider: o.paymentProvider ?? "manual", paymentRef: o.paymentRef ?? "", discountCode: o.discountCode ?? "", discount: o.discountAmount ?? 0,
     total: o.total, currency: s.currency,
   })));

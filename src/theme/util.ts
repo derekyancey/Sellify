@@ -1,5 +1,5 @@
 import type { Collection, Product, Variant } from "../lib/types";
-import { hasVariants, priceRange } from "../lib/variants";
+import { hasVariants, isAvailable, priceRange } from "../lib/variants";
 import type { RenderCtx, SectionCtx, Settings, SettingValue } from "./types";
 
 export const esc = (v: unknown) => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
@@ -111,7 +111,7 @@ export function priceHtml(ctx: RenderCtx, p: Product, v?: Variant, opts: { from?
 export function productCard(ctx: RenderCtx, p: Product, o: { ratio?: string; quickAdd?: boolean; showSecondary?: boolean } = {}) {
   const ts = ctx.theme.settings;
   const sale = p.compareAtPrice && p.compareAtPrice > p.price;
-  const sold = p.inventory <= 0;
+  const sold = !isAvailable(p);
   const badgePos = str(ts.badge_position, "bottom-left");
   const second = bool(ts.show_secondary_image, true) && p.imageUrl ? (p.images ?? []).find(u => u && u !== p.imageUrl) : undefined;
   const badge = sold ? `<span class="badge badge--sold ${badgePos}">Sold out</span>` : sale && bool(ts.show_sale_badge, true) ? `<span class="badge badge--sale ${badgePos}">Sale</span>` : "";

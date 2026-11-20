@@ -18,10 +18,12 @@ import { routeFor } from "./routes";
 import type { CartLine, RenderCtx, ThemeDoc } from "./types";
 import { money } from "./util";
 import { predictiveSearch } from "./search";
+import { normalizeProduct } from "../lib/variants";
 
 interface YanceyApi {
   settings: { site: string };
   products(): Promise<Product[]>;
+  catalog?(): Promise<Product[]>;
   collections(): Promise<Collection[]>;
   theme(): Promise<{ data: ThemeDoc | null } | null>;
   config(): Promise<{ stripe: boolean; paypal: boolean }>;
@@ -43,8 +45,8 @@ async function start() {
 
   let theme: ThemeDoc | null = null, products: Product[] = [], collections: Collection[] = [], payments = { stripe: true, paypal: false };
   try {
-    const [t, p, c, cfg] = await Promise.all([Y.theme(), Y.products(), Y.collections(), Y.config().catch(() => payments)]);
-    theme = t?.data ?? null; products = p; collections = c; payments = cfg;
+    const [t, p, c, cfg] = await Promise.all([Y.theme(), Y.catalog ? Y.catalog() : Y.products(), Y.collections(), Y.config().catch(() => payments)]);
+    theme = t?.data ?? null; products = p.map(x => normalizeProduct(x)); collections = c; payments = cfg;
   } catch (e) {
     console.warn("storefront.js: showing the published copy (could not load live data)", e);
   }

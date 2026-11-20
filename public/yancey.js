@@ -10,11 +10,15 @@
  *   await Yancey.products()                     -> active products for this site
  *   Yancey.cart.add(productId, qty, variantId?) / .remove(productId, variantId?) / .setQuantity(id, n, variantId?)
  *               .items() -> [{ productId, variantId?, quantity }] / .count() / .clear()
- *   Products with variants have .options [{ name, values }] and .variants [{ id, options, price, inventory, … }];
- *   pass the chosen variant's id to cart.add.
+ *     (products with several variants need a variantId: product.variants[i].id)
+ *   Products come back in one shape whatever format they were saved in (including Shopify imports):
+ *     .options [{ name, values }], .variants [{ id, options: ["M", "Red"], title, price, inventory, tracked, imageUrl }],
+ *     .images ["https://…"] (extra images after .imageUrl), .tracksInventory (false = always available)
  *   window.addEventListener("yancey:cart", e => e.detail)   // fires on every cart change
  *   await Yancey.config()                       -> { stripe: bool, paypal: bool }
+ *   await Yancey.product("handle-or-id")         -> one product (works for unlisted ones too), with .variants and .images
  *   await Yancey.collection("best-sellers")     -> { title, description, products }
+ *   await Yancey.catalog()                      -> active + unlisted products (everything sellable), all pages
  *   await Yancey.collections()                  -> all collections for this site
  *   await Yancey.theme()                        -> the live theme ({ name, data }) or null
  *   await Yancey.subscribe("a@b.com")           -> newsletter signup (customer with marketing on)
@@ -48,22 +52,22 @@
   function emit(items) { window.dispatchEvent(new CustomEvent("yancey:cart", { detail: items })); }
 
   // Lines are keyed by product + variant, so two sizes of one product are separate lines.
-  var same = function (i, productId, variantId) { return i.productId === productId && (i.variantId || "") === (variantId || ""); };
   var cart = {
     items: function () { return store(true); },
     count: function () { return cart.items().reduce(function (n, i) { return n + i.quantity; }, 0); },
     setQuantity: function (productId, quantity, variantId) {
-      var items = cart.items(), at = items.findIndex(function (i) { return same(i, productId, variantId); });
-      var line = { productId: productId, quantity: Math.min(100, Math.floor(quantity)) };
-      if (variantId) line.variantId = variantId;
-      if (at >= 0 && quantity > 0) items[at] = line;
-      else if (at >= 0) items.splice(at, 1);
-      else if (quantity > 0) items.push(line);
-      store(false, items); emit(items); return items;
+      var same = function (i) { return i.productId === productId && (i.variantId || null) === (variantId || null); };
+      var items = cart.items(), at = items.findIndex(same), next = items.filter(function (i) { return !same(i); });
+      if (quantity > 0) {
+        var line = { productId: productId, quantity: Math.min(100, Math.floor(quantity)) };
+        if (variantId) line.variantId = variantId;
+        next.splice(at < 0 ? next.length : at, 0, line);  // keep the line's position in the cart
+      }
+      store(false, next); emit(next); return next;
     },
     add: function (productId, quantity, variantId) {
-      var cur = cart.items().find(function (i) { return same(i, productId, variantId); });
-      return cart.setQuantity(productId, (cur ? cur.quantity : 0) + (quantity || 1), variantId);
+      var cur = cart.items().find(function (i) { return i.productId === productId && (i.variantId || null) === (variantId || null); });
+      return cart.setQuantity(productId, (cur ? cur.quantity : 0) + (quantity == null ? 1 : quantity), variantId);
     },
     remove: function (productId, variantId) { return cart.setQuantity(productId, 0, variantId); },
     clear: function () { store(false, []); emit([]); },
@@ -91,19 +95,82 @@
     return json.rows;
   }
 
-  function products(ids) {
-    var q = [{ method: "equal", attribute: "siteId", values: [cfg.site] }, { method: "equal", attribute: "status", values: ["active"] }, { method: "limit", values: [100] }];
-    if (ids) q.push({ method: "equal", attribute: "$id", values: ids.length ? ids : ["-"] });
-    return rows("products", q).then(function (list) { return list.map(parseProduct); });
+  /**
+   * Read a product saved in either format: the app's (options [{name, values}], variant.options ["M"], images ["url"])
+   * or a Shopify import (variant.options {"Size": "M"}, variant.image, images [{src}], a lone "Default Title" variant).
+   * Mirrors normalizeProduct() in src/lib/variants.ts.
+   */
+  function parse(p) {
+    ["variants", "images", "tags", "options"].forEach(function (k) { if (typeof p[k] === "string") { try { p[k] = JSON.parse(p[k]); } catch (e) { p[k] = null; } } });
+    var src = function (v) { return typeof v === "string" ? v : v && (v.src || v.url || v.originalSrc || v.original) || ""; };
+    var images = (Array.isArray(p.images) ? p.images : []).map(src).filter(Boolean);
+    p.imageUrl = p.imageUrl || images[0] || "";
+    p.images = images.filter(function (u, i) { return u !== p.imageUrl && images.indexOf(u) === i; });
+    var variants = (Array.isArray(p.variants) ? p.variants : []).filter(function (v) { return v && typeof v === "object"; });
+    var options = Array.isArray(p.options) ? p.options.filter(function (o) { return o && o.name; }) : [];
+    if (!options.length) {
+      variants.forEach(function (v) {
+        if (v.options && !Array.isArray(v.options) && typeof v.options === "object") Object.keys(v.options).forEach(function (name) {
+          var o = options.find(function (x) { return x.name === name; }) || (options.push({ name: name, values: [] }), options[options.length - 1]);
+          if (o.values.indexOf(String(v.options[name])) < 0) o.values.push(String(v.options[name]));
+        });
+      });
+    }
+    var keep = options.map(function (o) { return !(o.name.toLowerCase() === "title" && o.values.length <= 1 && (!o.values[0] || o.values[0] === "Default Title")); });
+    var real = options.filter(function (_, i) { return keep[i]; });
+    p.variants = variants.map(function (v) {
+      var vals = Array.isArray(v.options) ? v.options.map(String) : v.options && typeof v.options === "object" ? options.map(function (o) { return String(v.options[o.name] == null ? "" : v.options[o.name]); }) : [];
+      vals = real.length ? vals.filter(function (_, i) { return keep[i] !== false; }).slice(0, real.length) : [];
+      var out = Object.assign({}, v, { options: vals, price: Number(v.price) || 0, inventory: Math.trunc(Number(v.inventory) || 0), imageUrl: src(v.imageUrl || v.image) || undefined,
+        title: vals.length ? vals.join(" / ") : (v.title && v.title !== "Default Title" ? v.title : undefined) });
+      delete out.image;
+      return out;
+    });
+    p.options = real;
+    if (p.tracksInventory == null) p.tracksInventory = true;
+    return p;
   }
 
-  // options / variants are stored as JSON text.
-  function parseProduct(p) {
-    ["options", "variants", "images"].forEach(function (k) {
-      if (typeof p[k] === "string") { try { p[k] = JSON.parse(p[k]); } catch (e) { p[k] = []; } }
-      if (!Array.isArray(p[k])) p[k] = [];
-    });
-    return p;
+  /** Can this product (or one of its variants) be bought now? Untracked stock (digital goods) always can. */
+  function available(p, v) {
+    if (v) return p.tracksInventory === false || v.tracked === false || v.inventory > 0;
+    if (p.variants && p.variants.length) return p.variants.some(function (x) { return available(p, x); });
+    return p.tracksInventory === false || p.inventory > 0;
+  }
+
+  /** Every row matching the queries, 100 at a time (Appwrite's page size). */
+  async function allRows(table, queries) {
+    var out = [], cursor = null;
+    for (;;) {
+      var q = queries.concat([{ method: "limit", values: [100] }]);
+      if (cursor) q.push({ method: "cursorAfter", values: [cursor] });
+      var page = await rows(table, q);
+      out = out.concat(page);
+      if (page.length < 100) return out;
+      cursor = page[page.length - 1].$id;
+    }
+  }
+
+  // Active products for listings; collections (by id) may also include unlisted ones, which are buyable by link.
+  async function products(ids) {
+    var q = [{ method: "equal", attribute: "siteId", values: [cfg.site] }];
+    q.push(ids ? { method: "equal", attribute: "$id", values: ids.length ? ids.slice(0, 100) : ["-"] } : { method: "equal", attribute: "status", values: ["active"] });
+    var list = (await allRows("products", q)).map(parse);
+    return ids ? list.filter(function (p) { return p.status === "active" || p.status === "unlisted"; }) : list;
+  }
+
+  /** Everything a storefront can show or sell: active and unlisted products (unlisted ones only by link). */
+  async function catalog() {
+    var q = [{ method: "equal", attribute: "siteId", values: [cfg.site] }, { method: "equal", attribute: "status", values: ["active", "unlisted"] }];
+    return (await allRows("products", q)).map(parse);
+  }
+
+  async function product(handleOrId) {
+    var q = [{ method: "equal", attribute: "siteId", values: [cfg.site] }, { method: "equal", attribute: "handle", values: [handleOrId] }, { method: "limit", values: [1] }];
+    var hit = await rows("products", q);
+    if (!hit.length) hit = (await products([handleOrId]));
+    var p = hit[0] && parse(hit[0]);
+    return p && (p.status === "active" || p.status === "unlisted") ? p : null;
   }
 
   async function collection(handle) {
@@ -117,7 +184,7 @@
   }
 
   async function collections() {
-    return rows("collections", [{ method: "equal", attribute: "siteId", values: [cfg.site] }, { method: "limit", values: [200] }]);
+    return allRows("collections", [{ method: "equal", attribute: "siteId", values: [cfg.site] }]);
   }
 
   /** The live theme (Online store → Themes): { $id, name, data } or null. */
@@ -178,5 +245,5 @@
     return null;
   }
 
-  window.Yancey = { cart: cart, products: function () { return products(); }, collection: collection, collections: collections, theme: theme, subscribe: subscribe, discount: discount, checkout: checkout, handleReturn: handleReturn, config: function () { return call("/config", {}); }, settings: cfg };
+  window.Yancey = { cart: cart, products: function () { return products(); }, catalog: catalog, product: product, collection: collection, collections: collections, theme: theme, subscribe: subscribe, available: available, discount: discount, checkout: checkout, handleReturn: handleReturn, config: function () { return call("/config", {}); }, settings: cfg };
 })();

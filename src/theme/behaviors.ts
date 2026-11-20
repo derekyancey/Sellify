@@ -184,7 +184,7 @@ ${srcs.length > 1 ? `<button data-lb-prev aria-label="Previous image">${icon("m1
   const setLine = (key: string, q: number) => { const [pid, vid] = key.split(":"); return api.setQuantity(pid, q, vid || undefined); };
 
   /** After an option changes: find the matching variant and update price, stock, image, buttons and the URL. */
-  type V = { id: string; options: string[]; price: number; compareAtPrice?: number; inventory: number; imageUrl?: string };
+  type V = { id: string; options: string[]; price: number; compareAtPrice?: number; inventory: number; available?: boolean; tracked?: boolean; imageUrl?: string };
   function selectVariant(prod: HTMLElement | null) {
     if (!prod?.dataset.variants) return;
     const variants: V[] = JSON.parse(prod.dataset.variants);
@@ -197,7 +197,7 @@ ${srcs.length > 1 ? `<button data-lb-prev aria-label="Previous image">${icon("m1
     const v = variants.find(x => x.options.every((o, i) => o === chosen[i]));
     const cur = prod.dataset.currency || "USD";
     const fmt = (n: number) => { try { return new Intl.NumberFormat(undefined, { style: "currency", currency: cur }).format(n); } catch { return n.toFixed(2); } };
-    const sold = !v || v.inventory <= 0;
+    const sold = !v || (v.available === undefined ? v.inventory <= 0 : !v.available);
     const priceBox = $("[data-price] .price", prod);
     if (priceBox && v) {
       const sale = !!v.compareAtPrice && v.compareAtPrice > v.price;
@@ -207,8 +207,10 @@ ${srcs.length > 1 ? `<button data-lb-prev aria-label="Previous image">${icon("m1
     const inv = $("[data-inventory]", prod);
     if (inv) {
       const t = Number(inv.dataset.threshold) || 0, n = v?.inventory ?? 0, count = inv.dataset.showCount === "1";
+      if (v && v.tracked === false) { inv.className = "inventory-note"; inv.textContent = "In stock"; } else {
       inv.className = `inventory-note ${!v ? "out" : n <= 0 ? "out" : n <= t ? "low" : ""}`;
       inv.textContent = !v ? "Unavailable" : n <= 0 ? "Out of stock" : n <= t ? (count ? `Low stock: ${n} left` : "Low stock") : (count ? `${n} in stock` : "In stock");
+      }
     }
     for (const btn of $$<HTMLButtonElement>("[data-add-to-cart], [data-buy-now]", prod)) {
       if (v) btn.dataset.variant = v.id;

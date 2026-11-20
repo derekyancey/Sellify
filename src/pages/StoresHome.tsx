@@ -1,3 +1,4 @@
+import { orderDate } from "../lib/types";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowRight, Globe, Plus } from "lucide-react";
@@ -9,7 +10,7 @@ import type { Site } from "../lib/types";
 import { Badge, Button, ErrorBox, Field, Input, Modal, PageHeader, Select } from "../components/ui";
 import { cleanDomain } from "./StoreSettings";
 
-const progress = (s: Site) => [!!s.domain, !!s.cloudflareZoneId, !!s.hostingSiteId, !!(s.ga4PropertyId && s.gscProperty), s.emailStatus === "verified"];
+const progress = (s: Site) => [!!s.domain, !!s.hostingSiteId, !!(s.ga4PropertyId && s.gscProperty), s.emailStatus === "verified"];
 const initials = (n: string) => n.split(/\s+/).filter(w => /[a-z0-9]/i.test(w[0] ?? "")).slice(0, 2).map(w => w[0]).join("").toUpperCase() || "?";
 const COLORS = ["bg-emerald-600", "bg-sky-600", "bg-violet-600", "bg-amber-600", "bg-rose-600", "bg-teal-600"];
 
@@ -26,7 +27,7 @@ export default function StoresHome() {
     const since = daysAgo(30).toISOString();
     const by: Record<string, { revenue: number; orders: number }> = {};
     for (const o of orders.data ?? []) {
-      if (o.$createdAt < since) continue;
+      if (orderDate(o) < since) continue;
       const s = (by[o.siteId] ??= { revenue: 0, orders: 0 });
       s.orders++; if (o.financialStatus === "paid") s.revenue += o.total;
     }

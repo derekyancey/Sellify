@@ -3,7 +3,7 @@
  *   ?filter.v.availability=1&filter.v.price.gte=10&filter.v.price.lte=40&filter.v.option.size=M&filter.v.option.size=L&sort=price-asc&page=2
  */
 import type { Product } from "../lib/types";
-import { priceRange } from "../lib/variants";
+import { isAvailable, priceRange } from "../lib/variants";
 import type { Route } from "./types";
 
 export type Params = Record<string, string[]>;
@@ -48,7 +48,7 @@ export function applyFilters(products: Product[], params: Params) {
   const gte = Number(params["filter.v.price.gte"]?.[0]), lte = Number(params["filter.v.price.lte"]?.[0]);
   const optionFilters = Object.entries(params).filter(([k, v]) => k.startsWith(OPT) && v.length).map(([k, v]) => ({ key: k.slice(OPT.length), values: v }));
   return products.filter(p => {
-    if (inStock && p.inventory <= 0) return false;
+    if (inStock && !isAvailable(p)) return false;
     const r = priceRange(p);
     if (!isNaN(gte) && params["filter.v.price.gte"]?.[0] && r.max < gte) return false;
     if (!isNaN(lte) && params["filter.v.price.lte"]?.[0] && r.min > lte) return false;
@@ -56,7 +56,7 @@ export function applyFilters(products: Product[], params: Params) {
       const oi = (p.options ?? []).findIndex(o => key(o.name) === f.key);
       if (oi < 0) return false;
       // Match a variant with one of the chosen values (in stock if availability is on).
-      if (!p.variants?.some(v => f.values.includes(v.options[oi]) && (!inStock || v.inventory > 0))) return false;
+      if (!p.variants?.some(v => f.values.includes(v.options[oi]) && (!inStock || isAvailable(p, v)))) return false;
     }
     return true;
   });

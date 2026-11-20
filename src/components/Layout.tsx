@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { ChevronLeft, ExternalLink, LogOut, Menu, Settings, X } from "lucide-react";
+import { ChevronLeft, ExternalLink, LogOut, Menu, Settings, Upload, X } from "lucide-react";
 import { NAV } from "../lib/nav";
 import { useAuth } from "../context/Auth";
 import { useSite } from "../context/Site";
@@ -56,7 +56,12 @@ export default function Layout() {
           })}
         </div>
       ))}
-      <div className="mt-auto">
+      <div className="mt-auto space-y-0.5">
+        <NavLink to={base + "/import"} onClick={() => setOpen(false)}
+          className={({ isActive }) => cx("flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm",
+            isActive ? "bg-zinc-800 text-white" : "text-zinc-300 hover:bg-zinc-800/60 hover:text-white")}>
+          <Upload className="size-4" />Import data
+        </NavLink>
         <NavLink to={base + "/settings"} onClick={() => setOpen(false)}
           className={({ isActive }) => cx("flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm",
             isActive ? "bg-zinc-800 text-white" : "text-zinc-300 hover:bg-zinc-800/60 hover:text-white")}>

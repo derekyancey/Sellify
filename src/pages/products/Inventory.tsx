@@ -3,7 +3,7 @@ import { useSite } from "../../context/Site";
 import { list, update } from "../../lib/data";
 import { useAsync } from "../../lib/useAsync";
 import type { Product, Variant } from "../../lib/types";
-import { hasVariants, variantTitle, withRollups } from "../../lib/variants";
+import { hasVariants, variantTitle } from "../../lib/variants";
 import { Button, Card, ErrorBox, Input, Loading, PageHeader, Table, Td, cx } from "../../components/ui";
 
 export default function Inventory() {
@@ -14,10 +14,11 @@ export default function Inventory() {
   const [lowOnly, setLowOnly] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
-  // One row per sellable thing: a product without variants, or each variant.
-  type Row = { key: string; product: Product; variant?: Variant; sku?: string; inventory: number };
-  const all = useMemo(() => (data ?? []).filter(p => p.status !== "archived").flatMap<Row>(p => hasVariants(p)
-    ? p.variants!.map(v => ({ key: `${p.$id}:${v.id}`, product: p, variant: v, sku: v.sku, inventory: v.inventory }))
+  // One row per sellable thing whose stock is counted: each variant, or the product itself.
+  // Untracked products (digital goods) are always available and aren't listed.
+  type Row = { key: string; product: Product; variant?: Variant; sku?: string | null; inventory: number };
+  const all = useMemo(() => (data ?? []).filter(p => p.status !== "archived" && p.tracksInventory !== false).flatMap<Row>(p => p.variants?.length
+    ? p.variants.filter(v => v.tracked !== false).map(v => ({ key: `${p.$id}:${v.id}`, product: p, variant: hasVariants(p) ? v : undefined, sku: v.sku ?? p.sku, inventory: Math.max(0, v.inventory) }))
     : [{ key: `${p.$id}:`, product: p, variant: undefined, sku: p.sku, inventory: p.inventory }]), [data]);
   const rows = useMemo(() => all.filter(r => !lowOnly || r.inventory < threshold).sort((a, b) => a.inventory - b.inventory), [all, lowOnly, threshold]);
   const changed = Object.keys(edits).filter(k => all.find(r => r.key === k)?.inventory !== edits[k]);
@@ -29,9 +30,9 @@ export default function Inventory() {
       for (const k of changed) { const pid = k.split(":")[0]; byProduct.set(pid, [...(byProduct.get(pid) ?? []), k]); }
       for (const [pid, keys] of byProduct) {
         const p = data!.find(x => x.$id === pid)!;
-        if (hasVariants(p)) {
-          const variants = p.variants!.map(v => edits[`${pid}:${v.id}`] !== undefined ? { ...v, inventory: Math.max(0, Math.floor(edits[`${pid}:${v.id}`])) } : v);
-          await update("products", pid, withRollups({ options: p.options, variants }));
+        if (p.variants?.length) { // stock lives on the variants (also a product's single default variant)
+          const variants = p.variants.map(v => edits[`${pid}:${v.id}`] !== undefined ? { ...v, inventory: Math.max(0, Math.floor(edits[`${pid}:${v.id}`])) } : v);
+          await update("products", pid, { variants, inventory: variants.reduce((t, v) => t + Math.max(0, v.inventory), 0) });
         } else await update("products", pid, { inventory: Math.max(0, Math.floor(edits[keys[0]])) });
       }
       setEdits({}); setMsg(`Updated ${changed.length} item${changed.length === 1 ? "" : "s"}.`); reload();
@@ -41,7 +42,7 @@ export default function Inventory() {
 
   return (
     <>
-      <PageHeader title="Inventory" subtitle="Adjust stock in bulk. Paid orders reduce stock automatically."
+      <PageHeader title="Inventory" subtitle={`Adjust stock in bulk. Paid orders reduce stock automatically.${(data ?? []).some(p => p.tracksInventory === false) ? ` ${(data ?? []).filter(p => p.tracksInventory === false).length} products don't track stock (e.g. digital) and aren't listed.` : ""}`}
         actions={<><Button disabled={!changed.length} onClick={() => setEdits({})}>Discard</Button><Button variant="primary" disabled={!changed.length} loading={busy} onClick={save}>Save {changed.length || ""} change{changed.length === 1 ? "" : "s"}</Button></>} />
       {msg && <div className={`mb-4 rounded-lg px-3 py-2 text-sm ${msg.startsWith("Error") ? "bg-red-50 text-red-800" : "bg-emerald-50 text-emerald-800"}`}>{msg}</div>}
       <Card>

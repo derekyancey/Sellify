@@ -25,7 +25,7 @@ export function storefrontScripts(site: Site, base = "") {
 export async function deployStorefront(site: Site, theme: Theme, force = false) {
   if (!site.hostingSiteId) throw new Error("Pick this store's Appwrite site under Store settings → Connections first.");
   const [products, collections] = await Promise.all([list("products", site.$id), list("collections", site.$id)]);
-  const active = products.filter(p => p.status === "active");
+  const active = products.filter(p => p.status === "active" || p.status === "unlisted"); // unlisted: buyable by link
   const fetchText = async (path: string) => {
     const r = await fetch(path, { cache: "no-store" });
     const t = await r.text();

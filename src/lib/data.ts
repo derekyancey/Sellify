@@ -1,7 +1,7 @@
 import { ID, Query } from "appwrite";
 import { config, functions, isDemo, tables } from "./appwrite";
 import { buildDemo, demoOps } from "./demo";
-import { withRollups } from "./variants";
+import { isTracked, normalizeProduct } from "./variants";
 import type { Order, RowOf, TableName } from "./types";
 
 /* ------------------------------------------------------------------ */
@@ -24,15 +24,19 @@ function saveDemo(db: DemoDB) { try { localStorage.setItem(DEMO_KEY, JSON.string
 export function resetDemo() { try { localStorage.removeItem(DEMO_KEY); } catch { /* ignore */ } }
 
 // Some columns hold JSON in Appwrite (longtext); (de)serialize them here.
-const JSON_COLS: Partial<Record<TableName, string[]>> = { products: ["options", "variants", "images"], orders: ["items"], checkouts: ["items"], segments: ["rules"], themes: ["data"] };
+const JSON_COLS: Partial<Record<TableName, string[]>> = {
+  orders: ["items", "billingAddress", "shippingAddress", "tags"], checkouts: ["items"], segments: ["rules"], themes: ["data"],
+  products: ["images", "variants", "options", "tags"], customers: ["address", "tags"],
+};
 const toRow = (t: TableName, data: any) => {
   const out = { ...data };
   for (const c of JSON_COLS[t] ?? []) if (out[c] !== undefined && typeof out[c] !== "string") out[c] = JSON.stringify(out[c]);
   return out;
 };
 const fromRow = (t: TableName, row: any) => {
-  for (const c of JSON_COLS[t] ?? []) if (typeof row[c] === "string") { try { row[c] = JSON.parse(row[c]); } catch { row[c] = c === "data" ? null : []; } }
-  return row;
+  for (const c of JSON_COLS[t] ?? []) if (typeof row[c] === "string") { try { row[c] = JSON.parse(row[c]); } catch { row[c] = null; } }
+  // Products are stored in the app's shape or the Shopify-import shape; read both into one.
+  return t === "products" ? normalizeProduct(row) : row;
 };
 const strip = (data: any) => {
   const out: any = {};
@@ -44,12 +48,23 @@ export async function list<T extends TableName>(table: T, siteId?: string): Prom
   if (isDemo) {
     const rows = demoDb()[table] as RowOf<T>[];
     return (siteId ? rows.filter((r: any) => r.siteId === siteId) : rows)
-      .slice().sort((a, b) => b.$createdAt.localeCompare(a.$createdAt));
+      .map(r => (table === "products" ? normalizeProduct(structuredClone(r) as any) : r) as RowOf<T>)
+      .sort((a: any, b: any) => (b.placedAt || b.$createdAt).localeCompare(a.placedAt || a.$createdAt));
   }
-  const queries = [Query.orderDesc("$createdAt"), Query.limit(1000)];
-  if (siteId) queries.push(Query.equal("siteId", siteId));
-  const res = await tables.listRows({ databaseId: config.databaseId, tableId: table, queries });
-  return res.rows.map(r => fromRow(table, r)) as unknown as RowOf<T>[];
+  // Page through everything (stores can have tens of thousands of customers).
+  const out: any[] = [];
+  let cursor: string | undefined;
+  for (;;) {
+    const queries = [Query.orderDesc("$createdAt"), Query.limit(1000)];
+    if (siteId) queries.push(Query.equal("siteId", siteId));
+    if (cursor) queries.push(Query.cursorAfter(cursor));
+    const res = await tables.listRows({ databaseId: config.databaseId, tableId: table, queries });
+    out.push(...res.rows.map(r => fromRow(table, r)));
+    if (res.rows.length < 1000) break;
+    cursor = res.rows[res.rows.length - 1].$id;
+  }
+  if (table === "orders") out.sort((a, b) => (b.placedAt || b.$createdAt).localeCompare(a.placedAt || a.$createdAt));
+  return out as unknown as RowOf<T>[];
 }
 
 export async function create<T extends TableName>(table: T, data: Omit<RowOf<T>, "$id" | "$createdAt">): Promise<RowOf<T>> {
@@ -96,9 +111,12 @@ export async function createOrder(siteId: string, data: Omit<Order, "$id" | "$cr
   for (const li of data.items) {
     const p = products.find(p => p.$id === li.productId);
     if (!p) continue;
-    if (li.variantId && p.variants?.some(v => v.id === li.variantId)) {
-      p.variants = p.variants.map(v => v.id === li.variantId ? { ...v, inventory: Math.max(0, v.inventory - li.quantity) } : v);
-      await update("products", p.$id, withRollups({ options: p.options, variants: p.variants }));
+    // Lines without a variant on a product with one default variant use that variant.
+    const v = p.variants?.find(x => x.id === li.variantId) ?? (p.variants?.length === 1 ? p.variants[0] : undefined);
+    if (!isTracked(p, v)) continue; // digital / untracked: nothing to reduce
+    if (v) {
+      p.variants = p.variants!.map(x => x.id === v.id ? { ...x, inventory: Math.max(0, x.inventory - li.quantity) } : x);
+      await update("products", p.$id, { variants: p.variants, inventory: p.variants.reduce((t, x) => t + Math.max(0, x.inventory), 0) });
     } else {
       p.inventory = Math.max(0, p.inventory - li.quantity);
       await update("products", p.$id, { inventory: p.inventory });

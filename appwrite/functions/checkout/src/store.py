@@ -24,20 +24,80 @@ def a(obj, key):
     return getattr(obj, key.lstrip("$"), None)
 
 
+def _json_list(raw):
+    if isinstance(raw, str):
+        try:
+            raw = json.loads(raw)
+        except ValueError:
+            return []
+    return raw if isinstance(raw, list) else []
+
+
+def _is_placeholder(name, values):
+    """Shopify's "Title: Default Title" option on products without options."""
+    return str(name).lower() == "title" and len(values) <= 1 and (not values or values[0] in ("", "Default Title"))
+
+
 def variants_of(p):
-    """A product's variants (stored as JSON). Empty list when it has none."""
-    raw = a(p, "variants")
-    if not raw:
-        return []
-    try:
-        data = json.loads(raw) if isinstance(raw, str) else raw
-    except ValueError:
-        return []
-    return [v for v in data if isinstance(v, dict) and v.get("id")] if isinstance(data, list) else []
+    """A product's variants in one shape, whichever format they were saved in.
+
+    App format:     options column [{name, values}], variant.options ["M", "Red"], variant.imageUrl
+    Shopify import: variant.options {"Size": "M"}, variant.image, a lone "Default Title" variant
+    Returns dicts with id, options (list of values), title, price, inventory, tracked, imageUrl.
+    """
+    raw = [v for v in _json_list(a(p, "variants")) if isinstance(v, dict) and v.get("id")]
+    names = [str(o.get("name", "")) for o in _json_list(a(p, "options")) if isinstance(o, dict)]
+    if not names:  # Shopify shape: option names in order of first appearance
+        for v in raw:
+            if isinstance(v.get("options"), dict):
+                names += [n for n in v["options"] if n not in names]
+    values_by_name = {n: [] for n in names}
+    for v in raw:
+        if isinstance(v.get("options"), dict):
+            for n in names:
+                val = str(v["options"].get(n, ""))
+                if val not in values_by_name[n]:
+                    values_by_name[n].append(val)
+    keep = [not (isinstance(raw[0].get("options") if raw else None, dict) and _is_placeholder(n, values_by_name[n])) for n in names]
+    out = []
+    for v in raw:
+        opts = v.get("options")
+        if isinstance(opts, list):
+            values = [str(x) for x in opts]
+        elif isinstance(opts, dict):
+            values = [str(opts.get(n, "")) for n, k in zip(names, keep) if k]
+        else:
+            values = []
+        title = " / ".join(values) if values else (v.get("title") if v.get("title") not in (None, "", "Default Title") else "")
+        out.append({**v, "options": values, "title": title, "price": float(v.get("price") or 0),
+                    "inventory": int(float(v.get("inventory") or 0)), "imageUrl": v.get("imageUrl") or v.get("image") or None})
+    return out
+
+
+def option_names(p):
+    """Names of a product's real options ("Size", "Color"), in order, in either stored format."""
+    names = [str(o.get("name", "")) for o in _json_list(a(p, "options")) if isinstance(o, dict)]
+    if names:
+        return names
+    seen, values = [], {}
+    for v in _json_list(a(p, "variants")):
+        if isinstance(v, dict) and isinstance(v.get("options"), dict):
+            for n, val in v["options"].items():
+                if n not in seen:
+                    seen.append(n)
+                values.setdefault(n, [])
+                if str(val) not in values[n]:
+                    values[n].append(str(val))
+    return [n for n in seen if not _is_placeholder(n, values[n])]
 
 
 def variant_title(v):
-    return " / ".join(str(x) for x in (v.get("options") or []))
+    return v.get("title") or " / ".join(str(x) for x in (v.get("options") or []))
+
+
+def is_tracked(p, v=None):
+    """Untracked stock (digital goods) is always available and never reduced."""
+    return a(p, "tracksInventory") is not False and (v is None or v.get("tracked") is not False)
 
 
 class Store:
@@ -69,7 +129,8 @@ class Store:
             raise HttpError("Cart is empty")
         qty = {}  # (productId, variantId or "") -> quantity
         for it in items:
-            pid, vid, q = str(it.get("productId", "")), str(it.get("variantId") or ""), int(it.get("quantity", 1))
+            pid, q = str(it.get("productId", "")), int(it.get("quantity", 1))
+            vid = str(it.get("variantId") or "") or None
             if not pid or q < 1 or q > 100:
                 raise HttpError("Invalid cart item")
             qty[(pid, vid)] = qty.get((pid, vid), 0) + q
@@ -77,26 +138,23 @@ class Store:
         lines = []
         for (pid, vid), q in qty.items():
             p = products.get(pid)
-            if not p or a(p, "status") != "active":
+            if not p or a(p, "status") not in ("active", "unlisted"):  # unlisted = hidden from lists, still buyable by link
                 raise HttpError("A product in your cart is no longer available", 409)
             variants = variants_of(p)
+            v = None
             if variants:
-                v = next((x for x in variants if x.get("id") == vid), None)
-                if not v and not vid and len(variants) == 1:
-                    v = variants[0]
-                if not v:
-                    raise HttpError(f"Please choose an option for {a(p, 'title')}", 409)
-                if int(v.get("inventory") or 0) < q:
-                    raise HttpError(f"Only {int(v.get('inventory') or 0)} of {a(p, 'title')} ({variant_title(v)}) left in stock", 409)
-                lines.append({"productId": pid, "variantId": v["id"], "title": f"{a(p, 'title')} — {variant_title(v)}", "quantity": q,
-                              "price": round(float(v.get("price") or 0), 2), "imageUrl": v.get("imageUrl") or a(p, "imageUrl") or None})
-                continue
-            if (a(p, "inventory") or 0) < q:
-                raise HttpError(f"Only {a(p, 'inventory')} of {a(p, 'title')} left in stock", 409)
-            lines.append({"productId": pid, "title": a(p, "title"), "quantity": q, "price": round(float(a(p, "price")), 2),
-                          "imageUrl": a(p, "imageUrl") or None})
-        if any(l["price"] <= 0 for l in lines):
-            raise HttpError("A product in your cart has no price yet", 409)
+                v = next((x for x in variants if x.get("id") == vid), None) if vid else (variants[0] if len(variants) == 1 else None)
+                if v is None:
+                    raise HttpError(f"Choose an option for {a(p, 'title')}" if not vid else f"That option of {a(p, 'title')} is no longer available", 409)
+            tracked = is_tracked(p, v)
+            stock = (v["inventory"] if v else a(p, "inventory")) or 0
+            if tracked and stock < q:
+                label = f"{a(p, 'title')} ({variant_title(v)})" if v and variant_title(v) else a(p, "title")
+                raise HttpError(f"Only {max(0, stock)} of {label} left in stock", 409)
+            price = v["price"] if v else float(a(p, "price") or 0)
+            title = a(p, "title") + (f" — {variant_title(v)}" if v and variant_title(v) else "")
+            lines.append({"productId": pid, "variantId": v["id"] if v else None, "title": title, "quantity": q, "price": round(price, 2),
+                          "imageUrl": (v or {}).get("imageUrl") or a(p, "imageUrl") or None, "tracked": tracked})
         subtotal = round(sum(l["price"] * l["quantity"] for l in lines), 2)
         discount = self.discount(site_id, code, subtotal) if code else None
         total = round(subtotal - (discount["amount"] if discount else 0), 2)
@@ -151,7 +209,7 @@ class Store:
             return False
         if a(c, "siteId") != site_id:
             return False
-        self.db.update_row(DB, "customers", customer_id, {"acceptsMarketing": False})
+        self.db.update_row(DB, "customers", customer_id, {"acceptsMarketing": False, "unsubscribedAt": dt.datetime.now(dt.timezone.utc).isoformat()})
         return True
 
     def subscribe(self, site_id, email):
@@ -180,7 +238,7 @@ class Store:
         customer_id = self._upsert_customer(site_id, email, name, float(a(co, "total")), bool(a(co, "acceptsMarketing"))) if email else None
         last = self.db.list_rows(DB, "orders", queries=[Query.equal("siteId", site_id), Query.order_desc("number"), Query.limit(1)])
         number = (a(last.rows[0], "number") if last.rows else 1000) + 1
-        items = [{k: l[k] for k in ("productId", "variantId", "title", "quantity", "price") if k in l} for l in lines]
+        items = [{k: l.get(k) for k in ("productId", "variantId", "title", "quantity", "price")} for l in lines]
         order = {"siteId": site_id, "number": number, "customerId": customer_id, "customerName": name, "customerEmail": email,
                  "items": json.dumps(items), "total": float(a(co, "total")), "financialStatus": "paid",
                  "fulfillmentStatus": "unfulfilled", "paymentProvider": provider, "paymentRef": payment_ref,
@@ -192,6 +250,8 @@ class Store:
                 return {"orderId": checkout_id, "duplicate": True}
             raise
         for l in lines:
+            if l.get("tracked") is False:
+                continue  # digital / untracked products: no stock to reduce
             try:
                 if l.get("variantId"):
                     self._decrement_variant(l["productId"], l["variantId"], l["quantity"])
@@ -210,12 +270,12 @@ class Store:
     def _decrement_variant(self, product_id, variant_id, quantity):
         """Variant stock lives in the product's variants JSON; update it and the product's total stock."""
         p = self.db.get_row(DB, "products", product_id)
-        variants = variants_of(p)
-        for v in variants:
-            if v.get("id") == variant_id:
-                v["inventory"] = max(0, int(v.get("inventory") or 0) - int(quantity))
-        total = sum(max(0, int(v.get("inventory") or 0)) for v in variants)
-        self.db.update_row(DB, "products", product_id, {"variants": json.dumps(variants), "inventory": total})
+        raw = _json_list(a(p, "variants"))  # keep the stored format; only the count changes
+        for v in raw:
+            if isinstance(v, dict) and v.get("id") == variant_id:
+                v["inventory"] = max(0, int(float(v.get("inventory") or 0)) - int(quantity))
+        total = sum(max(0, int(float(v.get("inventory") or 0))) for v in raw if isinstance(v, dict) and v.get("tracked") is not False)
+        self.db.update_row(DB, "products", product_id, {"variants": json.dumps(raw), "inventory": total})
 
     def _upsert_customer(self, site_id, email, name, total, opted_in=False):
         found = self.db.list_rows(DB, "customers", queries=[Query.equal("siteId", site_id), Query.equal("email", email), Query.limit(1)])

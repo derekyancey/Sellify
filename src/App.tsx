@@ -6,6 +6,7 @@ import StoresHome from "./pages/StoresHome";
 import StoreSettings from "./pages/StoreSettings";
 import Account from "./pages/Account";
 import Finance from "./pages/Finance";
+import Import from "./pages/Import";
 import GoogleCallback from "./pages/GoogleCallback";
 import Layout from "./components/Layout";
 import { Loading } from "./components/ui";
@@ -16,7 +17,6 @@ import Products from "./pages/Products";
 import Customers from "./pages/Customers";
 import Analytics from "./pages/Analytics";
 import Seo from "./pages/Seo";
-import Domains from "./pages/Domains";
 import Deploys from "./pages/Deploys";
 import Planned from "./pages/Planned";
 import Abandoned from "./pages/orders/Abandoned";
@@ -67,6 +67,7 @@ function StoreRoutes() {
       <Route element={<Layout />}>
         <Route index element={<HomePage />} />
         <Route path="settings" element={<StoreSettings />} />
+        <Route path="import" element={<Import />} />
         <Route path="orders" element={<Orders />} />
         <Route path="orders/drafts" element={<Orders key="drafts" drafts />} />
         <Route path="orders/abandoned" element={<Abandoned />} />
@@ -86,7 +87,6 @@ function StoreRoutes() {
         <Route path="analytics" element={<Analytics />} />
         <Route path="finance" element={<Finance />} />
         <Route path="seo" element={needsUrl(<Seo />)} />
-        <Route path="domains" element={needsUrl(<Domains />)} />
         <Route path="deploys" element={<Deploys />} />
         <Route path="channels/online-store" element={<Themes />} />
         <Route path="channels/online-store/themes" element={<Themes />} />

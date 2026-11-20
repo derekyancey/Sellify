@@ -1,5 +1,5 @@
 import type { Product, Variant } from "../../lib/types";
-import { defaultVariant, galleryOf, hasVariants, priceRange, variantTitle } from "../../lib/variants";
+import { defaultVariant, galleryOf, hasVariants, isAvailable, isTracked, priceRange, variantTitle } from "../../lib/variants";
 import type { RenderCtx, SectionCtx, SectionSchema } from "../types";
 import { ICONS, blockAttrs, bool, collectionCard, collectionProducts, collectionUrl, editable, esc, findCollection, findProduct, fmt, iconOptions, img, inline, num, pad, priceHtml, productCard, ratioFor, rich, schemeClass, str } from "../util";
 import { colorScheme, editorEmpty, headingSize, padding } from "./shared";
@@ -124,7 +124,7 @@ function sampleProduct(s: RenderCtx): Product {
 function variantPicker(s: SectionCtx, p: Product, v: Variant | undefined, settings: Record<string, unknown>, attrs: string) {
   if (!hasVariants(p) || !p.options?.length || (p.variants!.length === 1 && p.options.length === 1 && p.options[0].values.length <= 1)) return s.editor && !hasVariants(p) ? `<p class="subdued"${attrs} style="font-size:.85rem">Options appear here for products with variants.</p>` : "";
   const crossOut = settings.show_sold_out !== false;
-  const available = (oi: number, value: string) => p.variants!.some(x => x.options[oi] === value && x.inventory > 0 && x.options.every((o, j) => j === oi || j > oi || o === v?.options[j]));
+  const available = (oi: number, value: string) => p.variants!.some(x => x.options[oi] === value && isAvailable(p, x) && x.options.every((o, j) => j === oi || j > oi || o === v?.options[j]));
   return `<div class="variant-picker"${attrs}>${p.options.map((o, oi) => {
     const cur = v?.options[oi];
     if (settings.picker_type === "dropdown") {
@@ -137,7 +137,7 @@ function variantPicker(s: SectionCtx, p: Product, v: Variant | undefined, settin
 
 /** The variant data the storefront needs to switch variants without a page load. */
 const variantData = (p: Product) => hasVariants(p)
-  ? ` data-variants="${esc(JSON.stringify(p.variants!.map(v => ({ id: v.id, options: v.options, price: v.price, compareAtPrice: v.compareAtPrice, inventory: v.inventory, imageUrl: v.imageUrl, title: variantTitle(v) }))))}"`
+  ? ` data-variants="${esc(JSON.stringify(p.variants!.map(v => ({ id: v.id, options: v.options, price: v.price, compareAtPrice: v.compareAtPrice, inventory: v.inventory, available: isAvailable(p, v), tracked: isTracked(p, v), imageUrl: v.imageUrl, title: variantTitle(v) }))))}"`
   : "";
 
 function productInfo(s: SectionCtx, p: Product, linkTitle = false, v?: Variant) {
@@ -151,13 +151,14 @@ function productInfo(s: SectionCtx, p: Product, linkTitle = false, v?: Variant) 
       case "variant_picker": return variantPicker(s, p, v, x, a);
       case "inventory": {
         const t = num(x.threshold, 10), n = v ? v.inventory : p.inventory;
+        if (!isTracked(p, v)) return `<p class="inventory-note"${a} data-inventory data-threshold="${t}" data-show-count="0">In stock</p>`; // stock isn't counted (digital goods)
         const cls = n <= 0 ? "out" : n <= t ? "low" : "";
         const label = n <= 0 ? "Out of stock" : n <= t ? (bool(x.show_count, true) ? `Low stock: ${n} left` : "Low stock") : (bool(x.show_count, true) ? `${n} in stock` : "In stock");
         return `<p class="inventory-note ${cls}"${a} data-inventory data-threshold="${t}" data-show-count="${bool(x.show_count, true) ? 1 : 0}">${label}</p>`;
       }
       case "quantity_selector": return `<div${a}><label class="subdued" style="display:block;font-size:.85rem;margin-bottom:6px">Quantity</label><div class="qty" data-qty><button type="button" data-qty-minus aria-label="Decrease">${ICONS.minus}</button><input type="number" min="1" value="1" aria-label="Quantity" data-qty-input><button type="button" data-qty-plus aria-label="Increase">${ICONS.plus}</button></div></div>`;
       case "buy_buttons": {
-        const sold = (v ? v.inventory : p.inventory) <= 0;
+        const sold = !isAvailable(p, v);
         const va = v ? ` data-variant="${esc(v.id)}"` : "";
         // Saved themes from before variants have no picker block: show one above the buttons.
         const picker = !hasPicker && hasVariants(p) ? variantPicker(s, p, v, {}, "") : "";
@@ -305,7 +306,7 @@ const collectionGrid: SectionSchema = {
       const group = (title: string, body: string, open: boolean) => `<details class="facet"${open ? " open" : ""}><summary>${esc(title)}<span class="chev">${ICONS.chevron}</span></summary><div class="facet__body">${body}</div></details>`;
       const check = (name: string, value: string, label: string, count: number, checked: boolean) =>
         `<label class="facet__check"><input type="checkbox" name="${esc(name)}" value="${esc(value)}"${checked ? " checked" : ""}${count ? "" : " disabled"}><span>${esc(label)}</span><span class="subdued">(${count})</span></label>`;
-      const inStock = list.filter(p => p.inventory > 0).length;
+      const inStock = list.filter(p => isAvailable(p)).length;
       facetsHtml = `<form class="facets" data-filters action="${esc(base)}">
 ${s.route.sort ? `<input type="hidden" name="sort" value="${esc(s.route.sort)}">` : ""}${isSearch ? `<input type="hidden" name="q" value="${esc(s.route.query ?? "")}">` : ""}
 ${group("Availability", check("filter.v.availability", "1", "In stock", inStock, !!params["filter.v.availability"]?.includes("1")), true)}

@@ -15,7 +15,7 @@ export function routeFor(url: string, theme: ThemeDoc, products: Product[], coll
   if (!parts.length) return { ...base, template: "index" };
   const [kind, handle] = parts;
   if (kind === "products" && handle) {
-    const product = products.find(p => p.$id === handle && p.status !== "archived");
+    const product = products.find(p => (p.$id === handle || p.handle === handle) && (p.status === "active" || p.status === "unlisted"));
     return product ? { ...base, template: "product", product, variant: u.searchParams.get("variant") ?? undefined } : { ...base, template: "404" };
   }
   if (kind === "collections" && !handle) return { ...base, template: "list-collections" };

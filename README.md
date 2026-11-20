@@ -200,6 +200,19 @@ Re-run `python appwrite/setup.py` after pulling: it adds the new tables (collect
 - **Product feed:** the checkout function serves `/feed.xml?site=<id>` in Google Merchant Center format, which TikTok, Pinterest and Meta also accept. Set `VITE_CHECKOUT_PUBLIC_URL` so the dashboard can show the URL. Set each site's product page path under **Sales channels → Google & YouTube**. Products without an image are left out, because Google requires one.
 - **Shared code:** `appwrite/shared/` is the single source for code used by several functions. Run `python appwrite/sync_shared.py` after editing it, and `--check` before deploying.
 
+## Moving from Shopify: Import data
+
+Each store has **Import data** (sidebar, and the Import buttons on Products and Customers). Drop in Shopify exports: *Products → Export*, *Customers → Export*, *Orders → Export*, choosing "All" and CSV. Zips from Shopify's email are fine too. Yancey recognises each file, shows what's in it, and imports in the right order (products → customers → orders).
+
+- **Safe to repeat / always latest:** products are matched by **handle**, customers by **email** (or Shopify ID if there's no email), and orders by **Shopify order ID**. Every record has a stable ID, and rows are written with Appwrite's bulk upsert, so uploading the same or a newer export updates existing records to the latest data. Nothing is duplicated.
+- **Email subscribers:** "Accepts Email Marketing" becomes the customer's subscribed flag. A customers file can go into **several stores at once**, optionally **subscribers only**. Anyone who unsubscribed through Yancey (email link, or unticked on the Customers page) is **never re-subscribed** by an import.
+- **Kept from Shopify:**
+  - **Products:** variants with their own prices, SKUs and stock; every image; tags; vendor and type; SEO title and description; the "unlisted" status; and whether stock is tracked (digital products aren't).
+  - **Orders:** original order numbers (new orders continue after the highest), original dates, line items linked to products and variants, subtotal, discounts, shipping, tax, refunds, cancellations, billing address and tags.
+  - **Customers:** names, phone, default address, tags, SMS consent, order count and amount spent.
+- **No side effects:** imports never send email or change stock.
+- **Images:** step 3, "Copy images off Shopify", moves every product, variant and description image from Shopify's CDN into Appwrite Storage, in resumable ~20-second batches. Re-imports keep the copied images.
+
 ## Product variants
 
 Open a product → **Variants → Add options like size or color**. Type values (Enter or comma between them) and Yancey creates one variant per combination, up to 3 options and 100 variants. Editing options keeps existing variants' prices and stock. Each variant has its own price, compare-at price, stock, SKU and image; *Set for all variants* fills price or stock in one go. The product's own price and stock become roll-ups (cheapest price, total stock), so lists and reports keep working.
@@ -207,6 +220,7 @@ Open a product → **Variants → Add options like size or color**. Type values 
 - **Checkout** prices and stock-checks every line by variant on the server, and paid orders decrement that variant's stock. Order lines, receipts, Stripe and PayPal show "House Blend — 2lb / Ground".
 - **Storefront:** the product page's *Variant picker* block (pills or dropdown, sold-out values crossed out) switches price, stock, image and the URL (`?variant=`) live. Product cards show "From $X" and *Choose options* instead of quick add. `yancey.js` cart lines carry `variantId`: `Yancey.cart.add(productId, qty, variantId)`.
 - **Inventory**, **Create order** and the **product feed** work per variant. The feed lists each variant with `item_group_id`, plus `size`/`color` when options use those names.
+- **Two stored formats:** products edited here save options as `[{name, values}]` and variant values as a list; Shopify imports keep `{"Size": "M"}` per variant, `image`, `{src}` images and a "Default Title" variant. The dashboard (`normalizeProduct` in `src/lib/variants.ts`), the storefront (`yancey.js`) and checkout (`variants_of` in `store.py`) read both, so imported and edited products work the same. Products with **Track stock** off (digital goods), or variants with `tracked: false`, are always available and their stock is never reduced.
 - Setup: re-run `python appwrite/setup.py` (adds the `options`, `variants` and `images` columns to products) and redeploy both functions.
 
 **Product media:** each product has a gallery (upload, drop files, or paste URLs; drag to reorder; the first image is the main one). Variants pick their image from the gallery. On the storefront the product page shows main image + thumbnails or a stacked grid on desktop, a swipeable slider with dots on mobile, and a zoom lightbox (arrow keys, Escape). Choosing a variant jumps to its image. Product cards show the second image on hover (Theme settings → Product cards).

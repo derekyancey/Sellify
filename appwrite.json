@@ -23,7 +23,10 @@
         "rules.read",
         "rules.write",
         "rows.read",
-        "rows.write"
+        "rows.write",
+        "files.read",
+        "files.write",
+        "buckets.read"
       ],
       "interval": 60
     },

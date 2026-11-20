@@ -18,6 +18,7 @@
     main { max-width: 1000px; margin: 0 auto; padding: 16px; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
     .card { background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+    select { font: inherit; padding: 6px; border: 1px solid var(--line); border-radius: 8px; }
     .card img, .card .ph { width: 100%; aspect-ratio: 1; object-fit: cover; background: #f4f4f5; }
     .card .body { padding: 12px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
     .price s { color: var(--muted); margin-left: 6px; }
@@ -73,9 +74,10 @@
         const p = catalog.find((x) => x.$id === productId);
         if (!p) return "";
         const v = (p.variants || []).find((x) => x.id === variantId);
-        const price = v ? v.price : p.price, key = `${p.$id}:${variantId || ""}`;
+        const price = v ? v.price : p.price, name = v && v.title ? `${p.title} - ${v.title}` : p.title;
+        const key = `${p.$id}|${variantId || ""}`;
         total += price * quantity;
-        return `<div class="line"><span>${esc(p.title)}${v ? ` <small class="muted">${esc(v.options.join(" / "))}</small>` : ""}</span>
+        return `<div class="line"><span>${esc(name)}</span>
           <span><button class="alt" data-dec="${key}">−</button> ${quantity} <button class="alt" data-inc="${key}">+</button></span>
           <span>${fmt(price * quantity)}</span></div>`;
       }).join("") || '<p class="muted">Your cart is empty.</p>';
@@ -111,21 +113,26 @@
           <div class="body">
             <strong>${esc(p.title)}</strong>
             <span class="price">${fmt(p.price)}${p.compareAtPrice ? `<s>${fmt(p.compareAtPrice)}</s>` : ""}</span>
-            ${p.variants && p.variants.length ? `<select data-variant-for="${p.$id}">${p.variants.map((v) => `<option value="${esc(v.id)}" ${v.inventory < 1 ? "disabled" : ""}>${esc(v.options.join(" / "))} · ${fmt(v.price)}${v.inventory < 1 ? " (sold out)" : ""}</option>`).join("")}</select>` : ""}
-            <button data-add="${p.$id}" ${p.inventory < 1 ? "disabled" : ""}>${p.inventory < 1 ? "Sold out" : "Add to cart"}</button>
+            ${(p.variants || []).length > 1 ? `<select data-variant-for="${p.$id}">${p.variants.map((v) => `<option value="${esc(v.id)}" ${Yancey.available(p, v) ? "" : "disabled"}>${esc(v.title)} · ${fmt(v.price)}${Yancey.available(p, v) ? "" : " (sold out)"}</option>`).join("")}</select>` : ""}
+            ${soldOut(p) ? "<button disabled>Sold out</button>" : `<button data-add="${p.$id}">Add to cart</button>`}
           </div>
         </div>`).join("") || "No products yet.";
       renderCart();
     }
 
+    // Untracked (e.g. digital) products never sell out; tracked ones need stock.
+    function soldOut(p) { return !Yancey.available(p); }  // untracked (digital) products never sell out
+    function variantFor(p) {
+      const vs = p.variants || [];
+      if (vs.length <= 1) return vs[0] ? vs[0].id : undefined;
+      return document.querySelector(`[data-variant-for="${p.$id}"]`).value;
+    }
     document.addEventListener("click", (e) => {
       const t = e.target.closest("button"); if (!t) return;
-      if (t.dataset.add) {
-        const pick = document.querySelector(`[data-variant-for="${t.dataset.add}"]`); // chosen variant, if the product has options
-        Yancey.cart.add(t.dataset.add, 1, pick ? pick.value : undefined); $("cart").classList.add("open");
-      }
-      const line = t.dataset.inc || t.dataset.dec;
-      if (line) { const [id, vid] = line.split(":"); Yancey.cart.add(id, t.dataset.inc ? 1 : -1, vid || undefined); }
+      if (t.dataset.add) { const p = catalog.find((x) => x.$id === t.dataset.add); Yancey.cart.add(p.$id, 1, variantFor(p)); $("cart").classList.add("open"); }
+      const [pid, vid] = (t.dataset.inc || t.dataset.dec || "").split("|");
+      if (t.dataset.inc) Yancey.cart.add(pid, 1, vid || undefined);
+      if (t.dataset.dec) Yancey.cart.add(pid, -1, vid || undefined);
     });
     window.addEventListener("yancey:cart", () => { if (applied) applyCode(applied.code, true); else renderCart(); });
     async function applyCode(code, quiet) {
