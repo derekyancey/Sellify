@@ -6,7 +6,8 @@ import { useSite, useStorePath } from "../context/Site";
 import { list, ops } from "../lib/data";
 import { useAsync } from "../lib/useAsync";
 import { date, daysAgo, money, num, ymd } from "../lib/format";
-import { Badge, Card, Loading, PageHeader, Stat, Table, Td } from "../components/ui";
+import { Badge, Card, Loading, PageHeader, Stat, Td } from "../components/ui";
+import { SortTable } from "../lib/useSort";
 import type { Site } from "../lib/types";
 import { FinStatus, FulStatus } from "./Orders";
 
@@ -88,15 +89,18 @@ export default function HomePage() {
       </div>
 
       <Card title="Recent orders" className="mt-4" actions={<Link to={sp("/orders")} className="text-sm text-zinc-500 hover:text-zinc-900">View all</Link>}>
-        <Table head={["Order", "Date", "Customer", "Payment", "Fulfillment", "Total"]} empty={!orders.length}>
-          {orders.slice(0, 6).map(o => (
+        {/* Sorts the six most recent orders; "View all" has the full list. */}
+        <SortTable rows={orders.slice(0, 6)} id="home-recent-orders" empty={!orders.length} cols={[
+          { label: "Order", get: o => o.number }, { label: "Date", get: o => orderDate(o) }, { label: "Customer", get: o => o.customerName },
+          { label: "Payment", get: o => o.financialStatus }, { label: "Fulfillment", get: o => o.fulfillmentStatus }, { label: "Total", get: o => o.total }]}>
+          {rows => rows.map(o => (
             <tr key={o.$id}>
               <Td className="font-medium">#{o.number}</Td><Td>{date(orderDate(o))}</Td><Td>{o.customerName}</Td>
               <Td><FinStatus s={o.financialStatus} /></Td><Td><FulStatus s={o.fulfillmentStatus} /></Td>
               <Td className="tabular-nums">{money(o.total, s.currency)}</Td>
             </tr>
           ))}
-        </Table>
+        </SortTable>
       </Card>
       {!s.ga4PropertyId && !s.gscProperty && <p className="mt-4 text-xs text-zinc-500">Tip: connect Google Analytics and Search Console in <Link className="underline" to={sp("/settings")}>store settings</Link> to see traffic here. <Badge tone="blue">free</Badge></p>}
     </>
