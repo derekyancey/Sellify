@@ -9,24 +9,34 @@ checkout: PUBLIC Appwrite Function your storefronts call to take payments.
   POST /discount         {siteId, items, code} -> preview a discount code
   GET|POST /unsubscribe  ?s=siteId&c=customerId&t=token   one-click unsubscribe from marketing email
   GET /feed.xml?site=ID  product feed for Google Merchant Center (free listings), TikTok, Pinterest, Meta
+  GET /download?token=T  confirmation page for a paid digital download (email links land here)
+  POST /download         token=T (form): checks the link, uses one download, redirects to a 5-minute private R2 URL
   (optional on any cart route: discountCode, acceptsMarketing)
 
 Prices, stock and currency are always read from Appwrite, never from the browser.
 Env: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_ENV (sandbox|live),
      SHIP_TO_COUNTRIES (optional, e.g. "US,CA"), ALLOWED_RETURN_HOSTS (optional extra hosts for redirect URLs),
-     RESEND_API_KEY (order emails; only sent once the site's email setup is verified)
+     RESEND_API_KEY (order emails; only sent once the site's email setup is verified),
+     DOWNLOAD_LINK_SECRET (signs download links; 16+ random characters), CHECKOUT_PUBLIC_URL,
+     R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET (private storage for download files)
+Stripe webhook events: checkout.session.completed, checkout.session.async_payment_succeeded,
+     checkout.session.expired, charge.refunded (refunds made in Stripe revoke download links)
 """
+import datetime as dt
+import html
 import json
 import os
 import sys
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 import requests
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import downloads as dl  # noqa: E402
 import emails  # noqa: E402
 import feed  # noqa: E402
 import payments  # noqa: E402
+import r2  # noqa: E402
 from errors import HttpError  # noqa: E402
 from store import Store, a  # noqa: E402
 
@@ -130,6 +140,12 @@ def stripe_webhook(req):
     raw = _raw(req)
     payments.verify_stripe_signature(raw, _headers(req).get("stripe-signature"), payments.env("STRIPE_WEBHOOK_SECRET"))
     event = json.loads(raw)
+    if event.get("type") == "charge.refunded":
+        c = event["data"]["object"]
+        ref = c.get("payment_intent") or c.get("id")
+        full = bool(c.get("refunded")) or c.get("amount_refunded", 0) >= c.get("amount", 0)
+        order_id = _store(req).refund_by_payment_ref(ref, c.get("amount_refunded", 0) / 100, full) if ref else None
+        return {"received": True, "refunded": order_id}
     if event.get("type") == "checkout.session.expired":
         s = event["data"]["object"]
         cid = s.get("client_reference_id") or (s.get("metadata") or {}).get("checkoutId")
@@ -210,6 +226,63 @@ def product_feed(req):
     return ("xml", 200, xml)
 
 
+DOWNLOAD_MESSAGES = {
+    "invalid": ("Link not valid", "This download link is invalid or incomplete. Use the link in your receipt email."),
+    "unpaid": ("Payment not complete", "This order hasn't been paid yet, so the download isn't available."),
+    "expired": ("Link expired", "This download link has expired. Reply to your receipt email and we'll send a new one."),
+    "used": ("Download limit reached", "This link has been used the maximum number of times. Reply to your receipt email for a new one."),
+    "replaced": ("Link replaced", "A newer download link was sent for this item. Use the most recent email from the store."),
+    "revoked": ("Link no longer active", "This order was refunded, so its download links have been turned off."),
+    "nofile": ("Download coming soon", "The file for this item isn't ready yet. Reply to your receipt email and we'll send it as soon as it is."),
+}
+DOWNLOAD_PAGE = """<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<meta name="robots" content="noindex"><title>{title}</title></head>
+<body style="font-family:system-ui,sans-serif;background:#f4f4f5;margin:0;display:grid;place-items:center;min-height:100vh">
+<div style="background:#fff;padding:32px;border-radius:12px;max-width:440px;text-align:center"><h1 style="font-size:20px">{title}</h1>
+<p style="color:#52525b">{body}</p>{form}</div></body></html>"""
+
+
+def _download_page(status, info, token=None):
+    if status != 200:
+        title, body = DOWNLOAD_MESSAGES[info.get("reason", "invalid")]
+        return ("html", status, DOWNLOAD_PAGE.format(title=html.escape(title), body=html.escape(body), form=""))
+    left = info["remaining"]
+    until = dt.datetime.fromtimestamp(info["expiresAt"], dt.timezone.utc).strftime("%B %-d, %Y")
+    body = (f"{html.escape(info['title'] or 'Your download')}"
+            f"{' (' + html.escape(info['name']) + ')' if info.get('name') else ''}. "
+            f"{left} download{'s' if left != 1 else ''} left on this link, valid until {until}.")
+    form = ('<form method="post" action="download"><input type="hidden" name="token" value="' + html.escape(token, quote=True) + '">'
+            '<button style="background:#18181b;color:#fff;border:0;border-radius:8px;padding:12px 20px;font-size:15px;cursor:pointer">'
+            'Download</button></form>')
+    return ("html", 200, DOWNLOAD_PAGE.format(title="Your download", body=body, form=form))
+
+
+def download(req):
+    """GET shows a confirmation page (so email link scanners can't use up downloads); POST uses one download and
+    redirects to a short-lived private R2 URL. Never logs the token or the storage URL."""
+    store = _store(req)
+    if req.method == "GET":
+        token = str((getattr(req, "query", None) or {}).get("token") or "")
+        status, info = store.check_download(token)
+        return _download_page(status, info, token)
+    raw = _raw(req)
+    try:
+        body = json.loads(raw) if raw.strip().startswith("{") else {k: v[0] for k, v in parse_qs(raw).items()}
+    except ValueError:
+        body = {}
+    token = str(body.get("token") or "")
+    status, info = store.check_download(token)
+    if status != 200:
+        return _download_page(status, info)
+    if not store.count_download(info["record"]):
+        return _download_page(410, {"reason": "used"})
+    try:
+        url = r2.download_url(info["siteId"], info["fileId"], info.get("name") or info["title"])
+    except r2.NotConfigured as e:
+        raise HttpError(str(e), 500)
+    return ("redirect", 303, url)
+
+
 def store_db():
     from store import DB
     return DB
@@ -220,6 +293,7 @@ ROUTES = {
     "/feed.xml": product_feed,
     "/discount": discount_preview,
     "/unsubscribe": unsubscribe,
+    "/download": download,
     "/stripe/session": stripe_session,
     "/stripe/webhook": stripe_webhook,
     "/paypal/create": paypal_create,
@@ -236,10 +310,12 @@ def main(context):
         return context.res.json({"error": f"Unknown route {path}"}, 404)
     try:
         out = handler(context.req)
+        if isinstance(out, tuple) and out[0] == "redirect":
+            return context.res.redirect(out[2], out[1], {"cache-control": "no-store", "referrer-policy": "no-referrer"})
         if isinstance(out, tuple) and out[0] in ("html", "xml"):
             ctype = "text/html; charset=utf-8" if out[0] == "html" else "application/xml; charset=utf-8"
             cache = "public, max-age=900" if out[0] == "xml" else "no-store"
-            return context.res.text(out[2], out[1], {"content-type": ctype, "cache-control": cache})
+            return context.res.text(out[2], out[1], {"content-type": ctype, "cache-control": cache, "referrer-policy": "no-referrer"})
         return context.res.json(out)
     except HttpError as e:
         if e.status >= 500:

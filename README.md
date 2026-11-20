@@ -73,7 +73,7 @@ Store emails (receipts, campaigns) are sent from each store's own domain, never 
 | Functions | `site-ops` (admin-only, runs automations hourly) and `checkout` (public, at `https://checkout.realniggafoods.com`), both deploying from `main` |
 | DNS (Cloudflare) | `@`, `www` and `checkout` are `CNAME appwrite.network` (DNS only); a CAA record lets Appwrite issue certificates; DMARC, SPF and Google verification are kept |
 | Already set | site `VITE_*` variables, `ADMIN_TEAM_ID`, `APPWRITE_SITES_CNAME_TARGET`, `UNSUBSCRIBE_SECRET` (both functions), `CHECKOUT_PUBLIC_URL` |
-| Still to add | `CLOUDFLARE_API_TOKEN`, `GOOGLE_OAUTH_CLIENT_ID` and `GOOGLE_OAUTH_CLIENT_SECRET` (site-ops); `RESEND_API_KEY`, Stripe and PayPal keys (both); `STRIPE_WEBHOOK_SECRET` (checkout); `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET` (both, for digital downloads) |
+| Still to add | `CLOUDFLARE_API_TOKEN`, `GOOGLE_OAUTH_CLIENT_ID` and `GOOGLE_OAUTH_CLIENT_SECRET` (site-ops); `RESEND_API_KEY`, Stripe and PayPal keys (both); `STRIPE_WEBHOOK_SECRET` (checkout); `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET` (both, for digital downloads); `DOWNLOAD_LINK_SECRET` (both: 32+ random characters that sign download links) |
 
 Free-plan limits that shaped this: 2 functions, no cron (hourly interval instead), and 3 web platforms.
 
@@ -210,6 +210,13 @@ One-time setup in the Cloudflare dashboard (account `7158a805…`):
    then redeploy. These are secrets: never paste them in chat, code or git.
 
 Optional: `DELIVERABLES_MAX_BYTES` caps upload size (default 5 GB, R2's single-upload limit).
+
+**Download links.** After a paid order, the checkout function creates one `downloads` row per digital line item
+(a product with a download file, or one that doesn't track stock) and signs a link with `DOWNLOAD_LINK_SECRET`:
+7 days, 5 downloads. `GET /download?token=…` shows a confirmation page, so email link scanners can't use up downloads,
+and the button uses one download and redirects to a 5-minute private R2 URL. Expired, used-up, replaced, refunded or
+tampered links get 410/403 and never the file. Add **`charge.refunded`** to the Stripe webhook's events so refunds made
+in Stripe also revoke links. Tests: `python appwrite/tests/test_downloads.py`.
 
 ## Automations and product feeds
 

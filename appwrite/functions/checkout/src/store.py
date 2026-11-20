@@ -1,5 +1,6 @@
 """Appwrite database access for the checkout function (uses the function's dynamic API key)."""
 import datetime as dt
+import hashlib
 import json
 import os
 
@@ -9,6 +10,7 @@ from appwrite.id import ID
 from appwrite.query import Query
 from appwrite.services.tables_db import TablesDB
 
+import downloads as dl
 from errors import HttpError
 
 DB = os.environ.get("APPWRITE_DATABASE_ID", "yancey")
@@ -149,6 +151,7 @@ class Store:
         """Turn a paid checkout into an order. Idempotent: the order's row ID *is* the checkout ID."""
         co = self.checkout(checkout_id)
         if a(co, "status") == "completed":
+            self.ensure_downloads(checkout_id)  # a retried webhook heals records a crashed first attempt missed
             return {"orderId": checkout_id, "duplicate": True}
         if abs(float(a(co, "total")) - float(amount_paid)) > 0.01:
             raise HttpError(f"Paid amount {amount_paid} does not match checkout total {a(co, 'total')}", 409)
@@ -169,6 +172,7 @@ class Store:
             self.db.create_row(DB, "orders", checkout_id, order)
         except AppwriteException as e:
             if e.code == 409:  # a concurrent webhook/capture already created it
+                self.ensure_downloads(checkout_id)
                 return {"orderId": checkout_id, "duplicate": True}
             raise
         for l in lines:
@@ -191,7 +195,12 @@ class Store:
             except AppwriteException:
                 pass  # discount deleted since checkout
         self.db.update_row(DB, "checkouts", checkout_id, {"status": "completed", "providerRef": payment_ref})
-        return {"orderId": checkout_id, "number": number, "_order": {**order, "$id": checkout_id, "items": items}}
+        result = {"orderId": checkout_id, "number": number, "_order": {**order, "$id": checkout_id, "items": items}}
+        try:  # the payment already succeeded: a problem creating download records must never fail it
+            result["_order"]["downloads"] = self.create_downloads(checkout_id, site_id, email, items)
+        except Exception as e:  # noqa: BLE001
+            result["downloadsError"] = getattr(e, "message", None) or e.__class__.__name__
+        return result
 
     def _upsert_customer(self, site_id, email, name, total, opted_in=False):
         found = self.db.list_rows(DB, "customers", queries=[Query.equal("siteId", site_id), Query.equal("email", email), Query.limit(1)])
@@ -207,3 +216,126 @@ class Store:
             "siteId": site_id, "name": name, "email": email, "ordersCount": 1, "totalSpent": total, "acceptsMarketing": opted_in,
             "lastOrderAt": dt.datetime.now(dt.timezone.utc).isoformat()})
         return a(c, "$id")
+
+    # ------------------------------------------------------------- digital downloads
+    @staticmethod
+    def download_id(order_id, index):
+        """Deterministic row ID per (order, line item), so retries never create a second record."""
+        return "dl" + hashlib.sha256(f"{order_id}:{index}".encode()).hexdigest()[:30]
+
+    @staticmethod
+    def deliverable(product, variant_id=None):
+        """(fileId, name) the line item delivers: the variant's own file, else the product's; (None, None) if none yet."""
+        v = next((x for x in _variants(product) if x.get("id") == variant_id), None) if variant_id else None
+        if v and v.get("deliverableFileId"):
+            return v["deliverableFileId"], v.get("deliverableName")
+        return a(product, "deliverableFileId"), a(product, "deliverableName")
+
+    def create_downloads(self, order_id, site_id, email, items, now=None):
+        """One downloads row per digital line item of a paid order (7 days, 5 downloads). Idempotent.
+        Digital = the product has a download file, or doesn't track stock. Physical products get no link.
+        Returns [{download, title, hasFile, token}] for receipts and the thank-you page."""
+        ids = {it.get("productId") for it in items if it.get("productId")}
+        products = self.products(site_id, ids) if ids else {}
+        out = []
+        for i, it in enumerate(items):
+            p = products.get(it.get("productId"))
+            if not p:
+                continue
+            file_id, _ = self.deliverable(p, it.get("variantId"))
+            if not file_id and a(p, "tracksInventory") is not False:
+                continue
+            rid = self.download_id(order_id, i)
+            expires = dl.new_expiry(now)
+            row = {"siteId": site_id, "orderId": order_id, "productId": it["productId"], "variantId": it.get("variantId"),
+                   "customerEmail": email or None, "downloadCount": 0, "maxDownloads": dl.MAX_DOWNLOADS,
+                   "expiresAt": expires.isoformat(), "createdAt": (now or dt.datetime.now(dt.timezone.utc)).isoformat()}
+            try:
+                rec = self.db.create_row(DB, "downloads", rid, row)
+            except AppwriteException as e:
+                if e.code != 409:
+                    raise
+                rec = self.db.get_row(DB, "downloads", rid)
+            out.append({"download": rec, "title": it.get("title") or a(p, "title"), "hasFile": bool(file_id),
+                        "token": dl.make_token(rid, order_id, it["productId"], a(rec, "expiresAt")) if dl.configured() else None})
+        return out
+
+    def ensure_downloads(self, order_id):
+        try:
+            o = self.db.get_row(DB, "orders", order_id)
+            if a(o, "financialStatus") == "paid":
+                items = a(o, "items")
+                self.create_downloads(order_id, a(o, "siteId"), a(o, "customerEmail"), json.loads(items) if isinstance(items, str) else items or [])
+        except Exception:  # noqa: BLE001 - best effort; the order itself is fine
+            pass
+
+    def check_download(self, token, now=None):
+        """Validate a download token against its record and order. Returns (status, info): status 200 when the file
+        may be served, else 403 (invalid) / 404 (no file attached yet) / 410 (expired, used up, reissued, revoked)."""
+        try:
+            t = dl.read_token(token)
+        except dl.BadToken:
+            return 403, {"reason": "invalid"}
+        try:
+            rec = self.db.get_row(DB, "downloads", t["d"])
+        except AppwriteException:
+            return 403, {"reason": "invalid"}
+        if a(rec, "orderId") != t["o"] or a(rec, "productId") != t["p"]:
+            return 403, {"reason": "invalid"}
+        now_s = dl.epoch(now or dt.datetime.now(dt.timezone.utc))
+        if not a(rec, "expiresAt") or dl.epoch(a(rec, "expiresAt")) != t["e"]:
+            return 410, {"reason": "replaced"}  # a newer link was issued for this item
+        if a(rec, "revokedAt"):
+            return 410, {"reason": "revoked"}
+        if now_s >= t["e"]:
+            return 410, {"reason": "expired"}
+        if (a(rec, "downloadCount") or 0) >= (a(rec, "maxDownloads") or dl.MAX_DOWNLOADS):
+            return 410, {"reason": "used"}
+        try:
+            order = self.db.get_row(DB, "orders", t["o"])
+        except AppwriteException:
+            return 403, {"reason": "invalid"}
+        status = a(order, "financialStatus")
+        if status in ("refunded", "partially_refunded", "voided"):
+            return 410, {"reason": "revoked"}
+        if status != "paid":
+            return 403, {"reason": "unpaid"}
+        try:
+            product = self.db.get_row(DB, "products", t["p"])
+        except AppwriteException:
+            return 404, {"reason": "nofile"}
+        file_id, name = self.deliverable(product, a(rec, "variantId"))
+        info = {"record": rec, "siteId": a(order, "siteId"), "fileId": file_id, "name": name, "title": a(product, "title"),
+                "remaining": (a(rec, "maxDownloads") or dl.MAX_DOWNLOADS) - (a(rec, "downloadCount") or 0), "expiresAt": t["e"]}
+        if not file_id:
+            return 404, {**info, "reason": "nofile"}
+        return 200, info
+
+    def count_download(self, rec):
+        """Atomically use one download; False if the limit was reached in the meantime."""
+        rid, limit = a(rec, "$id"), a(rec, "maxDownloads") or dl.MAX_DOWNLOADS
+        try:
+            self.db.increment_row_column(DB, "downloads", rid, "downloadCount", 1, max=limit)
+        except AppwriteException:
+            return False
+        self.db.update_row(DB, "downloads", rid, {"lastDownloadAt": dt.datetime.now(dt.timezone.utc).isoformat()})
+        return True
+
+    def revoke_downloads(self, order_id):
+        now = dt.datetime.now(dt.timezone.utc).isoformat()
+        rows = self.db.list_rows(DB, "downloads", queries=[Query.equal("orderId", order_id), Query.limit(100)]).rows
+        for r in rows:
+            if not a(r, "revokedAt"):
+                self.db.update_row(DB, "downloads", a(r, "$id"), {"revokedAt": now})
+        return len(rows)
+
+    def refund_by_payment_ref(self, payment_ref, refunded_amount, full):
+        """Stripe refunds made outside Sellify (charge.refunded): mark the order and revoke its download links."""
+        found = self.db.list_rows(DB, "orders", queries=[Query.equal("paymentRef", payment_ref), Query.limit(1)]).rows
+        if not found:
+            return None
+        o = found[0]
+        self.db.update_row(DB, "orders", a(o, "$id"), {"financialStatus": "refunded" if full else "partially_refunded",
+                                                         "refundedAmount": round(float(refunded_amount), 2)})
+        self.revoke_downloads(a(o, "$id"))
+        return a(o, "$id")
