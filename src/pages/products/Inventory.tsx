@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useSort } from "../../lib/useSort";
 import { useSite } from "../../context/Site";
 import { list, update } from "../../lib/data";
 import { useAsync } from "../../lib/useAsync";
@@ -21,6 +22,7 @@ export default function Inventory() {
     ? p.variants.filter(v => v.tracked !== false).map(v => ({ key: `${p.$id}:${v.id}`, product: p, variant: hasVariants(p) ? v : undefined, sku: v.sku ?? p.sku, inventory: Math.max(0, v.inventory) }))
     : [{ key: `${p.$id}:`, product: p, variant: undefined, sku: p.sku, inventory: p.inventory }]), [data]);
   const rows = useMemo(() => all.filter(r => !lowOnly || r.inventory < threshold).sort((a, b) => a.inventory - b.inventory), [all, lowOnly, threshold]);
+  const sort = useSort(rows, { product: r => `${r.product.title} ${r.variant ? variantTitle(r.variant) : ""}`, sku: r => r.sku, available: r => r.inventory }, { id: "inventory" });
   const changed = Object.keys(edits).filter(k => all.find(r => r.key === k)?.inventory !== edits[k]);
 
   const save = async () => {
@@ -52,8 +54,8 @@ export default function Inventory() {
         </div>
         {error && <ErrorBox error={error} />}
         {loading ? <Loading /> : (
-          <Table head={["Product", "SKU", "Available", "Adjust"]} empty={!rows.length}>
-            {rows.map(r => {
+          <Table head={[sort.th("Product", "product"), sort.th("SKU", "sku"), sort.th("Available", "available"), "Adjust"]} empty={!rows.length}>
+            {sort.rows.map(r => {
               const v = value(r.key, r.inventory);
               return (
                 <tr key={r.key} className={cx(edits[r.key] !== undefined && edits[r.key] !== r.inventory && "bg-amber-50/60")}>

@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useSort } from "../lib/useSort";
 import { ImageOff, Loader2, Plus, Upload, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { uploadFile } from "../lib/files";
@@ -26,6 +27,11 @@ export default function Products() {
   const [status, setStatus] = useState("all");
   const rows = (data ?? []).filter(p => (status === "all" || p.status === status)
     && (!q || `${p.title} ${p.sku ?? ""} ${p.vendor ?? ""} ${(p.tags ?? []).join(" ")} ${unitsOf(p).map(v => v.sku ?? "").join(" ")}`.toLowerCase().includes(q.toLowerCase())));
+  const sort = useSort(rows, {
+    title: p => p.title, status: p => p.status, type: p => p.productType, price: p => priceRange(p).min,
+    // untracked products (digital) have no stock count; they sort after tracked ones
+    inventory: p => (p.tracksInventory === false ? null : p.inventory),
+  }, { id: "products" });
 
   return (
     <>
@@ -46,8 +52,8 @@ export default function Products() {
         </div>
         {error && <ErrorBox error={error} />}
         {loading ? <Loading /> : (
-          <Table head={["", "Product", "Status", "Inventory", "Type", "Price"]} empty={!rows.length}>
-            {rows.map(p => (
+          <Table head={["", sort.th("Product", "title"), sort.th("Status", "status"), sort.th("Inventory", "inventory"), sort.th("Type", "type"), sort.th("Price", "price")]} empty={!rows.length}>
+            {sort.rows.map(p => (
               <tr key={p.$id} onClick={() => setEditing(p)} className="cursor-pointer hover:bg-zinc-50">
                 <Td className="w-12">{p.imageUrl ? <img src={p.imageUrl} alt="" loading="lazy" className="size-9 rounded-md object-cover" /> : <div className="grid size-9 place-items-center rounded-md bg-zinc-100 text-zinc-400"><ImageOff className="size-4" /></div>}</Td>
                 <Td className="font-medium">{p.title}{hasVariants(p) && <div className="text-xs font-normal text-zinc-500">{p.variants!.length} variants · {p.options!.map(o => o.name).join(", ")}</div>}</Td>

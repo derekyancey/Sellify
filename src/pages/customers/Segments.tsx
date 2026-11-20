@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { SortTable } from "../../lib/useSort";
 import { Plus, Trash2 } from "lucide-react";
 import { useSite } from "../../context/Site";
 import { create, list, remove, update } from "../../lib/data";
@@ -31,13 +32,14 @@ export default function Segments() {
         }}
         onDelete={editing.$id ? async () => { await remove("segments", editing.$id!); setEditing(null); reload(); } : undefined} />}
       <Card title="Your segments" className={editing ? "mt-4" : ""}>
-        <Table head={["Segment", "Customers", ""]}>
-          {BUILT_IN.map(b => <tr key={b.id}><Td className="font-medium">{b.name} <Badge>built-in</Badge></Td><Td>{count(b.rules)}</Td><Td /></tr>)}
-          {data.segments.map(sg => (
-            <tr key={sg.$id}><Td className="font-medium">{sg.name}</Td><Td>{count(sg.rules)}</Td>
-              <Td className="text-right"><Button variant="ghost" onClick={() => setEditing({ $id: sg.$id, name: sg.name, rules: sg.rules })}>Edit</Button></Td></tr>
+        <SortTable id="segments" cols={[{ label: "Segment", get: r => r.name }, { label: "Customers", get: r => r.count }, { label: "" }]}
+          rows={[...BUILT_IN.map(b => ({ id: b.id, name: b.name, rules: b.rules, builtIn: true, count: count(b.rules) })),
+            ...data.segments.map(sg => ({ id: sg.$id, name: sg.name, rules: sg.rules, builtIn: false, count: count(sg.rules) }))]}>
+          {rows => rows.map(r => (
+            <tr key={r.id}><Td className="font-medium">{r.name} {r.builtIn && <Badge>built-in</Badge>}</Td><Td>{r.count}</Td>
+              <Td className="text-right">{!r.builtIn && <Button variant="ghost" onClick={() => setEditing({ $id: r.id, name: r.name, rules: r.rules })}>Edit</Button>}</Td></tr>
           ))}
-        </Table>
+        </SortTable>
       </Card>
     </>
   );

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useSort } from "../../lib/useSort";
 import { Link } from "react-router-dom";
 import { Plus, Send } from "lucide-react";
 import { useSite, useStorePath } from "../../context/Site";
@@ -19,6 +20,10 @@ export default function Campaigns() {
     return { campaigns, templates, segments, customers };
   }, [s.$id]);
   const [editing, setEditing] = useState<Partial<Campaign> | null>(null);
+  const sort = useSort(data?.campaigns ?? [], {
+    name: c => c.name, status: c => c.status, audience: c => resolveSegment(c.segmentId, data?.segments ?? [])?.name,
+    sent: c => (c.status === "sent" ? c.sentCount : null), date: c => c.sentAt || c.$createdAt,
+  }, { id: "campaigns" });
   if (loading || !data) return <Loading />;
   const segName = (id: string) => resolveSegment(id, data.segments)?.name ?? "deleted segment";
 
@@ -30,8 +35,8 @@ export default function Campaigns() {
       {s.emailStatus !== "verified" && <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">Finish <Link className="underline" to={sp("/settings#email")}>email setup</Link> before sending campaigns.</div>}
       {!data.templates.length && <div className="mb-4 rounded-lg bg-sky-50 px-3 py-2 text-sm text-sky-900">First, <Link className="underline" to={sp("/marketing/designer")}>design an email template</Link>.</div>}
       <Card>
-        <Table head={["Campaign", "Status", "Audience", "Sent", "Date"]} empty={!data.campaigns.length}>
-          {data.campaigns.map(c => (
+        <Table head={[sort.th("Campaign", "name"), sort.th("Status", "status"), sort.th("Audience", "audience"), sort.th("Sent", "sent"), sort.th("Date", "date")]} empty={!data.campaigns.length}>
+          {sort.rows.map(c => (
             <tr key={c.$id} className="cursor-pointer hover:bg-zinc-50" onClick={() => setEditing(c)}>
               <Td><div className="font-medium">{c.name}</div><div className="text-xs text-zinc-500">{c.subject}</div></Td>
               <Td><Badge tone={c.status === "sent" ? "green" : c.status === "failed" ? "red" : c.status === "sending" ? "yellow" : "gray"}>{c.status}</Badge></Td>

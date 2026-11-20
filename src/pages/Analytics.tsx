@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SortTable } from "../lib/useSort";
 import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useSite } from "../context/Site";
 import { ops } from "../lib/data";
@@ -60,7 +61,9 @@ function Ga4({ propertyId, days }: { propertyId: string; days: number }) {
           </ResponsiveContainer></div>
         </Card>
         <Card title="Top pages">
-          <Table head={["Page", "Views"]}>{data.pages.map((p: any) => <tr key={p.path}><Td className="max-w-xs truncate">{p.path}</Td><Td className="tabular-nums">{num(p.views)}</Td></tr>)}</Table>
+          <SortTable rows={data.pages as any[]} id="ga4-pages" cols={[{ label: "Page", get: p => p.path }, { label: "Views", get: p => p.views }]}>
+            {rows => rows.map((p: any) => <tr key={p.path}><Td className="max-w-xs truncate">{p.path}</Td><Td className="tabular-nums">{num(p.views)}</Td></tr>)}
+          </SortTable>
         </Card>
       </div>
     </section>
@@ -93,11 +96,13 @@ function Gsc({ property, days }: { property: string; days: number }) {
         </ResponsiveContainer></div>
       </Card>
       <Card title={<div className="flex gap-3">{(["queries", "pages"] as const).map(k => <button key={k} onClick={() => setTab(k)} className={cx("capitalize", tab === k ? "text-zinc-900" : "text-zinc-400")}>Top {k}</button>)}</div>}>
-        <Table head={[tab === "queries" ? "Query" : "Page", "Clicks", "Impressions", "CTR", "Position"]} empty={!data[tab].length}>
-          {data[tab].map((r: any) => (
+        <SortTable key={tab} rows={data[tab] as any[]} id={`gsc-${tab}`} empty={!data[tab].length} cols={[
+          { label: tab === "queries" ? "Query" : "Page", get: r => r.key }, { label: "Clicks", get: r => r.clicks }, { label: "Impressions", get: r => r.impressions },
+          { label: "CTR", get: r => r.ctr }, { label: "Position", get: r => r.position }]}>
+          {rows => rows.map((r: any) => (
             <tr key={r.key}><Td className="max-w-sm truncate">{r.key}</Td><Td className="tabular-nums">{num(r.clicks)}</Td><Td className="tabular-nums">{num(r.impressions)}</Td><Td>{pct(r.ctr)}</Td><Td>{r.position.toFixed(1)}</Td></tr>
           ))}
-        </Table>
+        </SortTable>
       </Card>
     </section>
   );

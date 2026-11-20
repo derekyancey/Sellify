@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSort } from "../lib/useSort";
 import { Link } from "react-router-dom";
 import { Plus, Upload } from "lucide-react";
 import { storeSlug, useSite, useStorePath } from "../context/Site";
@@ -17,7 +18,6 @@ export default function Customers() {
   const { data, loading, error, reload, setData } = useAsync(() => list("customers", s.$id), [s.$id]);
   const [q, setQ] = useState("");
   const [show, setShow] = useState<"all" | "subscribers" | "buyers">("all");
-  const [sort, setSort] = useState<"spent" | "orders" | "name">("spent");
   const [page, setPage] = useState(0);
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", phone: "", acceptsMarketing: false });
@@ -26,11 +26,15 @@ export default function Customers() {
   const rows = useMemo(() => {
     const t = q.toLowerCase();
     return (data ?? []).filter(c => (show === "all" || (show === "subscribers" ? c.acceptsMarketing : c.ordersCount > 0))
-      && (!t || `${c.name} ${c.email ?? ""} ${c.phone ?? ""} ${(c.tags ?? []).join(" ")}`.toLowerCase().includes(t)))
-      .sort((a, b) => sort === "name" ? a.name.localeCompare(b.name) : sort === "orders" ? b.ordersCount - a.ordersCount : b.totalSpent - a.totalSpent);
-  }, [data, q, show, sort]);
+      && (!t || `${c.name} ${c.email ?? ""} ${c.phone ?? ""} ${(c.tags ?? []).join(" ")}`.toLowerCase().includes(t)));
+  }, [data, q, show]);
+  const sort = useSort(rows, {
+    name: c => c.name, email: c => c.email, subscribed: c => !!c.acceptsMarketing, orders: c => c.ordersCount,
+    spent: c => c.totalSpent, added: c => c.$createdAt,
+  }, { id: "customers", initial: { key: "spent", dir: "desc" } });
+  useEffect(() => { setPage(0); }, [sort.sort?.key, sort.sort?.dir]);
   const pages = Math.max(1, Math.ceil(rows.length / PAGE));
-  const shown = rows.slice(page * PAGE, page * PAGE + PAGE);
+  const shown = sort.rows.slice(page * PAGE, page * PAGE + PAGE);
 
   const toggle = async (c: Customer, on: boolean) => {
     // Unticking records an unsubscribe, which later imports respect; ticking is an explicit re-subscribe by you.
@@ -61,13 +65,11 @@ export default function Customers() {
             ))}
           </div>
           <Input placeholder="Search name, email, phone, tag" value={q} onChange={e => { setQ(e.target.value); setPage(0); }} className="min-w-0 flex-1 sm:max-w-xs" />
-          <Select value={sort} onChange={e => setSort(e.target.value as any)} className="w-40">
-            <option value="spent">Most spent</option><option value="orders">Most orders</option><option value="name">Name A–Z</option>
-          </Select>
         </div>
         {error && <ErrorBox error={error} />}
         {loading ? <Loading label="Loading customers…" /> : <>
-          <Table head={["Customer", "Email", "Subscribed", "Orders", "Amount spent", "Added"]} empty={!rows.length}>
+          <Table head={[sort.th("Customer", "name"), sort.th("Email", "email"), sort.th("Subscribed", "subscribed"), sort.th("Orders", "orders"),
+            sort.th("Amount spent", "spent"), sort.th("Added", "added")]} empty={!rows.length}>
             {shown.map(c => (
               <tr key={c.$id}>
                 <Td><div className="font-medium">{c.name}</div>{!!c.tags?.length && <div className="max-w-[16rem] truncate text-xs text-zinc-400">{c.tags.join(", ")}</div>}</Td>

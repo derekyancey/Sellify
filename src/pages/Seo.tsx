@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SortTable } from "../lib/useSort";
 import { Download, Play } from "lucide-react";
 import { useSite } from "../context/Site";
 import { ops, pagespeed } from "../lib/data";
@@ -62,8 +63,10 @@ function Crawler({ domain }: { domain: string }) {
               ))}
             </ul>
           )}
-          <Table head={["URL", "Status", "Title", "Words", "Depth", "Inlinks", "Time"]}>
-            {res.pages.map((p: any) => (
+          <SortTable rows={res.pages as any[]} id="seo-crawl" cols={[
+            { label: "URL", get: p => p.url }, { label: "Status", get: p => p.status }, { label: "Title", get: p => p.title }, { label: "Words", get: p => p.wordCount },
+            { label: "Depth", get: p => p.depth }, { label: "Inlinks", get: p => p.inlinks }, { label: "Time", get: p => p.responseMs }]}>
+            {rows => rows.map((p: any) => (
               <tr key={p.url}>
                 <Td className="max-w-[16rem] truncate"><a href={p.url} target="_blank" rel="noreferrer" className="hover:underline">{p.url.replace(/^https?:\/\/[^/]+/, "") || "/"}</a></Td>
                 <Td><Badge tone={p.status < 300 ? "green" : p.status < 400 ? "yellow" : "red"}>{p.status || "ERR"}</Badge></Td>
@@ -71,7 +74,7 @@ function Crawler({ domain }: { domain: string }) {
                 <Td>{p.wordCount}</Td><Td>{p.depth}</Td><Td>{p.inlinks}</Td><Td className="tabular-nums">{p.responseMs} ms</Td>
               </tr>
             ))}
-          </Table>
+          </SortTable>
         </div>
       )}
     </Card>
@@ -130,9 +133,10 @@ function Sitemaps({ property, domain, siteId }: { property: string; domain: stri
   return (
     <Card title="Sitemaps (Search Console)">
       {loading ? <Loading /> : error ? <ErrorBox error={error} /> : (
-        <Table head={["Sitemap", "Last submitted", "Errors", "Warnings"]} empty={!data.sitemaps.length}>
-          {data.sitemaps.map((m: any) => <tr key={m.path}><Td className="max-w-xs truncate">{m.path}</Td><Td>{m.lastSubmitted ? date(m.lastSubmitted) : "–"}</Td><Td>{m.errors}</Td><Td>{m.warnings}</Td></tr>)}
-        </Table>
+        <SortTable rows={data.sitemaps as any[]} id="sitemaps" empty={!data.sitemaps.length} cols={[
+          { label: "Sitemap", get: m => m.path }, { label: "Last submitted", get: m => m.lastSubmitted }, { label: "Errors", get: m => Number(m.errors) }, { label: "Warnings", get: m => Number(m.warnings) }]}>
+          {rows => rows.map((m: any) => <tr key={m.path}><Td className="max-w-xs truncate">{m.path}</Td><Td>{m.lastSubmitted ? date(m.lastSubmitted) : "–"}</Td><Td>{m.errors}</Td><Td>{m.warnings}</Td></tr>)}
+        </SortTable>
       )}
       <div className="mt-3 flex flex-wrap gap-2"><Input value={path} onChange={e => setPath(e.target.value)} className="max-w-sm" /><Button onClick={submit} loading={busy}>Submit sitemap</Button></div>
     </Card>

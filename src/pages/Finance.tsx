@@ -1,4 +1,5 @@
 import { orderDate } from "../lib/types";
+import { SortTable } from "../lib/useSort";
 import { useMemo, useState } from "react";
 import { Download } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -131,9 +132,9 @@ function Provider({ name, d, days }: { name: string; d: any; days: number }) {
         </div>
       ))}
       {d.payouts?.length > 0 && (
-        <Table head={["Payout", "Arrives", "Status"]}>
-          {d.payouts.map((p: any) => <tr key={p.id}><Td className="tabular-nums">{money(p.amount, p.currency)}</Td><Td>{date(p.arrival)}</Td><Td><Badge tone={p.status === "paid" ? "green" : p.status === "failed" ? "red" : "yellow"}>{p.status.replace(/_/g, " ")}</Badge></Td></tr>)}
-        </Table>
+        <SortTable rows={d.payouts as any[]} id="payouts" cols={[{ label: "Payout", get: p => p.amount }, { label: "Arrives", get: p => p.arrival }, { label: "Status", get: p => p.status }]}>
+          {rows => rows.map((p: any) => <tr key={p.id}><Td className="tabular-nums">{money(p.amount, p.currency)}</Td><Td>{date(p.arrival)}</Td><Td><Badge tone={p.status === "paid" ? "green" : p.status === "failed" ? "red" : "yellow"}>{p.status.replace(/_/g, " ")}</Badge></Td></tr>)}
+        </SortTable>
       )}
     </div>
   );

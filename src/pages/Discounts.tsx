@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSort } from "../lib/useSort";
 import { Plus, Shuffle } from "lucide-react";
 import { useSite } from "../context/Site";
 import { create, list, remove, update } from "../lib/data";
@@ -23,6 +24,9 @@ export default function Discounts() {
   const { site } = useSite(); const s = site!;
   const { data, loading, error, reload } = useAsync(() => list("discounts", s.$id), [s.$id]);
   const [editing, setEditing] = useState<Draft | null>(null);
+  const sort = useSort(data ?? [], {
+    code: d => d.code, status: d => discountState(d).label, value: d => d.value, used: d => d.usedCount, ends: d => d.endsAt,
+  }, { id: "discounts" });
   const describe = (d: Draft) => `${d.type === "percent" ? `${d.value}% off` : `${money(d.value, s.currency)} off`}${d.minSubtotal ? ` orders over ${money(d.minSubtotal, s.currency)}` : " entire order"}`;
 
   return (
@@ -32,8 +36,8 @@ export default function Discounts() {
       <Card>
         {error && <ErrorBox error={error} />}
         {loading ? <Loading /> : (
-          <Table head={["Code", "Status", "Discount", "Used", "Ends"]} empty={!data!.length}>
-            {data!.map(d => { const st = discountState(d); return (
+          <Table head={[sort.th("Code", "code"), sort.th("Status", "status"), sort.th("Discount", "value"), sort.th("Used", "used"), sort.th("Ends", "ends")]} empty={!data!.length}>
+            {sort.rows.map(d => { const st = discountState(d); return (
               <tr key={d.$id} className="cursor-pointer hover:bg-zinc-50" onClick={() => setEditing(d)}>
                 <Td className="font-mono font-semibold">{d.code}</Td><Td><Badge tone={st.tone}>{st.label}</Badge></Td>
                 <Td>{describe(d)}</Td><Td>{d.usedCount}{d.usageLimit ? ` / ${d.usageLimit}` : ""}</Td><Td>{d.endsAt ? date(d.endsAt) : "–"}</Td>

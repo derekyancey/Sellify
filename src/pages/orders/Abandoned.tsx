@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useSort } from "../../lib/useSort";
 import { useState } from "react";
 import { Mail } from "lucide-react";
 import { useSite, useStorePath } from "../../context/Site";
@@ -18,6 +19,9 @@ export default function Abandoned() {
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const rows = (data ?? []).filter(c => c.status === "expired" || (c.status === "open" && Date.now() - +new Date(c.$createdAt) > HOUR));
+  const sort = useSort(rows, {
+    started: c => c.$createdAt, email: c => c.email, items: c => c.items.reduce((t, i) => t + i.quantity, 0), via: c => c.provider, total: c => c.total,
+  }, { id: "abandoned" });
   const recoverable = rows.filter(c => c.email);
   const lost = rows.reduce((t, c) => t + c.total, 0);
   const canEmail = s.emailStatus === "verified";
@@ -39,8 +43,8 @@ export default function Abandoned() {
       <Card>
         {error && <ErrorBox error={error} />}
         {loading ? <Loading /> : (
-          <Table head={["Started", "Email", "Cart", "Via", "Total", ""]} empty={!rows.length}>
-            {rows.map(c => (
+          <Table head={[sort.th("Started", "started"), sort.th("Email", "email"), sort.th("Cart", "items"), sort.th("Via", "via"), sort.th("Total", "total"), ""]} empty={!rows.length}>
+            {sort.rows.map(c => (
               <tr key={c.$id}>
                 <Td>{dateTime(c.$createdAt)}</Td>
                 <Td>{c.email || <span className="text-zinc-400">unknown</span>}</Td>

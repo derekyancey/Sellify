@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SortTable } from "../lib/useSort";
 import { ExternalLink, Rocket } from "lucide-react";
 import { useSite } from "../context/Site";
 import { config } from "../lib/appwrite";
@@ -60,8 +61,10 @@ function DeploysInner({ siteId }: { siteId: string }) {
       </Card>
       <Card title="Recent deployments" actions={<Button variant="ghost" onClick={deps.reload}>Refresh</Button>}>
         {deps.loading ? <Loading /> : deps.error ? <ErrorBox error={deps.error} /> : (
-          <Table head={["Status", "Message", "Branch", "Commit", "Started", "Build time"]} empty={!deps.data.deployments.length}>
-            {deps.data.deployments.map((d: any) => (
+          <SortTable rows={deps.data.deployments as any[]} id="deploys" empty={!deps.data.deployments.length} cols={[
+            { label: "Status", get: d => d.status }, { label: "Message", get: d => d.message }, { label: "Branch", get: d => d.branch },
+            { label: "Commit" }, { label: "Started", get: d => d.createdAt }, { label: "Build time", get: d => d.buildSeconds || null }]}>
+            {rows => rows.map((d: any) => (
               <tr key={d.id}>
                 <Td><Badge tone={tone(d.status) as any}>{d.status}</Badge>{d.active && <span className="ml-1"><Badge tone="blue">active</Badge></span>}</Td>
                 <Td className="max-w-xs truncate">{d.message || (d.type === "manual" ? "Manual upload" : "Deployment")}</Td>
@@ -69,7 +72,7 @@ function DeploysInner({ siteId }: { siteId: string }) {
                 <Td>{dateTime(d.createdAt)}</Td><Td>{d.buildSeconds ? `${d.buildSeconds}s` : "–"}</Td>
               </tr>
             ))}
-          </Table>
+          </SortTable>
         )}
       </Card>
     </>

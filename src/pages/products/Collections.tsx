@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSort } from "../../lib/useSort";
 import { Plus } from "lucide-react";
 import { useSite } from "../../context/Site";
 import { create, list, remove, update } from "../../lib/data";
@@ -12,6 +13,7 @@ type Draft = Omit<Collection, "$id" | "$createdAt" | "siteId"> & { $id?: string 
 export default function Collections() {
   const { site } = useSite(); const s = site!;
   const { data, loading, error, reload } = useAsync(async () => ({ cols: await list("collections", s.$id), products: await list("products", s.$id) }), [s.$id]);
+  const sort = useSort(data?.cols ?? [], { title: c => c.title, handle: c => c.handle, products: c => c.productIds.length }, { id: "collections" });
   const [editing, setEditing] = useState<Draft | null>(null);
   return (
     <>
@@ -20,8 +22,8 @@ export default function Collections() {
       <Card>
         {error && <ErrorBox error={error} />}
         {loading ? <Loading /> : (
-          <Table head={["Collection", "Handle", "Products"]} empty={!data!.cols.length}>
-            {data!.cols.map(c => (
+          <Table head={[sort.th("Collection", "title"), sort.th("Handle", "handle"), sort.th("Products", "products")]} empty={!data!.cols.length}>
+            {sort.rows.map(c => (
               <tr key={c.$id} className="cursor-pointer hover:bg-zinc-50" onClick={() => setEditing(c)}>
                 <Td className="font-medium">{c.title}</Td><Td className="font-mono text-xs text-zinc-500">{c.handle}</Td><Td>{c.productIds.length}</Td>
               </tr>

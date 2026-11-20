@@ -83,12 +83,18 @@ export function Stat({ label, value, sub }: { label: string; value: ReactNode; s
   );
 }
 
-export function Table({ head, children, empty }: { head: ReactNode[]; children: ReactNode; empty?: boolean }) {
+/** A header cell with extra attributes, e.g. from useSort().th(). Plain strings / nodes work too. */
+export interface HeadCell { content: ReactNode; ariaSort?: "ascending" | "descending" | "none"; align?: "right" }
+const isHeadCell = (h: unknown): h is HeadCell => !!h && typeof h === "object" && "content" in (h as object) && !("$$typeof" in (h as object));
+
+export function Table({ head, children, empty }: { head: (ReactNode | HeadCell)[]; children: ReactNode; empty?: boolean }) {
   return (
     <div className="-mx-4 overflow-x-auto">
       <table className="w-full min-w-[560px] text-left text-sm">
         <thead className="border-b border-zinc-200 text-xs uppercase tracking-wide text-zinc-500">
-          <tr>{head.map((h, i) => <th key={i} className="px-4 py-2 font-medium">{h}</th>)}</tr>
+          <tr>{head.map((h, i) => isHeadCell(h)
+            ? <th key={i} aria-sort={h.ariaSort} className={cx("px-4 py-2 font-medium", h.align === "right" && "text-right")}>{h.content}</th>
+            : <th key={i} className="px-4 py-2 font-medium">{h}</th>)}</tr>
         </thead>
         <tbody className="divide-y divide-zinc-100">{children}</tbody>
       </table>

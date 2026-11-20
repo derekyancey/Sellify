@@ -1,4 +1,5 @@
 import { orderDate } from "../lib/types";
+import { useSort } from "../lib/useSort";
 import { useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Download, Plus, Trash2, Upload } from "lucide-react";
@@ -56,6 +57,10 @@ export default function Orders({ drafts = false }: { drafts?: boolean }) {
 
   const rows = useMemo(() => (data ?? []).filter(filters[filter]).filter(o =>
     !q || `#${o.number} ${o.customerName} ${o.customerEmail}`.toLowerCase().includes(q.toLowerCase())), [data, filter, q]);
+  const sort = useSort(rows, {
+    number: o => o.number, date: o => orderDate(o), customer: o => o.customerName, payment: o => o.financialStatus,
+    fulfillment: o => o.fulfillmentStatus, items: o => o.items.reduce((t, i) => t + i.quantity, 0), total: o => o.total,
+  }, { id: drafts ? "draft-orders" : "orders" });
 
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -108,8 +113,9 @@ export default function Orders({ drafts = false }: { drafts?: boolean }) {
         </div>
         {error && <ErrorBox error={error} />}
         {loading ? <Loading /> : (
-          <Table head={["Order", "Date", "Customer", "Payment", "Fulfillment", "Items", "Total"]} empty={!rows.length}>
-            {rows.map(o => (
+          <Table head={[sort.th("Order", "number"), sort.th("Date", "date"), sort.th("Customer", "customer"), sort.th("Payment", "payment"),
+            sort.th("Fulfillment", "fulfillment"), sort.th("Items", "items"), sort.th("Total", "total")]} empty={!rows.length}>
+            {sort.rows.map(o => (
               <tr key={o.$id} onClick={() => setSelected(o)} className="cursor-pointer hover:bg-zinc-50">
                 <Td className="font-medium">#{o.number}</Td><Td>{date(orderDate(o))}</Td><Td>{o.customerName}</Td>
                 <Td><FinStatus s={o.financialStatus} /> <span className="ml-1 text-xs text-zinc-500">{providerLabel[o.paymentProvider ?? "manual"]}</span></Td><Td><FulStatus s={o.fulfillmentStatus} /></Td>
