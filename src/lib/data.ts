@@ -18,7 +18,7 @@ function demoDb(): DemoDB {
   saveDemo(db);
   return db;
 }
-const emptyDb = () => ({ collections: [], discounts: [], segments: [], templates: [], campaigns: [], checkouts: [], automations: [] });
+const emptyDb = () => ({ collections: [], discounts: [], segments: [], templates: [], campaigns: [], checkouts: [], automations: [], downloads: [] });
 function saveDemo(db: DemoDB) { try { localStorage.setItem(DEMO_KEY, JSON.stringify(db)); } catch { /* ignore */ } }
 export function resetDemo() { try { localStorage.removeItem(DEMO_KEY); } catch { /* ignore */ } }
 

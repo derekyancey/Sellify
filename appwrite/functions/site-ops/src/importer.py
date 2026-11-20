@@ -177,7 +177,15 @@ def map_products(site_id, rows, existing=None):
             seen.add(src)
             m = migrated.get(src)
             images.append({"src": m["src"] if m else src, "alt": g(r, "Image Alt Text") or None, **({"original": src} if m else {})})
-        tracked = any(v["tracked"] for v in variants)
+        # Digital delivery is set in Sellify, not in the Shopify CSV: keep the deliverable files (product and per
+        # variant) and the "don't track stock" choice made here when the same handle is imported again.
+        prev_vs = {v.get("id"): v for v in _json(_a(prev, "variants"), []) if isinstance(v, dict)} if prev else {}
+        for v in variants:
+            pv = prev_vs.get(v["id"]) or {}
+            if pv.get("deliverableFileId"):
+                v["deliverableFileId"], v["deliverableName"] = pv["deliverableFileId"], pv.get("deliverableName")
+        digital = bool(prev and (_a(prev, "deliverableFileId") or any(v.get("deliverableFileId") for v in variants)))
+        tracked = any(v["tracked"] for v in variants) and not (digital and _a(prev, "tracksInventory") is False)
         first = min(variants, key=lambda v: v["price"])
         desc = g(head, "Body (HTML)")
         if prev and _a(prev, "description") and "cdn.shopify.com" not in (_a(prev, "description") or "") and desc and "cdn.shopify.com" in desc:
@@ -191,6 +199,8 @@ def map_products(site_id, rows, existing=None):
             "imageUrl": images[0]["src"] if images else None, "images": json.dumps(images), "variants": json.dumps(variants),
             "seoTitle": cut(g(head, "SEO Title"), 255), "seoDescription": cut(g(head, "SEO Description"), 1024),
             "costPerItem": first["costPerItem"], "externalId": cut(h, 64), "source": "shopify",
+            **({"deliverableFileId": _a(prev, "deliverableFileId"), "deliverableName": _a(prev, "deliverableName")}
+               if prev and _a(prev, "deliverableFileId") else {}),
         })
     return out, problems
 

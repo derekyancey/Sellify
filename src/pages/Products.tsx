@@ -1,18 +1,21 @@
 import { useState } from "react";
-import { ImageOff, Plus, Trash2, Upload } from "lucide-react";
+import { FileArchive, ImageOff, Plus, Trash2, Upload } from "lucide-react";
 import { Link } from "react-router-dom";
 import { storeSlug, useSite, useStorePath } from "../context/Site";
 import { create, list, remove, update } from "../lib/data";
-import { uploadFile } from "../lib/files";
+import { uploadDeliverable, uploadFile } from "../lib/files";
 import { useAsync } from "../lib/useAsync";
 import { money } from "../lib/format";
-import type { Product, ProductImage, Variant } from "../lib/types";
+import { missingDeliverable } from "../lib/types";
+import type { Product, ProductImage, Site, Variant } from "../lib/types";
 import { Badge, Button, Card, ErrorBox, Field, Input, Loading, Modal, PageHeader, Select, Table, Td, Textarea } from "../components/ui";
 import { downloadCsv } from "./Orders";
 
 type Draft = Omit<Product, "$id" | "$createdAt" | "siteId"> & { $id?: string };
 const newVariant = (): Variant => ({ id: "v" + Math.random().toString(36).slice(2, 12), title: "Default Title", price: 0, inventory: 0 });
-const blank = (): Draft => ({ title: "", description: "", price: 0, inventory: 0, status: "draft", sku: "", imageUrl: "", tracksInventory: true, variants: [newVariant()], images: [] });
+/** Stores that sell only digital downloads (MoonBear): new products default to not tracking stock. */
+export const isDigitalStore = (s: Site) => /moonbear/i.test(`${s.domain ?? ""} ${s.name}`);
+const blank = (s: Site): Draft => ({ title: "", description: "", price: 0, inventory: 0, status: "draft", sku: "", imageUrl: "", tracksInventory: !isDigitalStore(s), variants: [newVariant()], images: [] });
 const statusTone = (s: string) => s === "active" ? "green" : s === "draft" ? "blue" : s === "unlisted" ? "yellow" : "gray";
 
 const variantsOf = (p: Product): Variant[] => p.variants?.length ? p.variants
@@ -29,7 +32,8 @@ export default function Products() {
   const [editing, setEditing] = useState<Draft | null>(null);
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("all");
-  const rows = (data ?? []).filter(p => (status === "all" || p.status === status)
+  const noFile = (data ?? []).filter(missingDeliverable);
+  const rows = (data ?? []).filter(p => (status === "all" || (status === "nofile" ? missingDeliverable(p) : p.status === status))
     && (!q || `${p.title} ${p.sku ?? ""} ${p.vendor ?? ""} ${(p.tags ?? []).join(" ")} ${variantsOf(p).map(v => v.sku).join(" ")}`.toLowerCase().includes(q.toLowerCase())));
 
   return (
@@ -38,19 +42,25 @@ export default function Products() {
         <Link to={sp("/import")} className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium hover:bg-zinc-50"><Upload className="size-4" />Import</Link>
         <Button onClick={() => downloadCsv(`${storeSlug(s)}-products.csv`, rows.flatMap(p => variantsOf(p).map(v => ({
           handle: p.handle ?? "", title: p.title, status: p.status, vendor: p.vendor ?? "", type: p.productType ?? "", tags: (p.tags ?? []).join(", "),
-          variant: v.title, sku: v.sku ?? "", price: v.price, compareAtPrice: v.compareAtPrice ?? "", inventory: p.tracksInventory === false ? "not tracked" : v.inventory, image: p.imageUrl ?? "" }))))}>Export</Button>
-        <Button variant="primary" onClick={() => setEditing(blank())}><Plus className="size-4" />Add product</Button>
+          variant: v.title, sku: v.sku ?? "", downloadFile: v.deliverableName || p.deliverableName || "", price: v.price, compareAtPrice: v.compareAtPrice ?? "", inventory: p.tracksInventory === false ? "not tracked" : v.inventory, image: p.imageUrl ?? "" }))))}>Export</Button>
+        <Button variant="primary" onClick={() => setEditing(blank(s))}><Plus className="size-4" />Add product</Button>
       </>} />
       <Card>
         <div className="mb-3 flex flex-wrap gap-2">
           <Input placeholder="Search title, SKU, vendor, tag" value={q} onChange={e => setQ(e.target.value)} className="min-w-0 flex-1 sm:max-w-xs" />
           <Select value={status} onChange={e => setStatus(e.target.value)} className="w-40">
             {["all", "active", "unlisted", "draft", "archived"].map(x => <option key={x} value={x}>{x === "all" ? "All statuses" : x[0].toUpperCase() + x.slice(1)}</option>)}
+            <option value="nofile">No download file ({noFile.length})</option>
           </Select>
         </div>
+        {!loading && noFile.length > 0 && status !== "nofile" && (
+          <p className="mb-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900">
+            {noFile.length} of {data?.length} products have no download file yet. <button className="underline" onClick={() => setStatus("nofile")}>Show them</button>
+          </p>
+        )}
         {error && <ErrorBox error={error} />}
         {loading ? <Loading /> : (
-          <Table head={["", "Product", "Status", "Inventory", "Type", "Price"]} empty={!rows.length}>
+          <Table head={["", "Product", "Status", "Download", "Inventory", "Type", "Price"]} empty={!rows.length}>
             {rows.map(p => {
               const vs = variantsOf(p);
               return (
@@ -58,6 +68,8 @@ export default function Products() {
                   <Td className="w-12">{p.imageUrl ? <img src={p.imageUrl} alt="" loading="lazy" className="size-9 rounded-md object-cover" /> : <div className="grid size-9 place-items-center rounded-md bg-zinc-100 text-zinc-400"><ImageOff className="size-4" /></div>}</Td>
                   <Td><div className="font-medium">{p.title}</div>{vs.length > 1 && <div className="text-xs text-zinc-500">{vs.length} variants</div>}</Td>
                   <Td><Badge tone={statusTone(p.status)}>{p.status}</Badge></Td>
+                  <Td>{missingDeliverable(p) ? <Badge tone="yellow">No download file</Badge>
+                    : <span className="inline-flex max-w-48 items-center gap-1 truncate text-zinc-600" title={p.deliverableName ?? ""}><FileArchive className="size-4 shrink-0" />{p.deliverableName || (vs.length > 1 ? "Per variant" : "File attached")}</span>}</Td>
                   <Td>{p.tracksInventory === false ? <span className="text-zinc-500">Not tracked</span>
                     : <span className={p.inventory < 10 ? "font-medium text-red-600" : ""}>{p.inventory} in stock</span>}</Td>
                   <Td className="text-zinc-500">{p.productType || "–"}</Td>
@@ -90,6 +102,18 @@ function ProductForm({ initial, onClose, onSaved }: { initial: Draft; onClose():
     catch (e: any) { setErr(e.message); }
   };
 
+  const [uploading, setUploading] = useState<string | null>(null); // "product" or a variant id
+  const attach = async (target: "product" | number, file: File | undefined) => {
+    if (!file) return;
+    setErr(null); setUploading(target === "product" ? "product" : vs[target].id);
+    try {
+      const up = await uploadDeliverable(s.$id, file);
+      if (target === "product") setP(x => ({ ...x, deliverableFileId: up.id, deliverableName: up.name }));
+      else setV(target, { deliverableFileId: up.id, deliverableName: up.name });
+    } catch (e: any) { setErr(`Upload failed: ${e.message}`); }
+    finally { setUploading(null); }
+  };
+
   const save = async () => {
     if (!p.title.trim()) { setErr("Title is required"); return; }
     if (!vs.length || vs.some(v => !(v.price >= 0) || !v.title.trim())) { setErr("Every variant needs a name and a price."); return; }
@@ -102,6 +126,8 @@ function ProductForm({ initial, onClose, onSaved }: { initial: Draft; onClose():
       images: imgs, imageUrl: imgs[0]?.src ?? (p.imageUrl || undefined), variants: vs, tracksInventory: tracked,
       price: cheapest.price, compareAtPrice: cheapest.compareAtPrice ?? undefined, sku: vs[0].sku || undefined,
       inventory: tracked ? vs.reduce((t, v) => t + Math.max(0, v.inventory || 0), 0) : 0,
+      // file ID in the private deliverables bucket only; null clears it
+      deliverableFileId: p.deliverableFileId || null, deliverableName: p.deliverableFileId ? (p.deliverableName || null) : null,
     };
     try {
       if (p.$id) await update("products", p.$id, data); else await create("products", { ...data, siteId: s.$id });
@@ -157,6 +183,19 @@ function ProductForm({ initial, onClose, onSaved }: { initial: Draft; onClose():
         <label className="mt-2 flex items-center gap-2 text-sm"><input type="checkbox" checked={p.tracksInventory !== false} onChange={e => set("tracksInventory", e.target.checked)} />Track stock (turn off for digital products)</label>
       </div>
 
+      <div>
+        <div className="mb-1 text-sm font-medium">Download file</div>
+        <p className="mb-2 text-xs text-zinc-500">Stored privately. Buyers get a signed link that expires, never a public URL.</p>
+        <DeliverableRow label={vs.length > 1 ? "All variants" : "File"} name={p.deliverableFileId ? p.deliverableName || "File attached" : null}
+          busy={uploading === "product"} onPick={f => attach("product", f)} onClear={() => setP(x => ({ ...x, deliverableFileId: undefined, deliverableName: undefined }))} />
+        {vs.length > 1 && <div className="mt-2 space-y-1">
+          <p className="text-xs text-zinc-500">A variant with its own file delivers that file instead.</p>
+          {vs.map((v, i) => <DeliverableRow key={v.id} label={v.title} name={v.deliverableFileId ? v.deliverableName || "File attached" : null}
+            fallback={p.deliverableFileId ? "Uses the file above" : undefined} busy={uploading === v.id}
+            onPick={f => attach(i, f)} onClear={() => setV(i, { deliverableFileId: null, deliverableName: null })} />)}
+        </div>}
+      </div>
+
       <div className="grid grid-cols-2 gap-3">
         <Field label="Status">
           <Select value={p.status} onChange={e => set("status", e.target.value as Product["status"])}>
@@ -175,5 +214,24 @@ function ProductForm({ initial, onClose, onSaved }: { initial: Draft; onClose():
         </div>
       </details>
     </Modal>
+  );
+}
+
+function DeliverableRow({ label, name, fallback, busy, onPick, onClear }: {
+  label: string; name: string | null; fallback?: string; busy: boolean; onPick(f: File | undefined): void; onClear(): void;
+}) {
+  return (
+    <div className="flex items-center gap-2 rounded-lg border border-zinc-200 px-2 py-1.5 text-sm">
+      <span className="w-28 shrink-0 truncate text-zinc-500" title={label}>{label}</span>
+      {name ? <span className="flex min-w-0 flex-1 items-center gap-1 truncate"><FileArchive className="size-4 shrink-0 text-zinc-500" />{name}</span>
+        : fallback ? <span className="flex-1 text-xs text-zinc-500">{fallback}</span>
+        : <span className="flex-1"><Badge tone="yellow">No download file</Badge></span>}
+      <label className={"cursor-pointer text-xs underline " + (busy ? "pointer-events-none opacity-50" : "")}>
+        {busy ? "Uploading…" : name ? "Replace" : "Upload"}
+        <input type="file" hidden accept=".zip,.rar,.7z,.pdf,.epub,.mp3,.wav,.mp4,.mov,.png,.jpg,.jpeg,.psd,.ai,.svg,.ttf,.otf,.csv,.txt,.xlsx,.docx,.pptx,.procreate,.brushset,.abr,.cube,.xmp,.dng"
+          onChange={e => { onPick(e.target.files?.[0]); e.target.value = ""; }} />
+      </label>
+      {name && <button className="text-xs text-zinc-400 hover:text-red-600" onClick={onClear}>Remove</button>}
+    </div>
   );
 }

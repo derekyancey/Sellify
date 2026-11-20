@@ -33,3 +33,16 @@ export async function deleteFile(id: string) {
   if (isDemo) { localStorage.setItem(DEMO_KEY, JSON.stringify(demoFiles().filter(f => f.id !== id))); return; }
   await storage.deleteFile({ bucketId: config.bucketId, fileId: id });
 }
+
+/**
+ * Digital products: upload to the PRIVATE deliverables bucket (admins only). Returns the file ID, never a URL:
+ * customers only reach these files through the checkout function's signed, expiring download links.
+ */
+export interface Deliverable { id: string; name: string; size: number }
+export async function uploadDeliverable(siteId: string, file: File): Promise<Deliverable> {
+  const clean = file.name.replace(/[^\w.\- ]+/g, "_");
+  if (isDemo) return { id: "demo-" + ID.unique(), name: clean, size: file.size }; // demo mode keeps only the reference
+  const named = new File([file], prefix(siteId) + clean, { type: file.type });
+  const f = await storage.createFile({ bucketId: config.deliverablesBucketId, fileId: ID.unique(), file: named });
+  return { id: f.$id, name: clean, size: f.sizeOriginal };
+}

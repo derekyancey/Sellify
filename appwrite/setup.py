@@ -30,6 +30,12 @@ from appwrite.services.users import Users
 
 DB_ID = os.environ.get("APPWRITE_DATABASE_ID", "yancey")
 BUCKET_ID = os.environ.get("APPWRITE_BUCKET_ID", "files")
+# Private bucket for paid digital downloads. Never public: only the admins team can read it, and customers
+# only ever get a file through the checkout function's signed, expiring /download link.
+DELIVERABLES_BUCKET_ID = os.environ.get("APPWRITE_DELIVERABLES_BUCKET_ID", "deliverables")
+DELIVERABLES_MAX_BYTES = int(os.environ.get("DELIVERABLES_MAX_BYTES", "50000000"))  # Appwrite free plan caps uploads at 50 MB
+DELIVERABLE_EXTENSIONS = ["zip", "rar", "7z", "pdf", "epub", "mp3", "wav", "mp4", "mov", "png", "jpg", "jpeg", "psd", "ai",
+                          "svg", "ttf", "otf", "csv", "txt", "xlsx", "docx", "pptx", "procreate", "brushset", "abr", "cube", "xmp", "dng"]
 TEAM_ID = os.environ.get("ADMIN_TEAM_ID", "admins")
 
 # column helpers: (kind, key, required, extra kwargs)
@@ -75,7 +81,10 @@ SCHEMA = {
                     # imported / richer catalog data (Shopify-compatible)
                     S("handle", 255), S("vendor", 255), S("productType", 255), LT("tags"), LT("images"), LT("variants"),
                     S("seoTitle", 255), S("seoDescription", 1024), B("tracksInventory", default=True), F("costPerItem", min=0),
-                    S("externalId", 64), S("source", 32)],
+                    S("externalId", 64), S("source", 32),
+                    # digital delivery: an Appwrite Storage file ID in the private deliverables bucket, never a URL.
+                    # A variant with its own file carries deliverableFileId inside the variants JSON instead.
+                    S("deliverableFileId", 36), S("deliverableName", 255)],
         "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"]), ("by_handle", TablesDBIndexType.KEY, ["siteId", "handle"])],
     },
     "customers": {
@@ -107,6 +116,16 @@ SCHEMA = {
                     F("total", True, min=0), S("currency", 8), E("status", ["open", "completed", "expired"], "open"), S("email", 255),
                     S("discountCode", 32), S("discountId", 36), F("discountAmount", min=0), B("acceptsMarketing", default=False), D("recoveryEmailedAt")],
         "indexes": [("by_ref", TablesDBIndexType.KEY, ["providerRef"]), ("by_site", TablesDBIndexType.KEY, ["siteId"])],
+    },
+    # One row per purchased digital line item. Admin-readable (no public access); the checkout function writes
+    # these after a paid order and checks them on every download. No token or URL is ever stored here.
+    "downloads": {
+        "public_read": False,
+        "columns": [S("siteId", 36, True), S("orderId", 36, True), S("productId", 36, True), S("variantId", 64), S("customerEmail", 255),
+                    I("downloadCount", min=0, default=0), I("maxDownloads", min=0, default=5), D("expiresAt"), D("createdAt"),
+                    D("lastDownloadAt"), D("revokedAt")],
+        "indexes": [("by_order", TablesDBIndexType.KEY, ["orderId"]), ("by_site", TablesDBIndexType.KEY, ["siteId"]),
+                    ("by_product", TablesDBIndexType.KEY, ["siteId", "productId"])],
     },
     "collections": {
         "public_read": True,  # storefronts read these with Yancey.collection()
@@ -234,6 +253,17 @@ def main():
         file_security=False, maximum_file_size=10_000_000,
         allowed_file_extensions=["jpg", "jpeg", "png", "gif", "webp", "svg", "avif", "pdf", "mp4", "csv", "txt"]),
         lambda: Storage(client).get_bucket(BUCKET_ID))
+    ensure(f"bucket '{DELIVERABLES_BUCKET_ID}' (private, for paid digital downloads)", lambda: Storage(client).create_bucket(
+        DELIVERABLES_BUCKET_ID, "Deliverables", permissions=[Permission.read(admin), Permission.create(admin), Permission.update(admin), Permission.delete(admin)],
+        file_security=False, maximum_file_size=DELIVERABLES_MAX_BYTES, allowed_file_extensions=DELIVERABLE_EXTENSIONS, antivirus=True, transformations=False),
+        lambda: Storage(client).get_bucket(DELIVERABLES_BUCKET_ID))
+    # Re-runs: make sure nobody has opened the bucket up (no Role.any / users read) since it was created.
+    bucket = Storage(client).get_bucket(DELIVERABLES_BUCKET_ID)
+    if any("any" in p or "users" in p or "guests" in p for p in (attr(bucket, "permissions") or attr(bucket, "_permissions") or [])):
+        Storage(client).update_bucket(DELIVERABLES_BUCKET_ID, "Deliverables",
+                                      permissions=[Permission.read(admin), Permission.create(admin), Permission.update(admin), Permission.delete(admin)],
+                                      file_security=False, maximum_file_size=DELIVERABLES_MAX_BYTES, allowed_file_extensions=DELIVERABLE_EXTENSIONS)
+        print(f"  ~ bucket '{DELIVERABLES_BUCKET_ID}' permissions reset to admins only")
 
     email, password = os.environ.get("ADMIN_EMAIL"), os.environ.get("ADMIN_PASSWORD")
     if email:

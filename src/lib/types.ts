@@ -27,6 +27,8 @@ export interface Variant {
   id: string; title: string; options?: Record<string, string>; sku?: string | null; price: number; compareAtPrice?: number | null;
   inventory: number; tracked?: boolean; barcode?: string | null; grams?: number; requiresShipping?: boolean; taxable?: boolean;
   costPerItem?: number | null; image?: string | null;
+  /** This variant's own download (overrides the product's file). Storage file ID in the private deliverables bucket. */
+  deliverableFileId?: string | null; deliverableName?: string | null;
 }
 export interface Product extends Base {
   siteId: string;
@@ -42,6 +44,32 @@ export interface Product extends Base {
   handle?: string; vendor?: string; productType?: string; tags?: string[];
   images?: ProductImage[]; variants?: Variant[]; seoTitle?: string; seoDescription?: string;
   tracksInventory?: boolean; costPerItem?: number; externalId?: string; source?: string;
+  /** Digital delivery: Storage file ID in the private deliverables bucket (never a URL) and its file name. */
+  deliverableFileId?: string; deliverableName?: string;
+}
+
+/** The download file a variant delivers: its own file, else the product's. */
+export const deliverableFor = (p: Product, v?: Variant | null): { fileId: string; name?: string | null } | null =>
+  v?.deliverableFileId ? { fileId: v.deliverableFileId, name: v.deliverableName }
+    : p.deliverableFileId ? { fileId: p.deliverableFileId, name: p.deliverableName } : null;
+
+/** True when some variant of the product has nothing to deliver. */
+export const missingDeliverable = (p: Product) =>
+  !p.deliverableFileId && !(p.variants?.length && p.variants.every(v => v.deliverableFileId));
+
+/** One purchased digital line item (written by the checkout function). */
+export interface Download extends Base {
+  siteId: string;
+  orderId: string;
+  productId: string;
+  variantId?: string;
+  customerEmail?: string;
+  downloadCount: number;
+  maxDownloads: number;
+  expiresAt?: string;
+  createdAt?: string;
+  lastDownloadAt?: string;
+  revokedAt?: string;
 }
 
 export interface Customer extends Base {
@@ -161,9 +189,9 @@ export interface Checkout extends Base {
   recoveryEmailedAt?: string;
 }
 
-export type TableName = "sites" | "products" | "orders" | "customers" | "collections" | "discounts" | "segments" | "templates" | "campaigns" | "checkouts" | "automations";
+export type TableName = "sites" | "products" | "orders" | "customers" | "collections" | "discounts" | "segments" | "templates" | "campaigns" | "checkouts" | "automations" | "downloads";
 interface TableMap {
   sites: Site; products: Product; orders: Order; customers: Customer; collections: Collection; discounts: Discount;
-  segments: Segment; templates: EmailTemplate; campaigns: Campaign; checkouts: Checkout; automations: Automation;
+  segments: Segment; templates: EmailTemplate; campaigns: Campaign; checkouts: Checkout; automations: Automation; downloads: Download;
 }
 export type RowOf<T extends TableName> = TableMap[T];

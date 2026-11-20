@@ -6,7 +6,8 @@ export const config = {
   projectId: env.VITE_APPWRITE_PROJECT_ID || "",
   databaseId: env.VITE_APPWRITE_DATABASE_ID || "yancey",
   functionId: env.VITE_APPWRITE_FUNCTION_ID || "site-ops",
-  bucketId: env.VITE_APPWRITE_BUCKET_ID || "files",
+  bucketId: env.VITE_APPWRITE_BUCKET_ID || "files",                       // public: product + email images
+  deliverablesBucketId: env.VITE_APPWRITE_DELIVERABLES_BUCKET_ID || "deliverables", // private: paid downloads
   checkoutPublicUrl: (env.VITE_CHECKOUT_PUBLIC_URL || "").replace(/\/$/, ""),   // the checkout function's domain
   pagespeedKey: env.VITE_PAGESPEED_API_KEY || "",
 };

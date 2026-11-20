@@ -88,6 +88,9 @@
 
   function parse(p) {
     ["variants", "images", "tags"].forEach(function (k) { if (typeof p[k] === "string") { try { p[k] = JSON.parse(p[k]); } catch (e) { p[k] = []; } } });
+    // Download files are delivered only through signed links from the checkout function; storefronts never need the reference.
+    delete p.deliverableFileId; delete p.deliverableName;
+    (Array.isArray(p.variants) ? p.variants : []).forEach(function (v) { delete v.deliverableFileId; delete v.deliverableName; });
     return p;
   }
 
