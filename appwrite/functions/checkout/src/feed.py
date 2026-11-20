@@ -4,9 +4,13 @@ from xml.sax.saxutils import escape
 from store import a
 
 
+DEFAULT_PATH = "/products/{handle}"  # Shopify's product URL, so feed links match the old store's
+
+
 def product_url(site, product):
-    path = a(site, "feedProductPath") or "/?product={id}"
-    return f"https://{a(site, 'domain')}" + path.replace("{id}", a(product, "$id"))
+    path = a(site, "feedProductPath") or DEFAULT_PATH
+    handle = a(product, "handle") or a(product, "$id")
+    return f"https://{a(site, 'domain')}" + path.replace("{handle}", handle).replace("{id}", a(product, "$id"))
 
 
 def build(site, products):

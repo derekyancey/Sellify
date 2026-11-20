@@ -10,6 +10,8 @@ import type { Collection, Product, ProductImage, Variant } from "../lib/types";
 import { isSmart, matchesRules, syncCollections } from "../lib/collections";
 import { Badge, Button, Card, ErrorBox, Field, Input, Loading, Modal, PageHeader, Select, Table, Td, Textarea } from "../components/ui";
 import { downloadCsv } from "./Orders";
+import { redirectMoved } from "../lib/redirects";
+import { productPath, slug, storeUrl, uniqueHandle } from "../lib/urls";
 
 type Draft = Omit<Product, "$id" | "$createdAt" | "siteId"> & { $id?: string };
 const newVariant = (): Variant => ({ id: "v" + Math.random().toString(36).slice(2, 12), title: "Default Title", price: 0, inventory: 0 });
@@ -70,19 +72,24 @@ export default function Products() {
           </Table>
         )}
       </Card>
-      {editing && <ProductForm initial={editing} collections={cols.data ?? []} onClose={() => setEditing(null)} onSaved={() => { setEditing(null); reload(); cols.reload(); }} />}
+      {editing && <ProductForm initial={editing} collections={cols.data ?? []} products={data ?? []} onClose={() => setEditing(null)} onSaved={() => { setEditing(null); reload(); cols.reload(); }} />}
     </>
   );
 }
 
-function ProductForm({ initial, collections, onClose, onSaved }: { initial: Draft; collections: Collection[]; onClose(): void; onSaved(): void }) {
+function ProductForm({ initial, collections, products, onClose, onSaved }: { initial: Draft; collections: Collection[]; products: Product[]; onClose(): void; onSaved(): void }) {
   const { site } = useSite(); const s = site!;
   const [p, setP] = useState<Draft>(initial);
   const manual = collections.filter(c => !isSmart(c));
   const [inManual, setInManual] = useState<Set<string>>(() => new Set(initial.$id ? manual.filter(c => (c.productIds ?? []).includes(initial.$id!)).map(c => c.$id) : []));
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [handleTouched, setHandleTouched] = useState(!!initial.handle);
+  const [keepOldUrl, setKeepOldUrl] = useState(true);
   const set = <K extends keyof Draft>(k: K, v: Draft[K]) => setP(x => ({ ...x, [k]: v }));
+  const otherHandles = products.filter(x => x.$id !== p.$id).map(x => x.handle).filter(Boolean) as string[];
+  const handle = slug(p.handle || "") || uniqueHandle(p.title, otherHandles);
+  const handleChanged = !!initial.handle && handle !== initial.handle;
   const vs = p.variants ?? [];
   const setV = (i: number, patch: Partial<Variant>) => set("variants", vs.map((v, j) => j === i ? { ...v, ...patch } : v));
   const imgs = p.images ?? [];
@@ -97,18 +104,20 @@ function ProductForm({ initial, collections, onClose, onSaved }: { initial: Draf
   const save = async () => {
     if (!p.title.trim()) { setErr("Title is required"); return; }
     if (!vs.length || vs.some(v => !(v.price >= 0) || !v.title.trim())) { setErr("Every variant needs a name and a price."); return; }
+    if (otherHandles.includes(handle)) { setErr(`Another product already uses the URL /products/${handle}.`); return; }
     setBusy(true);
     const cheapest = vs.reduce((a, b) => (b.price < a.price ? b : a));
     const tracked = p.tracksInventory !== false;
     const data: any = {
       title: p.title.trim(), description: p.description, status: p.status, vendor: p.vendor || undefined, productType: p.productType || undefined,
-      tags: p.tags ?? [], seoTitle: p.seoTitle || undefined, seoDescription: p.seoDescription || undefined, handle: p.handle || undefined,
+      tags: p.tags ?? [], seoTitle: p.seoTitle || undefined, seoDescription: p.seoDescription || undefined, handle,
       images: imgs, imageUrl: imgs[0]?.src ?? (p.imageUrl || undefined), variants: vs, tracksInventory: tracked,
       price: cheapest.price, compareAtPrice: cheapest.compareAtPrice ?? undefined, sku: vs[0].sku || undefined,
       inventory: tracked ? vs.reduce((t, v) => t + Math.max(0, v.inventory || 0), 0) : 0,
     };
     try {
       const id = p.$id ? (await update("products", p.$id, data), p.$id) : (await create("products", { ...data, siteId: s.$id })).$id;
+      if (handleChanged && keepOldUrl) await redirectMoved(s.$id, `/products/${initial.handle}`, `/products/${handle}`);
       for (const c of manual) {
         const ids = c.productIds ?? [], want = inManual.has(c.$id);
         if (want !== ids.includes(id)) await update("collections", c.$id, { productIds: want ? [...ids, id] : ids.filter(x => x !== id) });
@@ -127,7 +136,7 @@ function ProductForm({ initial, collections, onClose, onSaved }: { initial: Draf
       footer={<>{p.$id && <Button variant="ghost" className="mr-auto text-red-600" onClick={del}>Delete</Button>}<Button onClick={onClose}>Cancel</Button><Button variant="primary" loading={busy} onClick={save}>Save</Button></>}>
       {err && <ErrorBox error={err} />}
       {p.source === "shopify" && <p className="rounded-lg bg-sky-50 px-3 py-2 text-xs text-sky-900">Imported from Shopify (handle <code>{p.handle}</code>). Re-importing a newer export overwrites these fields.</p>}
-      <Field label="Title"><Input value={p.title} onChange={e => set("title", e.target.value)} /></Field>
+      <Field label="Title"><Input value={p.title} onChange={e => setP(x => ({ ...x, title: e.target.value, handle: handleTouched ? x.handle : "" }))} /></Field>
       <Field label="Description" hint="HTML is kept as-is."><Textarea rows={4} value={p.description ?? ""} onChange={e => set("description", e.target.value)} /></Field>
 
       <div>
@@ -191,8 +200,15 @@ function ProductForm({ initial, collections, onClose, onSaved }: { initial: Draf
           {!manual.length && !smartIn.length && <p className="text-xs text-zinc-500">Not in any smart collection. Change its type or tags to match one.</p>}
         </div>
       )}
-      <details className="text-sm"><summary className="cursor-pointer font-medium">Search engine listing</summary>
+      <details className="text-sm" open={handleChanged || undefined}><summary className="cursor-pointer font-medium">Search engine listing</summary>
         <div className="mt-2 space-y-2">
+          <Field label="URL handle" hint={<>{storeUrl(s, productPath({ $id: "", title: p.title, handle }))} — the same path as on Shopify.</>}>
+            <div className="flex items-center gap-1"><span className="font-mono text-xs text-zinc-500">/products/</span>
+              <Input className="flex-1 font-mono" value={p.handle ?? ""} placeholder={handle}
+                onChange={e => { setHandleTouched(true); set("handle", e.target.value); }} onBlur={() => p.handle && set("handle", slug(p.handle))} /></div>
+          </Field>
+          {handleChanged && <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={keepOldUrl} onChange={e => setKeepOldUrl(e.target.checked)} />
+            Redirect <code>/products/{initial.handle}</code> to the new URL (keeps links and search rankings)</label>}
           <Field label="SEO title"><Input value={p.seoTitle ?? ""} onChange={e => set("seoTitle", e.target.value)} placeholder={p.title} /></Field>
           <Field label="SEO description"><Textarea rows={2} value={p.seoDescription ?? ""} onChange={e => set("seoDescription", e.target.value)} /></Field>
         </div>

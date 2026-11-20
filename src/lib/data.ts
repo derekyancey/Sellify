@@ -6,7 +6,7 @@ import type { Order, RowOf, TableName } from "./types";
 /* ------------------------------------------------------------------ */
 /* Rows: Appwrite TablesDB in production, localStorage in demo mode    */
 /* ------------------------------------------------------------------ */
-const DEMO_KEY = "yancey-demo-v8";
+const DEMO_KEY = "yancey-demo-v9";
 type DemoDB = { [K in TableName]: RowOf<K>[] };
 
 function demoDb(): DemoDB {
@@ -18,14 +18,14 @@ function demoDb(): DemoDB {
   saveDemo(db);
   return db;
 }
-const emptyDb = () => ({ collections: [], discounts: [], segments: [], templates: [], campaigns: [], checkouts: [], automations: [] });
+const emptyDb = () => ({ collections: [], discounts: [], segments: [], templates: [], campaigns: [], checkouts: [], automations: [], redirects: [], articles: [], pages: [] });
 function saveDemo(db: DemoDB) { try { localStorage.setItem(DEMO_KEY, JSON.stringify(db)); } catch { /* ignore */ } }
 export function resetDemo() { try { localStorage.removeItem(DEMO_KEY); } catch { /* ignore */ } }
 
 // Some columns hold JSON in Appwrite (longtext); (de)serialize them here.
 const JSON_COLS: Partial<Record<TableName, string[]>> = {
   orders: ["items", "billingAddress", "shippingAddress", "tags"], checkouts: ["items"], segments: ["rules"], collections: ["rules"],
-  products: ["images", "variants", "tags"], customers: ["address", "tags"],
+  products: ["images", "variants", "tags"], customers: ["address", "tags"], articles: ["tags"],
 };
 const toRow = (t: TableName, data: any) => {
   const out = { ...data };

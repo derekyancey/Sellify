@@ -6,6 +6,7 @@ import { list, update } from "../../lib/data";
 import { useAsync } from "../../lib/useAsync";
 import { Badge, Button, Card, Field, Input, Loading, PageHeader } from "../../components/ui";
 
+const DEFAULT_PATH = "/products/{handle}";
 const PLATFORMS = {
   google: {
     title: "Google & YouTube", subtitle: "Free product listings on Google Search, Shopping, Images, Maps and YouTube",
@@ -31,7 +32,7 @@ export default function Feed({ platform }: { platform: keyof typeof PLATFORMS })
   const P = PLATFORMS[platform];
   const { site, reload } = useSite(); const s = site!;
   const { data: products, loading } = useAsync(() => list("products", s.$id), [s.$id]);
-  const [path, setPath] = useState(s.feedProductPath || "/?product={id}");
+  const [path, setPath] = useState(s.feedProductPath || DEFAULT_PATH);
   const [copied, setCopied] = useState(false);
   const feedUrl = config.checkoutPublicUrl ? `${config.checkoutPublicUrl}/feed.xml?site=${s.$id}` : "";
   const active = (products ?? []).filter(p => p.status === "active");
@@ -51,9 +52,9 @@ export default function Feed({ platform }: { platform: keyof typeof PLATFORMS })
           )}
           <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm text-zinc-700">{P.steps.map((st, i) => <li key={i}>{st}</li>)}</ol>
           <div className="mt-4 border-t border-zinc-100 pt-4">
-            <Field label="Product page path" hint={<>Where each product lives on {s.domain}. <code>{"{id}"}</code> is replaced with the product ID, e.g. <code>/products/{"{id}"}</code>. Shared by every feed.</>}>
+            <Field label="Product page path" hint={<>Where each product lives on {s.domain}. <code>{"{handle}"}</code> is the product's URL handle (or use <code>{"{id}"}</code>). The default, <code>/products/{"{handle}"}</code>, is Shopify's, so links match your old store. Shared by every feed.</>}>
               <div className="flex gap-2"><Input value={path} onChange={e => setPath(e.target.value)} className="flex-1 font-mono" />
-                <Button disabled={path === (s.feedProductPath || "/?product={id}") || !path.includes("{id}")} onClick={async () => { await update("sites", s.$id, { feedProductPath: path }); reload(); }}>Save</Button></div>
+                <Button disabled={path === (s.feedProductPath || DEFAULT_PATH) || !/\{(id|handle)\}/.test(path)} onClick={async () => { await update("sites", s.$id, { feedProductPath: path }); reload(); }}>Save</Button></div>
             </Field>
           </div>
         </Card>

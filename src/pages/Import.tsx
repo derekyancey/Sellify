@@ -11,7 +11,7 @@ import { syncCollections } from "../lib/collections";
 interface Result { kind: ImportKind; store: string; records: number; added: number; updated: number; subscribers?: number; keptUnsubscribed?: number; problems: { key: string; error: string }[]; problemCount: number }
 interface Plan { file: ParsedFile; stores: string[]; subscribersOnly: boolean }
 
-const KIND_LABEL: Record<ImportKind, string> = { products: "Products", customers: "Customers", orders: "Orders" };
+const KIND_LABEL: Record<ImportKind, string> = { products: "Products", customers: "Customers", orders: "Orders", redirects: "URL redirects" };
 
 /** Import Shopify exports. Safe to repeat: records are matched (products by handle, customers by email,
  *  orders by Shopify order ID) and updated to the latest upload instead of duplicated. */
@@ -64,7 +64,7 @@ export default function Import() {
       setPlans([]);
       summary.reload();
       // Smart collections pick up newly imported products (and best-selling order from imported orders).
-      for (const store of new Set(steps.filter(x => x.p.file.kind !== "customers").map(x => x.store)))
+      for (const store of new Set(steps.filter(x => x.p.file.kind === "products" || x.p.file.kind === "orders").map(x => x.store)))
         await syncCollections(store).catch(e => setErr(`Imported, but updating collections failed: ${e.message}. Open Collections to retry.`));
     } catch (e: any) {
       setErr(`Import stopped: ${e.message}. Everything before this point was saved. Running the same import again is safe and continues where it left off.`);

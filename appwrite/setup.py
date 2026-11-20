@@ -62,6 +62,7 @@ SCHEMA = {
         "public_read": False,
         "columns": [S("name", 128, True), S("domain", 255), S("currency", 8), S("cloudflareZoneId", 64),
                     S("hostingSiteId", 64), S("gscProperty", 255), S("ga4PropertyId", 32), S("feedProductPath", 255),
+                    S("shopifyDomain", 255),  # the Shopify store this one moved from (URL check + blog import)
                     # email setup: nothing is sent until ownerEmail is confirmed and emailStatus is "verified"
                     S("ownerEmail", 255), S("senderName", 128), S("senderAddress", 255), S("emailDomainId", 64),
                     E("emailStatus", ["none", "pending", "verified", "failed"], "none"),
@@ -136,6 +137,26 @@ SCHEMA = {
         "columns": [S("siteId", 36, True), E("type", ["abandoned_cart", "welcome", "winback"], "abandoned_cart"), B("enabled", default=False),
                     I("delayHours", min=0), S("templateId", 36), S("subject", 255), D("lastRunAt"), I("sentCount", min=0, default=0)],
         "indexes": [("by_site_type", TablesDBIndexType.UNIQUE, ["siteId", "type"])],
+    },
+    # URL redirects, like Shopify's. Row IDs are derived from store + path, so each path has one redirect.
+    "redirects": {
+        "public_read": True,  # storefronts follow them with Yancey.redirect()
+        "columns": [S("siteId", 36, True), S("path", 512, True), S("target", 2048, True), S("source", 16)],
+        "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"]), ("by_path", TablesDBIndexType.KEY, ["siteId", "path"])],
+    },
+    # Blog posts at /blogs/{blogHandle}/{handle} and pages at /pages/{handle}: the same paths as Shopify.
+    "articles": {
+        "public_read": True,
+        "columns": [S("siteId", 36, True), S("blogHandle", 128, True), S("blogTitle", 255), S("handle", 255, True), S("title", 255, True),
+                    LT("bodyHtml"), LT("summaryHtml"), S("author", 128), LT("tags"), S("imageUrl", 2048), D("publishedAt"),
+                    B("published", default=True), S("seoTitle", 255), S("seoDescription", 1024), S("externalId", 64), S("source", 32)],
+        "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"]), ("by_handle", TablesDBIndexType.KEY, ["siteId", "blogHandle", "handle"])],
+    },
+    "pages": {
+        "public_read": True,
+        "columns": [S("siteId", 36, True), S("handle", 255, True), S("title", 255, True), LT("bodyHtml"), D("publishedAt"),
+                    B("published", default=True), S("seoTitle", 255), S("seoDescription", 1024), S("externalId", 64), S("source", 32)],
+        "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"]), ("by_handle", TablesDBIndexType.KEY, ["siteId", "handle"])],
     },
     # OAuth tokens for each store's connected accounts. No client permissions at all: only the
     # site-ops function's server key can read it, so tokens never reach a browser.
@@ -254,7 +275,7 @@ def main():
     if store_domain or os.environ.get("STORE_NAME"):
         print("First store")
         name = os.environ.get("STORE_NAME") or store_domain.split(".")[0]
-        row = {"name": name, "currency": os.environ.get("STORE_CURRENCY", "USD"), "feedProductPath": "/?product={id}", "emailStatus": "none"}
+        row = {"name": name, "currency": os.environ.get("STORE_CURRENCY", "USD"), "feedProductPath": "/products/{handle}", "emailStatus": "none"}
         if store_domain:
             row.update(domain=store_domain, gscProperty=f"sc-domain:{store_domain}")
         ensure(f"store '{name}' ({store_domain or 'no URL yet'})", lambda: db.create_row(DB_ID, "sites", ID.unique(), row))

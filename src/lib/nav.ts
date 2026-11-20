@@ -42,10 +42,9 @@ export const NAV: NavGroup[] = [
     { to: "/discounts", label: "Discounts", icon: Percent },
     { to: "/content/files", label: "Content", icon: FileImage, children: [
       { to: "/content/files", label: "Files" },
-      { to: "/content/blog", label: "Blog & pages", planned: {
-        what: "Write blog posts and pages for your sites.",
-        approach: "Decap CMS (open source, Git-based) edits Markdown in each site's repo; Appwrite Sites rebuilds on each commit.",
-        links: [{ label: "Decap CMS", href: "https://decapcms.org" }] } },
+      { to: "/content/blog", label: "Blog posts" },
+      { to: "/content/pages", label: "Pages" },
+      { to: "/content/redirects", label: "URL redirects" },
       { to: "/content/menus", label: "Menus", planned: {
         what: "Edit navigation menus without touching code.",
         approach: "Custom: a menus table read by yancey.js (Yancey.menu('main')), so storefronts render it at runtime." } },

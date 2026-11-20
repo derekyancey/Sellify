@@ -1,7 +1,7 @@
 import Papa from "papaparse";
 import { unzipSync, strFromU8 } from "fflate";
 
-export type ImportKind = "products" | "customers" | "orders";
+export type ImportKind = "products" | "customers" | "orders" | "redirects";
 export type Row = Record<string, string>;
 export interface ParsedFile { id: string; name: string; kind: ImportKind | null; rows: Row[]; columns: string[]; error?: string }
 
@@ -9,6 +9,7 @@ export interface ParsedFile { id: string; name: string; kind: ImportKind | null;
 export function detectKind(cols: string[]): ImportKind | null {
   const has = (c: string) => cols.includes(c);
   if (has("Handle") && has("Variant Price")) return "products";
+  if (has("Redirect from") && has("Redirect to")) return "redirects"; // Online Store → Navigation → URL redirects → Export
   if (has("Name") && has("Lineitem name")) return "orders";
   if ((has("Customer ID") || has("Email")) && (has("Accepts Email Marketing") || has("Accepts Marketing")) && !has("Lineitem name")) return "customers";
   return null;
@@ -27,7 +28,7 @@ function parseCsv(name: string, text: string): ParsedFile {
   return {
     id: `${name}-${Math.random().toString(36).slice(2, 8)}`, name, kind, rows, columns,
     error: res.errors.length > 5 ? `Couldn't read ${res.errors.length} lines (first: ${res.errors[0].message})`
-      : !kind ? "This doesn't look like a Shopify products, customers or orders export." : undefined,
+      : !kind ? "This doesn't look like a Shopify products, customers, orders or URL redirects export." : undefined,
   };
 }
 
@@ -69,6 +70,11 @@ export function summarize(f: ParsedFile) {
     const subs = f.rows.filter(r => yes(r["Accepts Email Marketing"] ?? r["Accepts Marketing"])).length;
     return { main: f.rows.length, label: "customers", details: [`${n(subs)} email subscribers`, `${n(f.rows.filter(r => !r.Email).length)} without email`] };
   }
+  if (f.kind === "redirects") {
+    const to = (r: Row) => r["Redirect to"] ?? "";
+    return { main: f.rows.length, label: "URL redirects", details: [`${n(f.rows.filter(r => /^\/products\//i.test(r["Redirect from"] ?? "")).length)} product URLs`,
+      `${n(f.rows.filter(r => to(r) === "/").length)} to the home page`] };
+  }
   return { main: 0, label: "rows", details: [] as string[] };
 }
 
@@ -93,4 +99,4 @@ export function chunk(kind: ImportKind, rows: Row[], max = kind === "customers" 
 }
 
 /** Import order: orders link to products and customers, so those go first. */
-export const ORDER: ImportKind[] = ["products", "customers", "orders"];
+export const ORDER: ImportKind[] = ["products", "customers", "orders", "redirects"];

@@ -14,6 +14,16 @@
  *   await Yancey.config()                       -> { stripe: bool, paypal: bool }
  *   await Yancey.product("handle-or-id")         -> one product (works for unlisted ones too), with .variants and .images
  *   await Yancey.collection("best-sellers")     -> { title, description, image, seoTitle, seoDescription, products } (in the collection's sort order)
+ *
+ *   Shopify's URLs work as they are: build the storefront on the same paths and every old link, bookmark and
+ *   search result keeps working.
+ *   Yancey.route(location.pathname)             -> { type: "product"|"collection"|"page"|"blog"|"article"|"cart"|"search"|"home"|…, handle, blog, tag, collection }
+ *   Yancey.urls.product(p) / .collection(c) / .page(p) / .blog(handle) / .article(a)   -> "/products/handle", …
+ *   await Yancey.redirect()                     -> follows a URL redirect for this page (Online store → URL redirects), else null.
+ *                                                  Call it on your 404 page, or first thing on every page.
+ *   await Yancey.page("about-us")               -> { title, bodyHtml, seoTitle, seoDescription } or null
+ *   await Yancey.blog("news", { tag })          -> { handle, title, articles: [...] } newest first (no bodies, for listings)
+ *   await Yancey.article("news", "what-is-a-lut") -> one post with bodyHtml, or null
  *   await Yancey.discount("WELCOME10")          -> { subtotal, discount: { code, amount }, total } or throws
  *   await Yancey.checkout("stripe" | "paypal", { email, discountCode, acceptsMarketing })
  *                                                // redirects to Stripe (card, Apple Pay, Google Pay) or PayPal
@@ -120,6 +130,89 @@
       seoTitle: c.seoTitle || c.title, seoDescription: c.seoDescription || null, products: list };
   }
 
+  // ------------------------------------------------------------------ Shopify-style URLs, pages and blogs
+  var urls = {
+    product: function (p) { return "/products/" + (p.handle || p.$id); },
+    collection: function (c) { return "/collections/" + (c.handle || c); },
+    page: function (p) { return "/pages/" + (p.handle || p); },
+    blog: function (h) { return "/blogs/" + h; },
+    article: function (a) { return "/blogs/" + a.blogHandle + "/" + a.handle; },
+  };
+
+  /** The redirect table's form of a path: no host, lower case, no trailing slash; query kept. */
+  function normalize(path) {
+    var s = String(path || "/").replace(/^[a-z]+:\/\/[^/?#]+/i, "").split("#")[0];
+    if (s.charAt(0) !== "/") s = "/" + s;
+    var q = s.indexOf("?"), p = (q < 0 ? s : s.slice(0, q)).replace(/\/{2,}/g, "/").toLowerCase();
+    if (p.length > 1) p = p.replace(/\/+$/, "");
+    try { p = decodeURI(p); } catch (e) { /* keep */ }
+    return q < 0 || q === s.length - 1 ? p : p + s.slice(q);
+  }
+
+  function route(path) {
+    var parts = normalize(path || location.pathname).split("?")[0].split("/").filter(Boolean), a = parts[0], b = parts[1], c = parts[2], d = parts[3];
+    if (!a) return { type: "home" };
+    if (a === "products" && b) return { type: "product", handle: b };
+    if (a === "collections" && b && c === "products" && d) return { type: "product", handle: d, collection: b };
+    if (a === "collections") return { type: "collection", handle: b || "all" };
+    if (a === "pages" && b) return { type: "page", handle: b };
+    if (a === "blogs" && b && c === "tagged" && d) return { type: "blog", blog: b, tag: d };
+    if (a === "blogs" && b && c) return { type: "article", blog: b, handle: c };
+    if (a === "blogs" && b) return { type: "blog", blog: b };
+    if (a === "cart" || a === "search" || a === "account") return { type: a };
+    if (a === "policies" && b) return { type: "policy", handle: b };
+    return { type: "other" };
+  }
+
+  /** Look up a redirect for this URL (with its query string first, then without) and go there. */
+  async function redirect(path) {
+    var full = normalize(path || (location.pathname + location.search)), base = full.split("?")[0];
+    var found = await rows("redirects", [{ method: "equal", attribute: "siteId", values: [cfg.site] },
+      { method: "equal", attribute: "path", values: full === base ? [base] : [full, base] }, { method: "limit", values: [2] }]);
+    var hit = found.find(function (r) { return r.path === full; }) || found[0];
+    if (!hit || normalize(hit.target) === full) return null;
+    if (!path) location.replace(hit.target);
+    return hit.target;
+  }
+
+  async function page(handle) {
+    var found = await rows("pages", [{ method: "equal", attribute: "siteId", values: [cfg.site] }, { method: "equal", attribute: "handle", values: [String(handle).toLowerCase()] }, { method: "limit", values: [1] }]);
+    var p = found[0];
+    return p && p.published !== false ? p : null;
+  }
+
+  function parseArticle(a) { if (typeof a.tags === "string") { try { a.tags = JSON.parse(a.tags); } catch (e) { a.tags = []; } } return a; }
+
+  async function blog(handle, opts) {
+    var q = [{ method: "equal", attribute: "siteId", values: [cfg.site] }, { method: "equal", attribute: "blogHandle", values: [handle] },
+      { method: "select", values: ["$id", "blogHandle", "blogTitle", "handle", "title", "summaryHtml", "author", "tags", "imageUrl", "publishedAt", "published", "seoDescription"] }];
+    var list = (await allRows("articles", q)).map(parseArticle).filter(function (a) { return a.published !== false; });
+    var tag = opts && opts.tag && String(opts.tag).toLowerCase();
+    if (tag) list = list.filter(function (a) { return (a.tags || []).some(function (t) { return t.toLowerCase().replace(/[^a-z0-9]+/g, "-") === tag || t.toLowerCase() === tag; }); });
+    list.sort(function (x, y) { return String(y.publishedAt || "").localeCompare(String(x.publishedAt || "")); });
+    return { handle: handle, title: (list[0] && list[0].blogTitle) || handle, articles: list };
+  }
+
+  async function article(blogHandle, handle) {
+    var found = await rows("articles", [{ method: "equal", attribute: "siteId", values: [cfg.site] }, { method: "equal", attribute: "blogHandle", values: [blogHandle] },
+      { method: "equal", attribute: "handle", values: [String(handle).toLowerCase()] }, { method: "limit", values: [1] }]);
+    var a = found[0] && parseArticle(found[0]);
+    return a && a.published !== false ? a : null;
+  }
+
+  /** Every row matching the queries, 100 at a time. */
+  async function allRows(table, queries) {
+    var out = [], cursor = null;
+    for (;;) {
+      var q = queries.concat([{ method: "limit", values: [100] }]);
+      if (cursor) q.push({ method: "cursorAfter", values: [cursor] });
+      var pageRows = await rows(table, q);
+      out = out.concat(pageRows);
+      if (pageRows.length < 100) return out;
+      cursor = pageRows[pageRows.length - 1].$id;
+    }
+  }
+
   function discount(code, items) {
     return call("/discount", { siteId: cfg.site, items: items || cart.items(), code: code });
   }
@@ -163,5 +256,6 @@
     return null;
   }
 
-  window.Yancey = { cart: cart, products: function () { return products(); }, product: product, collection: collection, discount: discount, checkout: checkout, handleReturn: handleReturn, config: function () { return call("/config", {}); }, settings: cfg };
+  window.Yancey = { cart: cart, products: function () { return products(); }, product: product, collection: collection, discount: discount,
+    route: route, urls: urls, redirect: redirect, page: page, blog: blog, article: article, checkout: checkout, handleReturn: handleReturn, config: function () { return call("/config", {}); }, settings: cfg };
 })();

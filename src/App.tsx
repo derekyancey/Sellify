@@ -26,6 +26,8 @@ import Inventory from "./pages/products/Inventory";
 import Segments from "./pages/customers/Segments";
 import Discounts from "./pages/Discounts";
 import Files from "./pages/content/Files";
+import Content from "./pages/content/Content";
+import Redirects from "./pages/content/Redirects";
 import Designer from "./pages/marketing/Designer";
 import Campaigns from "./pages/marketing/Campaigns";
 import OnlineStore from "./pages/channels/OnlineStore";
@@ -85,6 +87,9 @@ function StoreRoutes() {
         <Route path="discounts" element={<Discounts />} />
         <Route path="content" element={<Navigate to="files" replace />} />
         <Route path="content/files" element={<Files />} />
+        <Route path="content/blog" element={<Content key="articles" kind="articles" />} />
+        <Route path="content/pages" element={<Content key="pages" kind="pages" />} />
+        <Route path="content/redirects" element={<Redirects />} />
         <Route path="analytics" element={<Analytics />} />
         <Route path="finance" element={<Finance />} />
         <Route path="seo" element={needsUrl(<Seo />)} />

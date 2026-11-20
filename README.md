@@ -10,7 +10,7 @@ A Shopify-style admin for **all of your websites** in one place. Switch between 
 | **Customers** | All customers (marketing opt-in), Segments (rule builder) | Appwrite |
 | **Marketing** | Campaigns (send to a segment), Email designer (drag-and-drop), Automations (cart reminder, welcome, win-back) | [GrapesJS](https://github.com/GrapesJS/grapesjs) (BSD), Resend, Appwrite scheduled function |
 | **Discounts** | Percent/fixed codes with minimums, limits, dates, applied at checkout | Stripe coupons, PayPal |
-| **Content** | Files (images for products and emails) | Appwrite Storage |
+| **Content** | Files (images for products and emails), Blog posts, Pages, URL redirects (all on Shopify's paths) | Appwrite Storage, Appwrite |
 | **Analytics / SEO** | GA4, Search Console, crawler, PageSpeed, sitemaps | Google, Python crawler |
 | **Finance** | Per-store sales, refunds, discounts, net and payment-method split, monthly chart, CSV for your accountant; Stripe/PayPal balances, fees and payouts | Yancey orders, Stripe + PayPal reporting APIs (read-only) |
 | **Sales channels** | Online store (embed snippet), Google & YouTube and TikTok (product feed) | yancey.js, Merchant Center free listings |
@@ -26,7 +26,6 @@ Each planned page already describes its free approach. In brief:
 | Shipping labels | Shippo / EasyPost APIs: pay per label, no monthly fee |
 | Gift cards, Purchase orders, Transfers, Companies, Menus | Custom tables in Appwrite, no third-party cost |
 | Attribution | UTM tags + GA4 source/medium joined with orders |
-| Blog & pages | [Decap CMS](https://decapcms.org) (open source, Git-based) |
 | Point of sale | Stripe Terminal / Tap to Pay (per transaction) |
 
 ```
@@ -212,6 +211,29 @@ Each store has **Import data** (sidebar, and the Import buttons on Products and 
 - **No side effects:** imports never send email or change stock.
 - **Images:** step 3, "Copy images off Shopify", moves every product, variant and description image from Shopify's CDN into Appwrite Storage, in resumable ~20-second batches. Re-imports keep the copied images.
 
+## Keeping your Shopify URLs (products, collections, blogs, pages)
+
+Storefronts use **Shopify's paths**, so every old link, bookmark and Google result keeps working after the move:
+
+| Shopify URL | Yancey | Storefront call |
+| --- | --- | --- |
+| `/products/{handle}` (also `/collections/{c}/products/{handle}`) | product handle (kept by the import) | `Yancey.product(handle)` |
+| `/collections/{handle}`, `/collections/all` | collection handle | `Yancey.collection(handle)` |
+| `/pages/{handle}` | **Content → Pages** | `Yancey.page(handle)` |
+| `/blogs/{blog}`, `/blogs/{blog}/tagged/{tag}` | **Content → Blog posts** | `Yancey.blog(blog, { tag })` |
+| `/blogs/{blog}/{handle}` | **Content → Blog posts** | `Yancey.article(blog, handle)` |
+| anything that moved | **Content → URL redirects** | `Yancey.redirect()` |
+
+`Yancey.route(location.pathname)` tells a storefront which of these a URL is, and `Yancey.urls.product(p)` (and `.collection`, `.page`, `.blog`, `.article`) builds links. Shopping feeds link to `/products/{handle}` too.
+
+- **Check every URL:** *Content → URL redirects → Check against your Shopify store* reads the Shopify store's public sitemap (products, collections, pages, blogs, posts) and shows which URLs are served on the same path, redirected, or missing. Missing ones get a suggested redirect (the parent listing, as Shopify does), one by one or all at once.
+- **Blog posts and pages:** *Import from Shopify* on each page copies them with their handles, dates, authors and SEO text. Links inside them that point at the Shopify domain become relative (`/products/…`), so they follow the store to its new domain. Pages always import in full. Shopify's public blog feed only lists each blog's **latest 30 posts**, so for older posts (and tags, images and SEO titles) set `SHOPIFY_ADMIN_TOKEN` on `site-ops`: Shopify admin → Settings → Apps → Develop apps → Create an app → Admin API scopes `read_content` and `read_online_store_navigation` → Install → copy the Admin API access token.
+- **Redirects:** with the token, *Import Shopify's redirects* copies them all. Without it, export them in Shopify (Online Store → Navigation → URL redirects → Export) and use *Import CSV* there, or drop the file on **Import data**.
+- **Handle changes:** editing a product, collection, post or page handle offers to redirect the old URL (on by default), as Shopify does. Redirects that pointed at the old URL are updated so there are no chains.
+- **Real 301s:** `Yancey.redirect()` runs in the browser. For redirects that search engines see before the page loads, download **Cloudflare CSV** and upload it under Cloudflare → Rules → Bulk Redirects (free up to 10,000 URLs). If the store also changes domain, add one Cloudflare redirect rule from the old domain to the new one that keeps the path.
+
+Re-run `python appwrite/setup.py` after pulling: it adds the `redirects`, `articles` and `pages` tables and the `shopifyDomain` store column.
+
 ## Finance
 
 Each store's **Finance** page shows that store's sales, refunds, discounts, net and split by payment method. These come from Yancey's own orders, with a 30-day, 90-day or 1-year view and **Export for accountant** (CSV). Below that, **Payment accounts** shows your Stripe and PayPal balances, fees, refunds and recent payouts. Those are read-only, come from the processors, and are shared by every store that uses the account. They appear once `STRIPE_SECRET_KEY` / `PAYPAL_CLIENT_ID` + `PAYPAL_CLIENT_SECRET` are set on `site-ops`. PayPal's figures need the *Transaction search* permission on the PayPal app.
@@ -221,6 +243,7 @@ Each store's **Finance** page shows that store's sales, refunds, discounts, net 
 src/                       React dashboard
   lib/nav.ts               sidebar sections, sub-pages and the "planned" roadmap
   lib/segments.ts          segment rules engine
+  lib/urls.ts              Shopify-style storefront paths, redirect path normalising
   lib/data.ts              data layer (Appwrite or demo) + calls to the Python function
   lib/demo.ts              sample data and mocked integration responses
   pages/                   one file per screen
@@ -235,6 +258,7 @@ appwrite/functions/checkout/src/
   store.py                 cart pricing, idempotent order creation
 appwrite/functions/site-ops/src/
   main.py                  router, auth check, Cloudflare + Appwrite Sites hosting
+  shopify_urls.py          Shopify URL check, blog/page import, redirect import
   google_apis.py           Search Console + GA4
   crawler.py               SEO crawler
 ```

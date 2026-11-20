@@ -17,7 +17,8 @@ export interface Site extends Base {
   emailReceipts?: boolean;
   emailOwnerAlerts?: boolean;
   emailShipping?: boolean;
-  feedProductPath?: string;    // product page path for shopping feeds, e.g. /products/{id}
+  feedProductPath?: string;    // product page path for shopping feeds; default /products/{handle} (Shopify's)
+  shopifyDomain?: string;      // the Shopify store this one moved from, e.g. moonbear.shop (for the URL check)
 }
 export type EmailStatus = "none" | "pending" | "verified" | "failed";
 
@@ -174,9 +175,51 @@ export interface Checkout extends Base {
   recoveryEmailedAt?: string;
 }
 
-export type TableName = "sites" | "products" | "orders" | "customers" | "collections" | "discounts" | "segments" | "templates" | "campaigns" | "checkouts" | "automations";
+/** A URL redirect, like Shopify's (Online Store → Navigation → URL redirects). `path` is normalised (see lib/urls.ts). */
+export interface Redirect extends Base {
+  siteId: string;
+  path: string;                 // /products/old-handle (lower case, no host, no trailing slash; query kept)
+  target: string;               // /products/new-handle or a full https:// URL
+  source?: "shopify" | "auto" | "manual";
+}
+
+/** A blog post at /blogs/{blogHandle}/{handle}, as on Shopify. */
+export interface Article extends Base {
+  siteId: string;
+  blogHandle: string;           // e.g. "news"
+  blogTitle?: string;           // e.g. "Blog"
+  handle: string;
+  title: string;
+  bodyHtml?: string;
+  summaryHtml?: string;
+  author?: string;
+  tags?: string[];
+  imageUrl?: string;
+  publishedAt?: string;
+  published?: boolean;          // false = hidden from the storefront
+  seoTitle?: string;
+  seoDescription?: string;
+  externalId?: string; source?: string;
+}
+
+/** A page at /pages/{handle}, as on Shopify. */
+export interface Page extends Base {
+  siteId: string;
+  handle: string;
+  title: string;
+  bodyHtml?: string;
+  publishedAt?: string;
+  published?: boolean;
+  seoTitle?: string;
+  seoDescription?: string;
+  externalId?: string; source?: string;
+}
+
+export type TableName = "sites" | "products" | "orders" | "customers" | "collections" | "discounts" | "segments" | "templates" | "campaigns" | "checkouts" | "automations"
+  | "redirects" | "articles" | "pages";
 interface TableMap {
   sites: Site; products: Product; orders: Order; customers: Customer; collections: Collection; discounts: Discount;
   segments: Segment; templates: EmailTemplate; campaigns: Campaign; checkouts: Checkout; automations: Automation;
+  redirects: Redirect; articles: Article; pages: Page;
 }
 export type RowOf<T extends TableName> = TableMap[T];

@@ -167,6 +167,19 @@ export function demoOps(path: string, body: any): any {
     case "/google/gsc/sitemaps": return { sitemaps: [{ path: `https://${domain}/sitemap.xml`, lastSubmitted: ago(10), isPending: false, errors: 0, warnings: 1 }] };
     case "/google/gsc/submit-sitemap": return { ok: true };
     case "/seo/crawl": return demoCrawl(domain);
+    case "/urls/scan": {
+      const urls = [
+        { path: "/products/house-blend", type: "product", image: null, status: "same", to: null },
+        { path: "/products/old-blend", type: "product", image: null, status: "missing", to: "/products/old-blend" },
+        { path: "/collections/coffee", type: "collection", image: null, status: "redirect", to: "/collections/all" },
+        { path: "/pages/about-us", type: "page", image: null, status: "missing", to: "/pages/about-us" },
+        { path: "/blogs/news/brew-guide", type: "article", image: null, status: "missing", to: "/blogs/news/brew-guide" },
+      ];
+      return { domain: body.shopifyDomain, total: urls.length, counts: { same: 1, redirect: 1, missing: 3, broken_redirect: 0 }, urls };
+    }
+    case "/import/content": return { kind: body.kind, found: 0, written: 0, problems: [{ key: "demo", error: "Demo mode doesn't fetch from Shopify." }] };
+    case "/import/redirects": return { received: body.rows?.length ?? 0, records: 0, written: 0, added: 0, updated: 0, problems: [{ key: "demo", error: "Demo mode doesn't save imports." }], problemCount: 1 };
+    case "/import/shopify-redirects": throw new Error("Set SHOPIFY_ADMIN_TOKEN on the site-ops function, or upload Shopify's URL redirects export instead");
     default: throw new Error(`Demo mode has no mock for ${path}`);
   }
 }

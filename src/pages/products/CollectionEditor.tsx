@@ -9,6 +9,7 @@ import { money } from "../../lib/format";
 import { FIELDS, OPS, SORTS, collectionProducts, isMulti, matchesRules, needsValue, opsFor, salesByProduct, slug, valueOptions } from "../../lib/collections";
 import type { Collection, CollectionCondition, CollectionField, CollectionRules, CollectionSort, Product } from "../../lib/types";
 import { Badge, Button, Card, ErrorBox, Field, Input, Loading, Select, Textarea, cx } from "../../components/ui";
+import { redirectMoved } from "../../lib/redirects";
 
 type Draft = Omit<Collection, "$id" | "$createdAt" | "siteId"> & { $id?: string };
 const newCondition = (): CollectionCondition => ({ field: "productType", op: "is", values: [] });
@@ -37,6 +38,8 @@ function Editor({ initial, others, products, sales }: { initial: Draft; others: 
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [handleTouched, setHandleTouched] = useState(!!initial.$id);
+  const [keepOldUrl, setKeepOldUrl] = useState(true);
+  const handleChanged = !!initial.$id && !!initial.handle && slug(c.handle || c.title) !== initial.handle;
   const set = <K extends keyof Draft>(k: K, v: Draft[K]) => setC(x => ({ ...x, [k]: v }));
   const smart = c.type === "smart";
   const rules = c.rules ?? { match: "all", conditions: [] };
@@ -62,6 +65,7 @@ function Editor({ initial, others, products, sales }: { initial: Draft; others: 
     try {
       if (c.$id) await update("collections", c.$id, data);
       else await create("collections", { ...data, siteId: s.$id } as any);
+      if (handleChanged && keepOldUrl) await redirectMoved(s.$id, `/collections/${initial.handle}`, `/collections/${handle}`);
       nav(back);
     } catch (e: any) {
       setBusy(false);
@@ -125,9 +129,11 @@ function Editor({ initial, others, products, sales }: { initial: Draft; others: 
           <ImageCard url={c.imageUrl} title={c.title} onChange={u => set("imageUrl", u)} />
           <Card title="Search engine listing">
             <div className="space-y-3">
-              <Field label="URL handle" hint={<>Use <code>Yancey.collection("{slug(c.handle || c.title) || "handle"}")</code>{s.domain ? <> · {s.domain}/collections/{slug(c.handle || c.title)}</> : null}</>}>
+              <Field label="URL handle" hint={<>{s.domain ? <>{s.domain}/collections/{slug(c.handle || c.title)}, the same path as on Shopify · </> : null}<code>Yancey.collection("{slug(c.handle || c.title) || "handle"}")</code></>}>
                 <Input value={c.handle} onChange={e => { setHandleTouched(true); set("handle", slug(e.target.value)); }} onBlur={() => !c.handle && setHandleTouched(false)} />
               </Field>
+              {handleChanged && <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={keepOldUrl} onChange={e => setKeepOldUrl(e.target.checked)} />
+                Redirect <code>/collections/{initial.handle}</code> to the new URL</label>}
               <Field label="Page title" hint={`${(c.seoTitle || c.title).length}/70 characters`}><Input value={c.seoTitle ?? ""} placeholder={c.title} onChange={e => set("seoTitle", e.target.value)} /></Field>
               <Field label="Meta description" hint={`${(c.seoDescription ?? "").length}/160 characters`}><Textarea rows={3} value={c.seoDescription ?? ""} onChange={e => set("seoDescription", e.target.value)} /></Field>
             </div>

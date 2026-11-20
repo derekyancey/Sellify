@@ -14,6 +14,8 @@ Routes (all POST with a JSON body, called via functions.createExecution from the
   /email/setup | /email/status | /email/test | /email/order | /email/recovery | /email/campaign
   /import/products | /import/customers | /import/orders   (Shopify CSV rows; idempotent upserts)
   /import/images | /import/summary
+  /urls/scan | /import/content | /import/redirects | /import/shopify-redirects
+      (keep Shopify's URLs: sitemap check, blog posts + pages, redirects; the last one needs SHOPIFY_ADMIN_TOKEN)
   /finance/processors   (Stripe + PayPal balances, fees, payouts; read-only)
   /automations/preview | /automations/run   (also runs on this function's hourly schedule)
 
@@ -23,7 +25,8 @@ Secrets are function environment variables, never sent to the browser:
   GOOGLE_OAUTH_CLIENT_ID + GOOGLE_OAUTH_CLIENT_SECRET (per-store "Connect Google"), GOOGLE_SERVICE_ACCOUNT_JSON (optional fallback),
   STRIPE_SECRET_KEY, PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_ENV (for refunds),
   RESEND_API_KEY (email), UNSUBSCRIBE_SECRET + CHECKOUT_PUBLIC_URL (campaign unsubscribe links),
-  AUTOMATION_MAX_PER_RUN (default 50)
+  AUTOMATION_MAX_PER_RUN (default 50),
+  SHOPIFY_ADMIN_TOKEN (optional, read_content + read_online_store_navigation: full blog import and Shopify's redirects)
 """
 import json
 import os
@@ -42,6 +45,7 @@ import google_apis  # noqa: E402
 import google_oauth  # noqa: E402
 import imagecopy  # noqa: E402
 import importer  # noqa: E402
+import shopify_urls  # noqa: E402
 from errors import HttpError  # noqa: E402
 
 CF = "https://api.cloudflare.com/client/v4"
@@ -568,6 +572,53 @@ def import_summary(b):
             "orders": count("orders"), "imagesOnShopify": sum(len(imagecopy.pending_urls(p)) for p in products)}
 
 
+def _site(site_id):
+    try:
+        return _db().get_row(os.environ.get("APPWRITE_DATABASE_ID", "yancey"), "sites", site_id)
+    except Exception:  # noqa: BLE001
+        raise HttpError("Unknown store", 404)
+
+
+def _shopify_domain(b):
+    site_id, domain = b.get("siteId"), shopify_urls.clean_domain(b.get("shopifyDomain"))
+    if not site_id or not domain:
+        raise HttpError("Missing: siteId, shopifyDomain")
+    _site(site_id)
+    return site_id, domain
+
+
+def urls_scan(b):
+    site_id, domain = _shopify_domain(b)
+    return shopify_urls.scan(_db(), os.environ.get("APPWRITE_DATABASE_ID", "yancey"), site_id, domain)
+
+
+def import_content(b):
+    site_id, domain = _shopify_domain(b)
+    kind = b.get("kind")
+    if kind not in ("articles", "pages"):
+        raise HttpError("kind must be articles or pages")
+    return shopify_urls.import_content(_db(), os.environ.get("APPWRITE_DATABASE_ID", "yancey"), site_id, domain, kind)
+
+
+def import_redirects(b):
+    site_id, rows = need(b, "siteId", "rows")
+    if not isinstance(rows, list) or len(rows) > 5000:
+        raise HttpError("Send between 1 and 5000 redirects per request")
+    site = _site(site_id)
+    hosts = [importer._a(site, "domain"), importer._a(site, "shopifyDomain"), *(b.get("ownHosts") or [])]
+    return shopify_urls.import_redirects(_db(), os.environ.get("APPWRITE_DATABASE_ID", "yancey"), site_id, rows, hosts)
+
+
+def import_shopify_redirects(b):
+    site_id, domain = _shopify_domain(b)
+    if not shopify_urls.admin_token():
+        raise HttpError("Set SHOPIFY_ADMIN_TOKEN on the site-ops function, or upload Shopify's URL redirects export instead", 409)
+    site = _site(site_id)
+    rows = shopify_urls.shopify_redirects(domain)
+    return shopify_urls.import_redirects(_db(), os.environ.get("APPWRITE_DATABASE_ID", "yancey"), site_id, rows,
+                                         [importer._a(site, "domain"), domain])
+
+
 def finance_processors(b):
     return finance.summary(max(1, min(int(b.get("days") or 30), 366)))
 
@@ -617,6 +668,10 @@ ROUTES = {
     "/import/orders": _import("orders"),
     "/import/images": import_images,
     "/import/summary": import_summary,
+    "/urls/scan": urls_scan,
+    "/import/content": import_content,
+    "/import/redirects": import_redirects,
+    "/import/shopify-redirects": import_shopify_redirects,
     "/finance/processors": finance_processors,
     "/automations/preview": automations_preview,
     "/automations/run": automations_run,
