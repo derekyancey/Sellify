@@ -57,7 +57,9 @@ export const NAV: NavGroup[] = [
     { to: "/finance", label: "Finance", icon: Landmark },
   ] },
   { group: "Sales channels", items: [
-    { to: "/channels/online-store", label: "Online store", icon: Store },
+    { to: "/channels/online-store", label: "Online store", icon: Store, children: [
+      { to: "/channels/online-store/themes", label: "Themes" },
+    ] },
     { to: "/channels/google", label: "Google & YouTube", icon: Globe },
     { to: "/channels/tiktok", label: "TikTok", icon: Globe },
     { to: "/channels/pos", label: "Point of sale", icon: Store, planned: {

@@ -1,0 +1,639 @@
+{
+ "sections": [
+  {
+   "id": "main",
+   "scheme": "scheme-2",
+   "type": "main-product",
+   "style": {
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 100px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 25px))",
+    "--gap": "24px"
+   },
+   "mediaPosition": "left",
+   "split": "half",
+   "gallery": {
+    "t": "gallery",
+    "layout": "carousel",
+    "thumbnails": true,
+    "columns": 2,
+    "extend": true,
+    "style": {
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px",
+     "--padding-inline-start": "0px",
+     "--padding-inline-end": "0px",
+     "--thumbnail-width": "48px",
+     "--media-radius": "0px",
+     "--image-gap": "0px"
+    }
+   },
+   "details": [
+    {
+     "t": "group",
+     "style": {
+      "--border-width": "1px",
+      "--border-style": "none",
+      "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+      "--border-radius": "0px",
+      "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+      "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))",
+      "--padding-inline-start": "0px",
+      "--padding-inline-end": "0px",
+      "--size-style-width": "100%",
+      "--size-style-height": "fit",
+      "--size-style-width-mobile": "100%",
+      "--size-style-width-mobile-min": "5rem",
+      "--flex-direction": "column",
+      "--flex-wrap": "nowrap",
+      "--flex-wrap-mobile": "wrap",
+      "--gap": "24px"
+     },
+     "children": [
+      {
+       "t": "group",
+       "style": {
+        "--border-width": "1px",
+        "--border-style": "none",
+        "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+        "--border-radius": "0px",
+        "--padding-block-start": "0px",
+        "--padding-block-end": "0px",
+        "--padding-inline-start": "0px",
+        "--padding-inline-end": "0px",
+        "--size-style-width": "100%",
+        "--size-style-height": "fit",
+        "--size-style-width-mobile": "100%",
+        "--size-style-width-mobile-min": "5rem",
+        "--flex-direction": "column",
+        "--flex-wrap": "nowrap",
+        "--flex-wrap-mobile": "wrap",
+        "--gap": "12px",
+        "--horizontal-alignment": "flex-start",
+        "--vertical-alignment": "center",
+        "--vertical-alignment-mobile": "center"
+       },
+       "children": [
+        {
+         "t": "title",
+         "cls": "h1",
+         "style": {
+          "--padding-block-start": "0px",
+          "--padding-block-end": "0px",
+          "--padding-inline-start": "0px",
+          "--padding-inline-end": "0px",
+          "--color": "var(--color-foreground-heading)",
+          "--width": "fit-content",
+          "--max-width": "var(--max-width--body-normal)"
+         }
+        },
+        {
+         "t": "group",
+         "style": {
+          "--border-width": "1px",
+          "--border-style": "none",
+          "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+          "--border-radius": "0px",
+          "--padding-block-start": "0px",
+          "--padding-block-end": "0px",
+          "--padding-inline-start": "0px",
+          "--padding-inline-end": "0px",
+          "--size-style-width": "100%",
+          "--size-style-height": "fit",
+          "--size-style-width-mobile": "100%",
+          "--size-style-width-mobile-min": "5rem",
+          "--flex-direction": "row",
+          "--flex-wrap": "nowrap",
+          "--flex-wrap-mobile": "wrap",
+          "--gap": "24px",
+          "--horizontal-alignment": "flex-start",
+          "--vertical-alignment": "center",
+          "--vertical-alignment-mobile": "center"
+         },
+         "children": [
+          {
+           "t": "price",
+           "style": {
+            "--color": "var(--color-foreground)",
+            "--padding-block-start": "4px",
+            "--padding-block-end": "0px",
+            "--padding-inline-start": "0px",
+            "--padding-inline-end": "0px",
+            "--width": "100%"
+           },
+           "taxNote": true
+          }
+         ],
+         "mobileColumn": true,
+         "sizes": [
+          "height-fit",
+          "width-fill"
+         ]
+        }
+       ],
+       "mobileColumn": true,
+       "sizes": [
+        "height-fit",
+        "width-fill"
+       ]
+      },
+      {
+       "t": "variants"
+      },
+      {
+       "t": "buy",
+       "accelerated": true
+      }
+     ],
+     "sizes": [
+      "height-fit",
+      "width-fill"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "section_Knbjh8",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "row",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "row",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "image",
+      "image": "https://moonbear.shop/cdn/shop/files/frame-000107.jpg?v=1785388450",
+      "alt": "Film halation effect overlay showing a dreamy, glowing light diffusion on a film strip for creative visual enhancement.",
+      "style": {
+       "--ratio": "16 / 9",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px"
+      },
+      "dynamic": "featured"
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "text",
+        "cls": "h3",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground)",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<h2>What is Film Halation Effect</h2>"
+       },
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<p>Halation is the soft red-orange glow that appears around bright areas in film footage. It's caused by light penetrating the film emulsion, reflecting off the backing, and exposing the surrounding frame. Halation gives footage an organic, warm, cinematic quality that digital sensors can't produce on their own. That's why editors add halation effects in post — it's one of the fastest ways to make digital footage look like film.</p>"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-custom"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "media_with_content_UFtxfH",
+   "scheme": "scheme-3",
+   "type": "media-with-content",
+   "style": {
+    "--padding-block-start": "0px",
+    "--padding-block-end": "0px",
+    "--border-color": "rgb(var(--color-border-rgb) / 0.0)",
+    "--media-height": "60svh",
+    "--media-height-mobile": "50svh"
+   },
+   "media": null,
+   "content": {
+    "t": "group",
+    "style": {
+     "--border-color": "rgb(var(--color-border-rgb) / 0.0)",
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "24px",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "flex-end",
+     "--vertical-alignment-mobile": "flex-end"
+    },
+    "children": [
+     {
+      "t": "jumbo",
+      "text": "Recreate Film Glow",
+      "style": {
+       "--font-family": "var(--font-heading--family)",
+       "--font-weight": "var(--font-heading--weight)",
+       "--color": "var(--color-foreground-heading)",
+       "--text-align": "right",
+       "--line-height": "0.8",
+       "--letter-spacing": "-0.03em",
+       "--text-transform": "uppercase"
+      }
+     }
+    ],
+    "sizes": [
+     "height-",
+     "width-"
+    ]
+   },
+   "mediaPosition": "right"
+  },
+  {
+   "id": "section_TM7ntP",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--section-min-height": "var(--section-height-small)",
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 25px))",
+    "--horizontal-alignment": "center",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 25px))",
+     "--horizontal-alignment": "center",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "row",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "center",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     },
+     {
+      "t": "title",
+      "cls": "rte",
+      "style": {
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--width": "fit-content",
+       "--max-width": "var(--max-width--body-normal)"
+      }
+     },
+     {
+      "t": "description",
+      "cls": "rte",
+      "style": {
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--width": "fit-content",
+       "--max-width": "var(--max-width--body-normal)"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "section_eqdDmB",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "text",
+      "cls": "h3",
+      "style": {
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--color": "var(--color-foreground)",
+       "--width": "fit-content",
+       "--max-width": "var(--max-width--body-narrow)"
+      },
+      "html": "<h2>Frequently asked questions</h2>"
+     },
+     {
+      "t": "accordion",
+      "style": {
+       "--summary-font-family": "var(--font-h5--family)",
+       "--summary-font-style": "var(--font-h5--style)",
+       "--summary-font-weight": "var(--font-h5--weight)",
+       "--summary-font-size": "var(--font-h5--size)",
+       "--summary-font-line-height": "var(--font-h5--line-height)",
+       "--summary-font-case": "var(--font-h5--case)",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px"
+      },
+      "items": [
+       {
+        "title": "Does it work on all footage types?",
+        "open": false,
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>Our goal is for every customer to be totally satisfied with their purchase. If this isn't the case, let us know and we'll do our best to work with you to make it right.</p>"
+         }
+        ]
+       },
+       {
+        "title": "What's the difference between halation and bloom?",
+        "open": false,
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>We are unable to accept returns on certain items. These will be carefully marked before purchase.</p>"
+         }
+        ]
+       },
+       {
+        "title": "Why does the halo color change in different scenes?",
+        "open": false,
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>We will work quickly to ship your order as soon as possible. Once your order has shipped, you will receive an email with further information. Delivery times vary depending on your location.</p>"
+         }
+        ]
+       },
+       {
+        "title": "Can I use it with MoonBear LUTs?",
+        "open": false,
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>Our products are manufactured both locally and globally. We carefully select our manufacturing partners to ensure our products are high quality and a fair value.</p>"
+         }
+        ]
+       },
+       {
+        "title": "Is it GPU-friendly?",
+        "open": false,
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>Shipping is calculated based on your location and the items in your order. You will always know the shipping price before you purchase.</p>"
+         }
+        ]
+       },
+       {
+        "title": "Is it GPU-friendly?",
+        "open": false,
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>Shipping is calculated based on your location and the items in your order. You will always know the shipping price before you purchase.</p>"
+         }
+        ]
+       }
+      ],
+      "plus": false,
+      "dividers": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "product-recommendations",
+   "scheme": "scheme-1",
+   "type": "product-recommendations",
+   "style": {
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 24px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 24px))",
+    "--gap": "24px",
+    "--resource-list-column-gap-desktop": "12px",
+    "--resource-list-row-gap-desktop": "12px",
+    "--resource-list-columns": "repeat(4, 1fr)",
+    "--resource-list-columns-mobile": "repeat(2, 1fr)"
+   },
+   "heading": "Complete your collection"
+  }
+ ]
+}

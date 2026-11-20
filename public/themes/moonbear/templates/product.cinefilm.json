@@ -1,0 +1,723 @@
+{
+ "sections": [
+  {
+   "id": "main",
+   "scheme": "scheme-2",
+   "type": "main-product",
+   "style": {
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 29px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 25px))",
+    "--gap": "24px"
+   },
+   "mediaPosition": "left",
+   "split": "half",
+   "gallery": {
+    "t": "gallery",
+    "layout": "carousel",
+    "thumbnails": true,
+    "columns": 2,
+    "extend": true,
+    "style": {
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px",
+     "--padding-inline-start": "0px",
+     "--padding-inline-end": "0px",
+     "--thumbnail-width": "48px",
+     "--media-radius": "0px",
+     "--image-gap": "0px"
+    }
+   },
+   "details": [
+    {
+     "t": "group",
+     "style": {
+      "--border-width": "1px",
+      "--border-style": "none",
+      "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+      "--border-radius": "0px",
+      "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+      "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))",
+      "--padding-inline-start": "0px",
+      "--padding-inline-end": "0px",
+      "--size-style-width": "100%",
+      "--size-style-height": "fit",
+      "--size-style-width-mobile": "100%",
+      "--size-style-width-mobile-min": "5rem",
+      "--flex-direction": "column",
+      "--flex-wrap": "nowrap",
+      "--flex-wrap-mobile": "wrap",
+      "--gap": "24px"
+     },
+     "children": [
+      {
+       "t": "group",
+       "style": {
+        "--border-width": "1px",
+        "--border-style": "none",
+        "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+        "--border-radius": "0px",
+        "--padding-block-start": "0px",
+        "--padding-block-end": "0px",
+        "--padding-inline-start": "0px",
+        "--padding-inline-end": "0px",
+        "--size-style-width": "100%",
+        "--size-style-height": "fit",
+        "--size-style-width-mobile": "100%",
+        "--size-style-width-mobile-min": "5rem",
+        "--flex-direction": "column",
+        "--flex-wrap": "nowrap",
+        "--flex-wrap-mobile": "wrap",
+        "--gap": "12px",
+        "--horizontal-alignment": "flex-start",
+        "--vertical-alignment": "center",
+        "--vertical-alignment-mobile": "center"
+       },
+       "children": [
+        {
+         "t": "title",
+         "cls": "h1",
+         "style": {
+          "--padding-block-start": "0px",
+          "--padding-block-end": "0px",
+          "--padding-inline-start": "0px",
+          "--padding-inline-end": "0px",
+          "--color": "var(--color-foreground)",
+          "--width": "fit-content",
+          "--max-width": "var(--max-width--body-normal)"
+         }
+        },
+        {
+         "t": "group",
+         "style": {
+          "--border-width": "1px",
+          "--border-style": "none",
+          "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+          "--border-radius": "0px",
+          "--padding-block-start": "0px",
+          "--padding-block-end": "0px",
+          "--padding-inline-start": "0px",
+          "--padding-inline-end": "0px",
+          "--size-style-width": "100%",
+          "--size-style-height": "fit",
+          "--size-style-width-mobile": "100%",
+          "--size-style-width-mobile-min": "5rem",
+          "--flex-direction": "row",
+          "--flex-wrap": "nowrap",
+          "--flex-wrap-mobile": "wrap",
+          "--gap": "24px",
+          "--horizontal-alignment": "flex-start",
+          "--vertical-alignment": "center",
+          "--vertical-alignment-mobile": "center"
+         },
+         "children": [
+          {
+           "t": "price",
+           "style": {
+            "--color": "var(--color-foreground)",
+            "--padding-block-start": "4px",
+            "--padding-block-end": "0px",
+            "--padding-inline-start": "0px",
+            "--padding-inline-end": "0px",
+            "--width": "100%"
+           },
+           "taxNote": true
+          }
+         ],
+         "mobileColumn": true,
+         "sizes": [
+          "height-fit",
+          "width-fill"
+         ]
+        }
+       ],
+       "mobileColumn": true,
+       "sizes": [
+        "height-fit",
+        "width-fill"
+       ]
+      },
+      {
+       "t": "buy",
+       "accelerated": true
+      },
+      {
+       "t": "accordion",
+       "style": {
+        "--summary-font-family": "var(--font-h6--family)",
+        "--summary-font-style": "var(--font-h6--style)",
+        "--summary-font-weight": "var(--font-h6--weight)",
+        "--summary-font-size": "var(--font-h6--size)",
+        "--summary-font-line-height": "var(--font-h6--line-height)",
+        "--summary-font-case": "var(--font-h6--case)",
+        "--padding-block-start": "20px",
+        "--padding-block-end": "0px",
+        "--padding-inline-start": "0px",
+        "--padding-inline-end": "0px",
+        "--border-width": "1px",
+        "--border-style": "none",
+        "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+        "--border-radius": "0px"
+       },
+       "items": [
+        {
+         "title": "What's included",
+         "open": true,
+         "children": [
+          {
+           "t": "text",
+           "cls": "rte",
+           "style": {
+            "--padding-block-start": "0px",
+            "--padding-block-end": "0px",
+            "--padding-inline-start": "0px",
+            "--padding-inline-end": "0px",
+            "--width": "100%",
+            "--max-width": "var(--max-width--body-normal)",
+            "--text-align": "left"
+           },
+           "html": "<p>81 title presets inspired by music videos, built for directors and editors looking for complex unique designs.</p>"
+          }
+         ]
+        },
+        {
+         "title": "Compatibility",
+         "open": false,
+         "children": [
+          {
+           "t": "text",
+           "cls": "rte",
+           "style": {
+            "--padding-block-start": "0px",
+            "--padding-block-end": "0px",
+            "--padding-inline-start": "0px",
+            "--padding-inline-end": "0px",
+            "--width": "100%",
+            "--max-width": "var(--max-width--body-normal)",
+            "--text-align": "left"
+           },
+           "html": "<p>After Effects | Premiere Pro | Final Cut Pro | DaVinci Resolve</p>"
+          }
+         ]
+        },
+        {
+         "title": "Licence info",
+         "open": false,
+         "children": [
+          {
+           "t": "text",
+           "cls": "rte",
+           "style": {
+            "--padding-block-start": "0px",
+            "--padding-block-end": "0px",
+            "--padding-inline-start": "0px",
+            "--padding-inline-end": "0px",
+            "--width": "100%",
+            "--max-width": "var(--max-width--body-normal)",
+            "--text-align": "left"
+           },
+           "html": "<p>License covers personal and commercial use. Pre-cleared for Youtube. For broadcast, please request an extended license at hello@MoonBear.shop</p>"
+          }
+         ]
+        },
+        {
+         "title": "Full Description",
+         "open": false,
+         "children": [
+          {
+           "t": "description"
+          }
+         ]
+        }
+       ],
+       "plus": true,
+       "dividers": true
+      }
+     ],
+     "sizes": [
+      "height-fit",
+      "width-fill"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "section_bg8fAx",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--section-min-height": "var(--section-height-small)",
+    "--flex-direction": "row",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "12px",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "0px",
+    "--padding-block-end": "0px"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "row",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "12px",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<h2>CINEFILM — Cinematic Film LUT Pack - </h2>"
+       },
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<p>Bring cinematic color to your edits. <em>Cinefilm</em> is MoonBear’s ultimate experience in cinematic LUTs. Polished, powerful, and packed with presets that turn any scene into a visual anthem. </p><p>Perfect for music videos, films, movies, commercials and everything in between.</p>"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     },
+     {
+      "t": "accordion",
+      "style": {
+       "--summary-font-family": "var(--font-h6--family)",
+       "--summary-font-style": "var(--font-h6--style)",
+       "--summary-font-weight": "var(--font-h6--weight)",
+       "--summary-font-size": "var(--font-h6--size)",
+       "--summary-font-line-height": "var(--font-h6--line-height)",
+       "--summary-font-case": "var(--font-h6--case)",
+       "--padding-block-start": "20px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px"
+      },
+      "items": [
+       {
+        "title": "What's included",
+        "open": true,
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>More than 20 cinematic color presets inspired by music videos, built for directors and editors looking for rich color.</p>"
+         }
+        ]
+       },
+       {
+        "title": "Compatibility",
+        "open": false,
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>After Effects | Premiere Pro | Final Cut Pro | DaVinci Resolve | CapCut</p>"
+         }
+        ]
+       },
+       {
+        "title": "Licence info",
+        "open": false,
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>License covers personal and commercial use. Pre-cleared for Youtube. For broadcast, please request an extended license at hello@MoonBear.shop</p>"
+         }
+        ]
+       }
+      ],
+      "plus": true,
+      "dividers": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "section_zGLKh6",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "row",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "row",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "image",
+      "image": "https://moonbear.shop/cdn/shop/files/ShotClub_AI_-_Father_s_Day_37.jpg?v=1785388634",
+      "alt": "Father's Day themed image from MoonBear's Shot Club AI Stock Image Library, featuring a father and child celebrating together.",
+      "style": {
+       "--ratio": "1.7777777777777777",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px"
+      }
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "text",
+        "cls": "h3",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground)",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<p>Cinematic color grading at your fingertips.</p>"
+       },
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<p>CineFilm LUT pack transforms your footage with rich, professional coloring that makes every shot pop. </p>"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-custom"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "hero_LfH7Mx",
+   "scheme": "scheme-5",
+   "type": "hero",
+   "style": {
+    "--blur-opacity": "0.75",
+    "--hero-min-height": "var(--section-height-medium)",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))",
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "0px",
+    "--horizontal-alignment": "center",
+    "--vertical-alignment": "flex-end",
+    "--vertical-alignment-mobile": "flex-end"
+   },
+   "media": [
+    {
+     "image": "https://moonbear.shop/cdn/shop/files/CINEFILMEX.6_4c67c3e9-c852-457e-a414-fcc18e142abc.jpg?v=1785388609",
+     "alt": "CineFilm Cinematic Film LUT Pack color correction preset by moonbear.shop, shown with film strip and color grading examples.",
+     "desktop": true,
+     "mobile": true
+    }
+   ],
+   "overlay": {
+    "--overlay-layer": "var(--layer-flat)",
+    "--overlay-color": "#00000026",
+    "--overlay-color--end": "rgba(0, 0, 0, 0)",
+    "--overlay-direction": "to top",
+    "kind": "gradient"
+   },
+   "href": null,
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "0px",
+     "--horizontal-alignment": "center",
+     "--vertical-alignment": "flex-end",
+     "--vertical-alignment-mobile": "flex-end"
+    },
+    "mobileColumn": true,
+    "children": []
+   }
+  },
+  {
+   "id": "17581248119f5690c4",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "12px",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "0px",
+    "--padding-block-end": "0px"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "12px",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "html",
+      "html": "<definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku class=\"ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku\">\n<div class=\"ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku__content\">\n<h3 aria-expanded=\"false\" class=\"ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku__term\" role=\"button\" tabindex=\"0\">\n      What Are CINEFILM — Cinematic Film LUT Pack?\n      \n        <span class=\"ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku__pronunciation\">/ Cin-e-Film /</span>\n<svg class=\"ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku__icon\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" viewbox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">\n<polyline points=\"6,9 12,15 18,9\"></polyline>\n</svg>\n</h3>\n<div class=\"ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku__definition\">\n<p>CINEFILM — Cinematic Film LUT Pack is a collection of more than 20  cinematic luts made for video editors who demand visual identity.</p><p>These are ready-to-use and packed with style.</p><p>Think: professional looks without the tedious setup.</p>\n</div>\n</div>\n</definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku>",
+      "css": "\n  .ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku {\n    background-color: #f8f9fa;\n    border-radius: 12px;\n    padding: 32px;\n    max-width: 600px;\n    margin: 0 auto;\n    position: relative;\n    overflow: hidden;\n  }\n\n  .ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku::before {\n    content: '';\n    position: absolute;\n    top: 0;\n    left: -100%;\n    width: 100%;\n    height: 100%;\n    background: linear-gradient(\n      90deg,\n      transparent,\n      #ce313120,\n      transparent\n    );\n    transition: left 0.6s ease;\n  }\n\n  .ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku:hover::before {\n    left: 100%;\n  }\n\n  .ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku__content {\n    position: relative;\n    z-index: 2;\n  }\n\n  .ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku__term {\n    color: #1a1a1a;\n    font-size: 24px;\n    font-weight: 700;\n    margin: 0 0 16px 0;\n    cursor: pointer;\n    display: flex;\n    align-items: center;\n    gap: 12px;\n    transition: color 0.3s ease;\n  }\n\n  .ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku__term:hover {\n    color: #ce3131;\n  }\n\n  .ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku__icon {\n    width: 24px;\n    height: 24px;\n    transition: transform 0.3s ease;\n    color: #ce3131;\n  }\n\n  .ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku__icon.rotated {\n    transform: rotate(180deg);\n  }\n\n  .ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku__definition {\n    color: #4a5568;\n    font-size: 16px;\n    line-height: 1.6;\n    margin: 0;\n    max-height: 0;\n    opacity: 0;\n    overflow: hidden;\n    transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;\n  }\n\n  .ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku__definition.expanded {\n    max-height: 200px;\n    opacity: 1;\n    padding-top: 16px;\n  }\n\n  .ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku__examples {\n    margin-top: 16px;padding-top: 16px;\n    border-top: 1px solid #e2e8f0;\n  }\n\n  .ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku__examples-title {\n    color: #ce3131;\n    font-size: 14px;\n    font-weight: 600;\n    margin: 0 0 8px 0;\n    text-transform: uppercase;\n    letter-spacing: 0.5px;\n  }\n\n  .ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku__examples-list {\n    color: #4a5568;\n    font-size: 15px;\n    margin: 0;\n    padding-left: 20px;\n  }\n\n  .ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku__examples-list li {\n    margin-bottom: 4px;\n  }\n\n  .ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku__pronunciation {\n    color: #ce3131;\n    font-size: 14px;\n    font-style: italic;\n    margin-left: 8px;\n    opacity: 0.8;\n  }\n\n  @media screen and (max-width: 749px) {\n    .ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku {\n      padding: 24.0px;\n    }\n\n    .ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku__term {\n      font-size: 21.6px;\n    }\n\n    .ai-definition-panel-abgptzlhdunhlunqwcaigenblock40b610agagwku__definition {\n      font-size: 14.4px;\n    }\n  }\n"
+     }
+    ]
+   }
+  },
+  {
+   "id": "section_cnKqnH",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "text",
+      "cls": "rte",
+      "style": {
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--width": "fit-content",
+       "--max-width": "var(--max-width--body-narrow)"
+      },
+      "html": "<h3>Frequently asked questions</h3>"
+     },
+     {
+      "t": "accordion",
+      "style": {
+       "--summary-font-family": "var(--font-h5--family)",
+       "--summary-font-style": "var(--font-h5--style)",
+       "--summary-font-weight": "var(--font-h5--weight)",
+       "--summary-font-size": "var(--font-h5--size)",
+       "--summary-font-line-height": "var(--font-h5--line-height)",
+       "--summary-font-case": "var(--font-h5--case)",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px"
+      },
+      "items": [
+       {
+        "title": "Which software are these presets compatible with?",
+        "open": false,
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>Cine Film LUTs works in all the majors — Premiere Pro, Final Cut Pro, After Effects, DaVinci Resolve, and Photoshop. No obscure plugins required. moonbear.shop</p>"
+         }
+        ]
+       }
+      ],
+      "plus": false,
+      "dividers": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "product-recommendations",
+   "scheme": "scheme-1",
+   "type": "product-recommendations",
+   "style": {
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 24px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 24px))",
+    "--gap": "24px",
+    "--resource-list-column-gap-desktop": "12px",
+    "--resource-list-row-gap-desktop": "12px",
+    "--resource-list-columns": "repeat(4, 1fr)",
+    "--resource-list-columns-mobile": "repeat(2, 1fr)"
+   },
+   "heading": "Complete your collection"
+  }
+ ]
+}

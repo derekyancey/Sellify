@@ -1,0 +1,337 @@
+{
+ "sections": [
+  {
+   "id": "main",
+   "scheme": "scheme-1",
+   "type": "main-product",
+   "style": {
+    "--padding-block-start": "12px",
+    "--padding-block-end": "0px",
+    "--gap": "12px"
+   },
+   "mediaPosition": "left",
+   "split": "half",
+   "gallery": {
+    "t": "gallery",
+    "layout": "carousel",
+    "thumbnails": false,
+    "columns": 2,
+    "extend": false,
+    "style": {
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px",
+     "--padding-inline-start": "0px",
+     "--padding-inline-end": "0px",
+     "--thumbnail-width": "44px",
+     "--media-radius": "0px",
+     "--image-gap": "4px"
+    }
+   },
+   "details": [
+    {
+     "t": "group",
+     "style": {
+      "--border-width": "1px",
+      "--border-style": "none",
+      "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+      "--border-radius": "0px",
+      "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 24px))",
+      "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 24px))",
+      "--padding-inline-start": "0px",
+      "--padding-inline-end": "0px",
+      "--size-style-width": "100%",
+      "--size-style-height": "100%",
+      "--size-style-width-mobile": "100%",
+      "--size-style-width-mobile-min": "5rem",
+      "--flex-direction": "column",
+      "--flex-wrap": "nowrap",
+      "--flex-wrap-mobile": "wrap",
+      "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 28px))"
+     },
+     "children": [
+      {
+       "t": "group",
+       "style": {
+        "--border-width": "1px",
+        "--border-style": "none",
+        "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+        "--border-radius": "0px",
+        "--padding-block-start": "0px",
+        "--padding-block-end": "0px",
+        "--padding-inline-start": "0px",
+        "--padding-inline-end": "0px",
+        "--size-style-width": "100%",
+        "--size-style-height": "fit",
+        "--size-style-width-mobile": "100%",
+        "--size-style-width-mobile-min": "5rem",
+        "--flex-direction": "column",
+        "--flex-wrap": "nowrap",
+        "--flex-wrap-mobile": "wrap",
+        "--gap": "12px",
+        "--horizontal-alignment": "flex-start",
+        "--vertical-alignment": "center",
+        "--vertical-alignment-mobile": "center"
+       },
+       "children": [
+        {
+         "t": "title",
+         "cls": "h1",
+         "style": {
+          "--padding-block-start": "0px",
+          "--padding-block-end": "0px",
+          "--padding-inline-start": "0px",
+          "--padding-inline-end": "0px",
+          "--color": "var(--color-foreground-heading)",
+          "--width": "100%",
+          "--max-width": "var(--max-width--body-normal)",
+          "--text-align": "center"
+         }
+        },
+        {
+         "t": "price",
+         "style": {
+          "--color": "var(--color-foreground)",
+          "--padding-block-start": "4px",
+          "--padding-block-end": "0px",
+          "--padding-inline-start": "0px",
+          "--padding-inline-end": "0px",
+          "--width": "100%"
+         },
+         "taxNote": false
+        }
+       ],
+       "mobileColumn": true,
+       "sizes": [
+        "height-fit",
+        "width-fill"
+       ]
+      },
+      {
+       "t": "accordion",
+       "style": {
+        "--summary-font-family": "var(--font-h6--family)",
+        "--summary-font-style": "var(--font-h6--style)",
+        "--summary-font-weight": "var(--font-h6--weight)",
+        "--summary-font-size": "var(--font-h6--size)",
+        "--summary-font-line-height": "var(--font-h6--line-height)",
+        "--summary-font-case": "var(--font-h6--case)",
+        "--padding-block-start": "0px",
+        "--padding-block-end": "0px",
+        "--padding-inline-start": "0px",
+        "--padding-inline-end": "0px",
+        "--border-width": "1px",
+        "--border-style": "none",
+        "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+        "--border-radius": "0px"
+       },
+       "items": [
+        {
+         "title": "Description",
+         "open": false,
+         "children": [
+          {
+           "t": "description"
+          }
+         ]
+        }
+       ],
+       "plus": true,
+       "dividers": true
+      },
+      {
+       "t": "buy",
+       "accelerated": false
+      }
+     ],
+     "sizes": [
+      "height-fill",
+      "width-fill"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "section_JMY7md",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--section-min-height": "var(--section-height-small)",
+    "--flex-direction": "row",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "0px",
+    "--horizontal-alignment": "center",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 32px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 32px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "row",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "0px",
+     "--horizontal-alignment": "center",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 32px))",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 32px))"
+    },
+    "mobileColumn": false,
+    "children": [
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "17px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "fit-content",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "fit-content",
+       "--size-style-width-mobile-min": "fit-content",
+       "--flex-direction": "row",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "14px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "group",
+        "style": {
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "19px",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--size-style-width": "100%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "100%",
+         "--size-style-width-mobile-min": "5rem",
+         "--flex-direction": "row",
+         "--flex-wrap": "nowrap",
+         "--flex-wrap-mobile": "wrap",
+         "--gap": "0px",
+         "--horizontal-alignment": "center",
+         "--vertical-alignment": "center",
+         "--vertical-alignment-mobile": "center"
+        },
+        "children": [
+         {
+          "t": "video",
+          "video": "https://moonbear.shop/cdn/shop/videos/c/vp/f71fe8f202a94ef7a0e9005993bc6fba/f71fe8f202a94ef7a0e9005993bc6fba.HD-1080p-2.5Mbps-91112568.mp4?v=0",
+          "poster": "https://moonbear.shop/cdn/shop/files/preview_images/f71fe8f202a94ef7a0e9005993bc6fba.thumbnail.0000000000_2500x.jpg?v=1786213968",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--border-width": "1px",
+           "--border-style": "none",
+           "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+           "--border-radius": "13px",
+           "--size-style-width": "50%",
+           "--size-style-width-mobile": "100%",
+           "--size-style-aspect-ratio": "0.563"
+          }
+         }
+        ],
+        "sizes": [
+         "height-fit",
+         "width-fill"
+        ]
+       },
+       {
+        "t": "group",
+        "style": {
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--size-style-width": "100%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "100%",
+         "--size-style-width-mobile-min": "5rem",
+         "--flex-direction": "row",
+         "--flex-wrap": "nowrap",
+         "--flex-wrap-mobile": "wrap",
+         "--gap": "0px",
+         "--horizontal-alignment": "center",
+         "--vertical-alignment": "center",
+         "--vertical-alignment-mobile": "center"
+        },
+        "children": [
+         {
+          "t": "video",
+          "video": "https://moonbear.shop/cdn/shop/videos/c/vp/63ad0ecfd3eb4df698f125b02011c083/63ad0ecfd3eb4df698f125b02011c083.HD-1080p-2.5Mbps-91112569.mp4?v=0",
+          "poster": "https://moonbear.shop/cdn/shop/files/preview_images/63ad0ecfd3eb4df698f125b02011c083.thumbnail.0000000000_2500x.jpg?v=1786213962",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--border-width": "1px",
+           "--border-style": "none",
+           "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+           "--border-radius": "13px",
+           "--size-style-width": "50%",
+           "--size-style-width-mobile": "100%",
+           "--size-style-aspect-ratio": "0.563"
+          }
+         }
+        ],
+        "sizes": [
+         "height-fit",
+         "width-fill"
+        ]
+       }
+      ],
+      "sizes": [
+       "height-fit",
+       "width-fit-content"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "shotclub_proof_BqMFfM",
+   "scheme": "scheme-1",
+   "type": "custom",
+   "name": "shotclub_proof",
+   "html": "<section class=\"shopify-section sc-proof-section\" id=\"shopify-section-template--23137861107955__shotclub_proof_BqMFfM\"><style data-shopify=\"\">\n  .sc-proof {\n    background: rgba(247, 247, 248, 0.4);\n    border-bottom: 1px solid #eeeef1;\n    padding: 40px 20px 64px;\n    color: #0e0e14;\n    font-family: 'Inter', system-ui, -apple-system, sans-serif;\n  }\n  .sc-proof__inner {\n    max-width: 1180px;\n    margin: 0 auto;\n  }\n  .sc-proof__head {\n    text-align: center;\n    max-width: 560px;\n    margin: 0 auto;\n  }\n  .sc-proof__rule {\n    display: inline-flex;\n    align-items: center;\n    gap: 10px;\n    font-size: 10px;\n    text-transform: uppercase;\n    letter-spacing: 0.22em;\n    color: #60606e;\n    font-weight: 500;\n  }\n  .sc-proof__rule-line {\n    width: 24px;\n    height: 1px;\n    background: #b6b6c2;\n    display: inline-block;\n  }\n  .sc-proof__title {\n    margin: 16px 0 0;\n    font-size: 26px;\n    line-height: 1.1;\n    letter-spacing: -0.012em;\n    font-weight: 500;\n    color: #0e0e14;\n  }\n  .sc-proof__title em {\n    font-family: 'Fraunces', 'Georgia', serif;\n    font-style: italic;\n    font-weight: 400;\n    color: #60606e;\n  }\n  .sc-proof__sub {\n    margin: 12px auto 0;\n    font-size: 14px;\n    line-height: 1.55;\n    color: #60606e;\n    max-width: 480px;\n  }\n  .sc-proof__grid {\n    margin: 36px auto 0;\n    display: grid;\n    grid-template-columns: repeat(2, 1fr);\n    gap: 8px;\n    max-width: 960px;\n  }\n  .sc-proof__cell {\n    overflow: hidden;\n    border-radius: 16px;\n    background: #eeeef1;\n    aspect-ratio: 4 / 5;\n    position: relative;\n  }\n  .sc-proof__cell img {\n    position: absolute;\n    inset: 0;\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n    transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);\n  }\n  .sc-proof__cell:hover img {\n    transform: scale(1.04);\n  }\n  @media (min-width: 640px) {\n    .sc-proof__grid { gap: 12px; grid-template-columns: repeat(3, 1fr); }\n    .sc-proof__title { font-size: 32px; }\n    .sc-proof__sub { font-size: 16px; }\n  }\n  @media (min-width: 900px) {\n    .sc-proof__title { font-size: 40px; }\n    .sc-proof__grid { grid-template-columns: repeat(4, 1fr); }\n  }\n</style>\n<section class=\"sc-proof\">\n<div class=\"sc-proof__inner\">\n<div class=\"sc-proof__head\">\n<div class=\"sc-proof__rule\">\n<span class=\"sc-proof__rule-line\"></span>\n<span>Behind the door</span>\n<span class=\"sc-proof__rule-line\"></span>\n</div>\n<h2 class=\"sc-proof__title\">\n        A live sample\n        <em>from the floor.</em>\n</h2>\n<p class=\"sc-proof__sub\">\n        Film-like solid color backgrounds.\n      </p>\n</div>\n<div class=\"sc-proof__grid\"></div>\n</div>\n</section>\n</section>"
+  },
+  {
+   "id": "product_recommendations_qggXJq",
+   "scheme": "scheme-1",
+   "type": "product-recommendations",
+   "style": {
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 28px))",
+    "--resource-list-column-gap-desktop": "12px",
+    "--resource-list-row-gap-desktop": "24px",
+    "--resource-list-columns": "repeat(4, 1fr)",
+    "--resource-list-columns-mobile": "repeat(2, 1fr)"
+   },
+   "heading": "You may also like"
+  }
+ ]
+}

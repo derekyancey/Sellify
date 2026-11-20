@@ -1,0 +1,7 @@
+{
+  "endpoint": "https://nyc.cloud.appwrite.io/v1",
+  "project": "6afd3365001c9a7ecfc6",
+  "site": "6afe35ac001d18a3e5ad",
+  "currency": "USD",
+  "successUrl": "/?checkout=success"
+}

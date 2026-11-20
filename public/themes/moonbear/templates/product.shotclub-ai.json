@@ -1,0 +1,370 @@
+{
+ "sections": [
+  {
+   "id": "main",
+   "scheme": "scheme-1",
+   "type": "main-product",
+   "style": {
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 39px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 39px))",
+    "--gap": "28px"
+   },
+   "mediaPosition": "left",
+   "split": "half",
+   "gallery": {
+    "t": "gallery",
+    "layout": "grid",
+    "thumbnails": false,
+    "columns": 1,
+    "extend": false,
+    "style": {
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px",
+     "--padding-inline-start": "0px",
+     "--padding-inline-end": "0px",
+     "--thumbnail-width": "44px",
+     "--media-radius": "5px",
+     "--image-gap": "4px",
+     "--gallery-aspect-ratio": "2/1"
+    }
+   },
+   "details": [
+    {
+     "t": "group",
+     "style": {
+      "--border-width": "1px",
+      "--border-style": "none",
+      "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+      "--border-radius": "0px",
+      "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 24px))",
+      "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 24px))",
+      "--padding-inline-start": "0px",
+      "--padding-inline-end": "0px",
+      "--size-style-width": "100%",
+      "--size-style-height": "fit",
+      "--size-style-width-mobile": "100%",
+      "--size-style-width-mobile-min": "5rem",
+      "--flex-direction": "column",
+      "--flex-wrap": "nowrap",
+      "--flex-wrap-mobile": "wrap",
+      "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 28px))"
+     },
+     "children": [
+      {
+       "t": "group",
+       "style": {
+        "--border-width": "1px",
+        "--border-style": "none",
+        "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+        "--border-radius": "0px",
+        "--padding-block-start": "0px",
+        "--padding-block-end": "0px",
+        "--padding-inline-start": "0px",
+        "--padding-inline-end": "0px",
+        "--size-style-width": "100%",
+        "--size-style-height": "fit",
+        "--size-style-width-mobile": "100%",
+        "--size-style-width-mobile-min": "5rem",
+        "--flex-direction": "column",
+        "--flex-wrap": "nowrap",
+        "--flex-wrap-mobile": "wrap",
+        "--gap": "12px",
+        "--horizontal-alignment": "flex-start",
+        "--vertical-alignment": "center",
+        "--vertical-alignment-mobile": "center"
+       },
+       "children": [
+        {
+         "t": "title",
+         "cls": "h1",
+         "style": {
+          "--padding-block-start": "0px",
+          "--padding-block-end": "0px",
+          "--padding-inline-start": "0px",
+          "--padding-inline-end": "0px",
+          "--color": "var(--color-foreground-heading)",
+          "--width": "100%",
+          "--max-width": "var(--max-width--body-normal)",
+          "--text-align": "left"
+         }
+        },
+        {
+         "t": "price",
+         "style": {
+          "--color": "var(--color-foreground)",
+          "--padding-block-start": "4px",
+          "--padding-block-end": "0px",
+          "--padding-inline-start": "0px",
+          "--padding-inline-end": "0px",
+          "--width": "100%"
+         },
+         "taxNote": false
+        }
+       ],
+       "mobileColumn": true,
+       "sizes": [
+        "height-fit",
+        "width-fill"
+       ]
+      },
+      {
+       "t": "variants"
+      },
+      {
+       "t": "accordion",
+       "style": {
+        "--summary-font-family": "var(--font-h6--family)",
+        "--summary-font-style": "var(--font-h6--style)",
+        "--summary-font-weight": "var(--font-h6--weight)",
+        "--summary-font-size": "var(--font-h6--size)",
+        "--summary-font-line-height": "var(--font-h6--line-height)",
+        "--summary-font-case": "var(--font-h6--case)",
+        "--padding-block-start": "0px",
+        "--padding-block-end": "0px",
+        "--padding-inline-start": "0px",
+        "--padding-inline-end": "0px",
+        "--border-width": "1px",
+        "--border-style": "none",
+        "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+        "--border-radius": "0px"
+       },
+       "items": [
+        {
+         "title": "Description",
+         "open": false,
+         "children": [
+          {
+           "t": "description"
+          }
+         ]
+        }
+       ],
+       "plus": true,
+       "dividers": true
+      },
+      {
+       "t": "buy",
+       "accelerated": false
+      }
+     ],
+     "sizes": [
+      "height-fit",
+      "width-fill"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "shotclub_hero_NgHnQX",
+   "scheme": "scheme-1",
+   "type": "custom",
+   "name": "shotclub_hero",
+   "html": "<section class=\"shopify-section sc-hero-section\" id=\"shopify-section-template--23043659989235__shotclub_hero_NgHnQX\"><style data-shopify=\"\">\n  .sc-hero {\n    position: relative;\n    overflow: hidden;\n    padding: 64px 20px 80px;\n    background: #ffffff;\n    color: #0e0e14;\n    border-bottom: 1px solid #eeeef1;\n    font-family: 'Inter', system-ui, -apple-system, sans-serif;\n  }\n  .sc-hero__halo,\n  .sc-hero__halo-2 {\n    pointer-events: none;\n    position: absolute;\n    border-radius: 9999px;\n    filter: blur(80px);\n  }\n  .sc-hero__halo {\n    top: 120px;\n    left: 50%;\n    transform: translateX(-50%);\n    width: 520px;\n    height: 420px;\n    background: rgba(252, 211, 77, 0.5);\n  }\n  .sc-hero__halo-2 {\n    top: -90px;\n    right: -180px;\n    width: 300px;\n    height: 300px;\n    background: rgba(235, 232, 255, 0.6);\n  }\n  .sc-hero__inner {\n    position: relative;\n    max-width: 1180px;\n    margin: 0 auto;\n  }\n  .sc-hero__rule {\n    display: inline-flex;\n    align-items: center;\n    gap: 10px;\n    font-size: 10px;\n    text-transform: uppercase;\n    letter-spacing: 0.22em;\n    color: #60606e;\n    font-weight: 500;\n  }\n  .sc-hero__rule-line {\n    display: inline-block;\n    width: 24px;\n    height: 1px;\n    background: #b6b6c2;\n  }\n  .sc-hero__rule-dot {\n    color: #b6b6c2;\n  }\n  .sc-hero__head {\n    text-align: center;\n    max-width: 640px;\n    margin: 0 auto;\n  }\n  .sc-hero__title {\n    margin: 24px 0 0;\n    font-size: 34px;\n    line-height: 1.06;\n    letter-spacing: -0.012em;\n    font-weight: 500;\n    color: #0e0e14;\n  }\n  .sc-hero__title em {\n    font-family: 'Fraunces', 'Georgia', serif;\n    font-style: italic;\n    font-weight: 400;\n    color: #2e2e38;\n  }\n  .sc-hero__title .sc-period {\n    font-family: 'Fraunces', 'Georgia', serif;\n    font-style: italic;\n    font-weight: 400;\n    color: #b6b6c2;\n  }\n  .sc-hero__sub {\n    margin: 18px auto 0;\n    max-width: 460px;\n    font-size: 16px;\n    line-height: 1.55;\n    color: #434350;\n  }\n  .sc-hero__form-wrap {\n    position: relative;\n    margin: 36px auto 0;\n    max-width: 440px;\n  }\n  .sc-hero__plate {\n    display: none;\n  }\n  .sc-hero__form {\n    position: relative;\n    border-radius: 16px;\n    border: 1px solid #d9d9e0;\n    background: #ffffff;\n    box-shadow: 0 30px 60px -24px rgba(14, 14, 20, 0.18);\n    padding: 22px 22px 22px;\n  }\n  .sc-hero__form-tag {\n    position: absolute;\n    top: -12px;\n    left: 20px;\n    display: inline-flex;\n    align-items: center;\n    gap: 6px;\n    background: #ffffff;\n    border: 1px solid #d9d9e0;\n    border-radius: 9999px;\n    padding: 4px 10px;\n    font-size: 9px;\n    text-transform: uppercase;\n    letter-spacing: 0.22em;\n    color: #60606e;\n    font-weight: 500;\n  }\n  .sc-hero__form-tag::before {\n    content: '';\n    height: 6px;\n    width: 6px;\n    border-radius: 9999px;\n    background: #fbbf24;\n  }\n  .sc-hero__field-label {\n    display: block;\n    font-size: 10px;\n    text-transform: uppercase;\n    letter-spacing: 0.22em;\n    color: #60606e;\n    font-weight: 500;\n    margin: 8px 0 6px;\n  }\n  .sc-hero__input {\n    width: 100%;\n    height: 48px;\n    padding: 0 14px;\n    border-radius: 12px;\n    border: 1px solid #d9d9e0;\n    background: #ffffff;\n    font-size: 16px;\n    color: #0e0e14;\n    box-sizing: border-box;\n  }\n  .sc-hero__input:focus {\n    outline: none;\n    border-color: #fbbf24;\n    box-shadow: 0 0 0 3px rgba(252, 191, 36, 0.4);\n  }\n  .sc-hero__cta {\n    width: 100%;\n    margin-top: 12px;\n    min-height: 48px;\n    border: 0;\n    cursor: pointer;\n    background: #0e0e14;\n    color: #ffffff;\n    border-radius: 9999px;\n    padding: 6px 8px 6px 20px;\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    gap: 8px;\n    font-size: 15px;\n    font-weight: 500;\n    font-family: inherit;\n  }\n  .sc-hero__cta:hover {\n    background: #1c1c24;\n  }\n  .sc-hero__cta-arrow {\n    display: grid;\n    place-items: center;\n    height: 32px;\n    width: 32px;\n    border-radius: 9999px;\n    background: #fbbf24;\n    color: #07070b;\n  }\n  .sc-hero__fineprint {\n    margin-top: 10px;\n    text-align: center;\n    font-family: 'Fraunces', 'Georgia', serif;\n    font-style: italic;\n    font-size: 11px;\n    line-height: 1.5;\n    color: #60606e;\n  }\n  .sc-hero__fineprint a {\n    color: #0e0e14;\n    font-style: normal;\n    font-family: inherit;\n  }\n  .sc-hero__trust {\n    display: grid;\n    grid-template-columns: repeat(3, 1fr);\n    gap: 12px;\n    margin: 36px auto 0;\n    max-width: 600px;\n    text-align: center;\n  }\n  .sc-hero__trust-label {\n    font-size: 9px;\n    text-transform: uppercase;\n    letter-spacing: 0.22em;\n    color: #60606e;\n    font-weight: 500;\n  }\n  .sc-hero__trust-line {\n    margin-top: 6px;\n    font-size: 12px;\n    line-height: 1.35;\n    color: #1c1c24;\n  }\n  @media (min-width: 640px) {\n    .sc-hero { padding-left: 32px; padding-right: 32px; }\n    .sc-hero__title { font-size: 56px; }\n    .sc-hero__sub { font-size: 18px; }\n    .sc-hero__plate {\n      display: block;\n      position: absolute;\n      pointer-events: none;\n    }\n    .sc-hero__plate--member {\n      left: -64px;\n      top: -8px;\n      transform: rotate(-6deg);\n      background: #ffffff;\n      border: 1px solid #eeeef1;\n      box-shadow: 0 1px 2px rgba(12,12,20,0.04), 0 8px 24px rgba(12,12,20,0.06);\n      border-radius: 14px;\n      padding: 8px 12px;\n    }\n    .sc-hero__plate--member-label {\n      font-size: 8px;\n      text-transform: uppercase;\n      letter-spacing: 0.22em;\n      color: #8a8a99;\n      font-weight: 500;\n    }\n    .sc-hero__plate--member-num {\n      font-family: 'Fraunces', 'Georgia', serif;\n      font-style: italic;\n      font-size: 22px;\n      color: #0e0e14;\n      line-height: 1;\n      margin-top: 2px;\n    }\n    .sc-hero__plate--seat {\n      right: -56px;\n      bottom: -8px;\n      transform: rotate(5deg);\n      background: #0e0e14;\n      color: #ffffff;\n      border-radius: 9999px;\n      padding: 6px 14px;\n      box-shadow: 0 12px 32px rgba(14,14,20,0.32);\n    }\n    .sc-hero__plate--seat-text {\n      display: inline-flex;\n      align-items: center;\n      gap: 6px;\n      font-size: 9px;\n      text-transform: uppercase;\n      letter-spacing: 0.22em;\n      font-weight: 500;\n    }\n    .sc-hero__plate--seat-text::before {\n      content: '';\n      height: 6px;\n      width: 6px;\n      border-radius: 9999px;\n      background: #fcd34d;\n      animation: sc-pulse 2s infinite;\n    }\n    @keyframes sc-pulse {\n      0%, 100% { opacity: 1; }\n      50% { opacity: 0.4; }\n    }\n  }\n  @media (min-width: 768px) {\n    .sc-hero__title { font-size: 64px; }\n  }\n</style>\n<link href=\"https://fonts.googleapis.com\" rel=\"preconnect\"/>\n<link crossorigin=\"\" href=\"https://fonts.gstatic.com\" rel=\"preconnect\"/>\n<link href=\"https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;1,400;1,500&amp;family=Inter:wght@400;500&amp;display=swap\" rel=\"stylesheet\"/>\n<section class=\"sc-hero\">\n<span aria-hidden=\"true\" class=\"sc-hero__halo\"></span>\n<span aria-hidden=\"true\" class=\"sc-hero__halo-2\"></span>\n<div class=\"sc-hero__inner\">\n<div class=\"sc-hero__head\">\n<div class=\"sc-hero__rule\">\n<span class=\"sc-hero__rule-line\"></span>\n<span>Membership</span>\n<span class=\"sc-hero__rule-dot\">·</span>\n<span>By invitation, on demand</span>\n<span class=\"sc-hero__rule-line\"></span>\n</div>\n<h1 class=\"sc-hero__title\">\n        Apply for\n        <em>membership</em><span class=\"sc-period\">.</span>\n</h1>\n<p class=\"sc-hero__sub\">\n        The door opens at checkout. There's no free tier — your seat is held the moment your first payment clears.\n      </p>\n</div>\n<div class=\"sc-hero__form-wrap\"><div class=\"sc-hero__plate sc-hero__plate--member\">\n<div class=\"sc-hero__plate--member-label\">Member No.</div>\n<div class=\"sc-hero__plate--member-num\">___</div>\n</div>\n<div class=\"sc-hero__plate sc-hero__plate--seat\">\n<span class=\"sc-hero__plate--seat-text\">Now seating</span>\n</div>\n<form action=\"https://www.shotclubai.com/pricing?utm_source=moonbear.shop&amp;utm_medium=referral\" class=\"sc-hero__form\" data-sc-hero-form=\"\" method=\"get\">\n<div class=\"sc-hero__form-tag\">Application</div>\n<label>\n<span class=\"sc-hero__field-label\">Email for receipt &amp; sign-in</span>\n<input autocomplete=\"email\" class=\"sc-hero__input\" inputmode=\"email\" name=\"email\" placeholder=\"you@studio.com\" required=\"\" type=\"email\"/>\n</label>\n<input name=\"ref\" type=\"hidden\" value=\"moonbear\"/>\n<input name=\"utm_source\" type=\"hidden\" value=\"moonbear\"/>\n<button class=\"sc-hero__cta\" type=\"submit\">\n<span>Continue — apply for membership</span>\n<span aria-hidden=\"true\" class=\"sc-hero__cta-arrow\">→</span>\n</button>\n<p class=\"sc-hero__fineprint\">\n          Account opens at checkout. Cancel anytime.\n          <a href=\"https://shotclubai.com/license\" rel=\"noopener\" target=\"_blank\">License terms</a>.\n        </p>\n</form>\n</div>\n<ul class=\"sc-hero__trust\"><li>\n<div class=\"sc-hero__trust-label\">Cancel anytime</div>\n<div class=\"sc-hero__trust-line\">No multi-month lock-in.</div>\n</li><li>\n<div class=\"sc-hero__trust-label\">Commercial use</div>\n<div class=\"sc-hero__trust-line\">Included with every plan.</div>\n</li><li>\n<div class=\"sc-hero__trust-label\">Stripe checkout</div>\n<div class=\"sc-hero__trust-line\">We never see your card.</div>\n</li></ul>\n</div>\n</section>\n</section>"
+  },
+  {
+   "id": "shotclub_tiers_VWyi4k",
+   "scheme": "scheme-1",
+   "type": "custom",
+   "name": "shotclub_tiers",
+   "html": "<section class=\"shopify-section sc-tiers-section\" id=\"shopify-section-template--23043659989235__shotclub_tiers_VWyi4k\"><style data-shopify=\"\">\n  .sc-tiers {\n    background: #ffffff;\n    padding: 64px 20px 64px;\n    color: #0e0e14;\n    font-family: 'Inter', system-ui, -apple-system, sans-serif;\n  }\n  .sc-tiers__inner {\n    max-width: 880px;\n    margin: 0 auto;\n  }\n  .sc-tiers__head {\n    text-align: center;\n    max-width: 560px;\n    margin: 0 auto;\n  }\n  .sc-tiers__rule {\n    display: inline-flex;\n    align-items: center;\n    gap: 10px;\n    font-size: 10px;\n    text-transform: uppercase;\n    letter-spacing: 0.22em;\n    color: #60606e;\n    font-weight: 500;\n  }\n  .sc-tiers__rule-line {\n    width: 24px;\n    height: 1px;\n    background: #b6b6c2;\n    display: inline-block;\n  }\n  .sc-tiers__title {\n    margin: 16px 0 0;\n    font-size: 28px;\n    line-height: 1.1;\n    letter-spacing: -0.012em;\n    font-weight: 500;\n  }\n  .sc-tiers__title em {\n    font-family: 'Fraunces', 'Georgia', serif;\n    font-style: italic;\n    font-weight: 400;\n    color: #60606e;\n  }\n  .sc-tiers__sub {\n    margin: 12px auto 0;\n    font-size: 14px;\n    line-height: 1.55;\n    color: #60606e;\n    max-width: 480px;\n  }\n  .sc-tiers__grid {\n    display: grid;\n    grid-template-columns: 1fr;\n    gap: 16px;\n    margin-top: 36px;\n  }\n  .sc-tier {\n    position: relative;\n    background: #ffffff;\n    border: 1px solid #d9d9e0;\n    border-radius: 16px;\n    padding: 22px;\n    display: flex;\n    flex-direction: column;\n  }\n  .sc-tier--highlight {\n    border-color: #0e0e14;\n    box-shadow: 0 1px 2px rgba(12,12,20,0.04), 0 8px 24px rgba(12,12,20,0.06);\n  }\n  .sc-tier__head {\n    display: flex;\n    justify-content: space-between;\n    align-items: flex-start;\n    gap: 8px;\n  }\n  .sc-tier__name {\n    font-size: 18px;\n    line-height: 1.2;\n    letter-spacing: -0.012em;\n    font-weight: 500;\n    margin: 0;\n  }\n  .sc-tier__badge {\n    display: inline-flex;\n    align-items: center;\n    gap: 6px;\n    font-size: 9px;\n    text-transform: uppercase;\n    letter-spacing: 0.18em;\n    background: #0e0e14;\n    color: #ffffff;\n    border-radius: 9999px;\n    padding: 4px 10px;\n    font-weight: 500;\n    white-space: nowrap;\n  }\n  .sc-tier__badge::before {\n    content: '';\n    height: 6px;\n    width: 6px;\n    border-radius: 9999px;\n    background: #fcd34d;\n  }\n  .sc-tier__price {\n    margin-top: 10px;\n    display: flex;\n    align-items: baseline;\n    gap: 4px;\n  }\n  .sc-tier__price-num {\n    font-size: 32px;\n    font-weight: 500;\n    letter-spacing: -0.012em;\n  }\n  .sc-tier__price-cycle {\n    font-family: 'Fraunces', 'Georgia', serif;\n    font-style: italic;\n    color: #60606e;\n    font-size: 14px;\n  }\n  .sc-tier__blurb {\n    margin-top: 8px;\n    color: #60606e;\n    font-size: 13px;\n    line-height: 1.5;\n  }\n  .sc-tier__features {\n    margin: 18px 0 0;\n    padding: 0;\n    list-style: none;\n    display: flex;\n    flex-direction: column;\n    gap: 10px;\n  }\n  .sc-tier__feature {\n    display: flex;\n    align-items: flex-start;\n    gap: 10px;\n    font-size: 14px;\n    line-height: 1.45;\n    color: #2e2e38;\n  }\n  .sc-tier__feature::before {\n    content: '';\n    margin-top: 6px;\n    height: 6px;\n    width: 6px;\n    border-radius: 9999px;\n    background: #0e0e14;\n    flex-shrink: 0;\n  }\n  .sc-tier__cta {\n    margin-top: 22px;\n    text-align: center;\n    text-decoration: none;\n    border-radius: 9999px;\n    padding: 12px 16px;\n    font-size: 14px;\n    font-weight: 500;\n    color: #2e2e38;\n    border: 1px solid #d9d9e0;\n    background: #ffffff;\n    transition: background 200ms ease;\n  }\n  .sc-tier--highlight .sc-tier__cta {\n    background: #0e0e14;\n    color: #ffffff;\n    border-color: #0e0e14;\n  }\n  .sc-tier__cta:hover {\n    background: #f7f7f8;\n  }\n  .sc-tier--highlight .sc-tier__cta:hover {\n    background: #1c1c24;\n  }\n  .sc-tiers__footnote {\n    margin-top: 28px;\n    text-align: center;\n    color: #60606e;\n    font-size: 12px;\n  }\n  .sc-tiers__footnote a {\n    color: #0e0e14;\n    text-decoration: underline;\n  }\n  @media (min-width: 640px) {\n    .sc-tiers__grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }\n    .sc-tiers__title { font-size: 36px; }\n    .sc-tiers__sub { font-size: 16px; }\n    .sc-tier { padding: 24px; }\n    .sc-tier__price-num { font-size: 36px; }\n  }\n</style>\n<section class=\"sc-tiers\">\n<div class=\"sc-tiers__inner\">\n<div class=\"sc-tiers__head\">\n<div class=\"sc-tiers__rule\">\n<span class=\"sc-tiers__rule-line\"></span>\n<span>Membership tiers</span>\n<span class=\"sc-tiers__rule-line\"></span>\n</div>\n<h2 class=\"sc-tiers__title\">\n        Two memberships.\n        <em>One door.</em>\n</h2>\n<p class=\"sc-tiers__sub\">\n        Both unlock the full library and a commercial license. Switch (or cancel) any time from your account.\n      </p>\n</div>\n<div class=\"sc-tiers__grid\"><div class=\"sc-tier\">\n<div class=\"sc-tier__head\">\n<h3 class=\"sc-tier__name\">Creator</h3></div>\n<div class=\"sc-tier__price\">\n<span class=\"sc-tier__price-num\">$20</span>\n<span class=\"sc-tier__price-cycle\">/ month</span>\n</div>\n<p class=\"sc-tier__blurb\">50 downloads / month. Same library, lighter appetite.</p>\n<ul class=\"sc-tier__features\"><li class=\"sc-tier__feature\">50 HD downloads / month</li><li class=\"sc-tier__feature\">All aspect ratios</li><li class=\"sc-tier__feature\">New drops monthly</li><li class=\"sc-tier__feature\">Commercial license included</li></ul>\n<a class=\"sc-tier__cta\" href=\"https://www.shotclubai.com/pricing?utm_source=moonbear.shop&amp;utm_medium=referral&amp;ref=moonbear&amp;utm_source=moonbear\">\n              Apply for Basic →\n            </a>\n</div><div class=\"sc-tier sc-tier--highlight\">\n<div class=\"sc-tier__head\">\n<h3 class=\"sc-tier__name\">Pro</h3><span class=\"sc-tier__badge\">Members' favorite</span></div>\n<div class=\"sc-tier__price\">\n<span class=\"sc-tier__price-num\">$30</span>\n<span class=\"sc-tier__price-cycle\">/ month</span>\n</div>\n<p class=\"sc-tier__blurb\">Unlimited downloads. The full club.</p>\n<ul class=\"sc-tier__features\"><li class=\"sc-tier__feature\">Unlimited HD downloads</li><li class=\"sc-tier__feature\">All aspect ratios</li><li class=\"sc-tier__feature\">New drops monthly</li><li class=\"sc-tier__feature\">Commercial license included</li><li class=\"sc-tier__feature\">Priority access to new drops</li></ul>\n<a class=\"sc-tier__cta\" href=\"https://www.shotclubai.com/pricing?utm_source=moonbear.shop&amp;utm_medium=referral&amp;ref=moonbear&amp;utm_source=moonbear\">\n              Apply for Pro →\n            </a>\n</div></div>\n<p class=\"sc-tiers__footnote\">\n<a href=\"https://shotclubai.com/pricing\">Compare plans in detail</a>\n      · Prices in USD · Taxes added where required.\n    </p>\n</div>\n</section>\n</section>"
+  },
+  {
+   "id": "section_4mAKXV",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--section-min-height": "var(--section-height-small)",
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "12px",
+    "--horizontal-alignment": "center",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "0px",
+    "--padding-block-end": "0px"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "12px",
+     "--horizontal-alignment": "center",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "row",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "image",
+        "image": "https://moonbear.shop/cdn/shop/files/ShotClub_AI_-_Somebody_s_Watching_Me_37.jpg?v=1785388634",
+        "alt": "Image from MoonBear's Shot Club AI stock image library showing a person being watched, representing surveillance or observation themes.",
+        "style": {
+         "--ratio": "1.7777777777777777",
+         "--size-style-width": "100%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "100%",
+         "--size-style-width-mobile-min": "5rem",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px"
+        },
+        "dynamic": "featured"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "text",
+        "cls": "h2",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground)",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<h2>Bring the Narrative.</h2>"
+       },
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<p>With ShotClub, there's a story in every collection.</p>"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "shotclub_proof_g3Wydq",
+   "scheme": "scheme-1",
+   "type": "custom",
+   "name": "shotclub_proof",
+   "html": "<section class=\"shopify-section sc-proof-section\" id=\"shopify-section-template--23043659989235__shotclub_proof_g3Wydq\"><style data-shopify=\"\">\n  .sc-proof {\n    background: rgba(247, 247, 248, 0.4);\n    border-bottom: 1px solid #eeeef1;\n    padding: 64px 20px 64px;\n    color: #0e0e14;\n    font-family: 'Inter', system-ui, -apple-system, sans-serif;\n  }\n  .sc-proof__inner {\n    max-width: 1180px;\n    margin: 0 auto;\n  }\n  .sc-proof__head {\n    text-align: center;\n    max-width: 560px;\n    margin: 0 auto;\n  }\n  .sc-proof__rule {\n    display: inline-flex;\n    align-items: center;\n    gap: 10px;\n    font-size: 10px;\n    text-transform: uppercase;\n    letter-spacing: 0.22em;\n    color: #60606e;\n    font-weight: 500;\n  }\n  .sc-proof__rule-line {\n    width: 24px;\n    height: 1px;\n    background: #b6b6c2;\n    display: inline-block;\n  }\n  .sc-proof__title {\n    margin: 16px 0 0;\n    font-size: 26px;\n    line-height: 1.1;\n    letter-spacing: -0.012em;\n    font-weight: 500;\n    color: #0e0e14;\n  }\n  .sc-proof__title em {\n    font-family: 'Fraunces', 'Georgia', serif;\n    font-style: italic;\n    font-weight: 400;\n    color: #60606e;\n  }\n  .sc-proof__sub {\n    margin: 12px auto 0;\n    font-size: 14px;\n    line-height: 1.55;\n    color: #60606e;\n    max-width: 480px;\n  }\n  .sc-proof__grid {\n    margin: 36px auto 0;\n    display: grid;\n    grid-template-columns: repeat(2, 1fr);\n    gap: 8px;\n    max-width: 960px;\n  }\n  .sc-proof__cell {\n    overflow: hidden;\n    border-radius: 16px;\n    background: #eeeef1;\n    aspect-ratio: 4 / 5;\n    position: relative;\n  }\n  .sc-proof__cell img {\n    position: absolute;\n    inset: 0;\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n    transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);\n  }\n  .sc-proof__cell:hover img {\n    transform: scale(1.04);\n  }\n  @media (min-width: 640px) {\n    .sc-proof__grid { gap: 12px; grid-template-columns: repeat(3, 1fr); }\n    .sc-proof__title { font-size: 32px; }\n    .sc-proof__sub { font-size: 16px; }\n  }\n  @media (min-width: 900px) {\n    .sc-proof__title { font-size: 40px; }\n    .sc-proof__grid { grid-template-columns: repeat(4, 1fr); }\n  }\n</style>\n<section class=\"sc-proof\">\n<div class=\"sc-proof__inner\">\n<div class=\"sc-proof__head\">\n<div class=\"sc-proof__rule\">\n<span class=\"sc-proof__rule-line\"></span>\n<span>Behind the door</span>\n<span class=\"sc-proof__rule-line\"></span>\n</div>\n<h2 class=\"sc-proof__title\">\n        A live sample\n        <em>from the floor.</em>\n</h2>\n<p class=\"sc-proof__sub\">\n        Cinematic AI imagery, every aspect ratio, refreshed monthly. Members get the full library.\n      </p>\n</div>\n<div class=\"sc-proof__grid\"></div>\n</div>\n</section>\n</section>"
+  },
+  {
+   "id": "blocks_zwexTz",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "12px",
+    "--horizontal-alignment": "center",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "0px",
+    "--padding-block-end": "0px"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "12px",
+     "--horizontal-alignment": "center",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "html",
+      "html": "<div class=\"ai-image-gallery-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\">\n<div class=\"ai-image-gallery__container-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\">\n<div class=\"ai-image-gallery__grid-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\">\n<div class=\"ai-image-gallery__item-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\">\n<img alt=\"Image of a blonde woman riding a horse, featured in MoonBear's Shot Club AI Stock Image Library subscription.\" class=\"ai-image-gallery__image-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\" height=\"720\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/ShotClubAI_-_Riding_Blonde_7.jpg?v=1785388634&amp;width=800\" width=\"1280\"/>\n</div>\n<div class=\"ai-image-gallery__item-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\">\n<img alt=\"\" class=\"ai-image-gallery__image-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\" height=\"1536\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/ShotClub-_Model_in_Blue-11.jpg?v=1786246227&amp;width=800\" width=\"2816\"/>\n</div>\n<div class=\"ai-image-gallery__item-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\">\n<img alt=\"Father's Day themed image from MoonBear's Shot Club AI Stock Image Library, featuring a father and child celebrating together.\" class=\"ai-image-gallery__image-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\" height=\"720\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/ShotClub_AI_-_Father_s_Day_37.jpg?v=1785388634&amp;width=800\" width=\"1280\"/>\n</div>\n<div class=\"ai-image-gallery__item-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\">\n<img alt=\"Shot Club Ai Stock Image Library subscription by MoonBear, showcasing a collection of high-quality AI-generated stock images.\" class=\"ai-image-gallery__image-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\" height=\"720\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/89389406-aa18-4fec-8485-0226fc44ce41.jpg?v=1785388634&amp;width=800\" width=\"1280\"/>\n</div>\n<div class=\"ai-image-gallery__item-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\">\n<img alt=\"\" class=\"ai-image-gallery__image-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\" height=\"1536\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/ShotClub-_Ball_is_Life-35.jpg?v=1786246241&amp;width=800\" width=\"2688\"/>\n</div>\n<div class=\"ai-image-gallery__item-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\">\n<img alt=\"\" class=\"ai-image-gallery__image-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\" height=\"768\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/ShotClub_-_Cowboy_Studio_34.jpg?v=1786246225&amp;width=800\" width=\"1408\"/>\n</div>\n<div class=\"ai-image-gallery__item-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\">\n<img alt=\"\" class=\"ai-image-gallery__image-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\" height=\"768\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/shotclub-267284fa-af0f-4b09-a3af-e94587f38212.jpg?v=1786246173&amp;width=800\" width=\"1408\"/>\n</div>\n<div class=\"ai-image-gallery__item-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\">\n<img alt=\"Shot Club Ai Stock Image Library subscription image featuring a moonbear mascot with sleepwalking theme in a digital art style.\" class=\"ai-image-gallery__image-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\" height=\"720\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/ShotClub_AI_-_Sleep_Walking_12.jpg?v=1785388634&amp;width=800\" width=\"1280\"/>\n</div>\n<div class=\"ai-image-gallery__item-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\">\n<img alt=\"Close-up of fresh sashimi slices on a plate, showcasing vibrant pink fish for Shot Club Ai Stock Image Library by MoonBear.\" class=\"ai-image-gallery__image-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\" height=\"1280\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/ShotClubAI_-_Sashimi_8.jpg?v=1785388634&amp;width=800\" width=\"720\"/>\n</div>\n<div class=\"ai-image-gallery__item-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\">\n<img alt=\"Mother's Day themed image from MoonBear's Shot Club AI Stock Image Library, featuring diverse family celebrating together.\" class=\"ai-image-gallery__image-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\" height=\"720\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/ShotClub_AI_-_Mother_s_Day_142.jpg?v=1785388634&amp;width=800\" width=\"1280\"/>\n</div>\n<div class=\"ai-image-gallery__item-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\">\n<img alt=\"Shot Club AI stock image library subscription by MoonBear, featuring a vibrant photo of a basketball player in action.\" class=\"ai-image-gallery__image-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\" height=\"720\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/ShotClubAI_-_Big_Champ21.jpg?v=1785388634&amp;width=800\" width=\"1280\"/>\n</div>\n<div class=\"ai-image-gallery__item-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\">\n<img alt=\"Pale white horse in a serene landscape, part of the Shot Club AI Stock Image Library by MoonBear, for creative and design projects.\" class=\"ai-image-gallery__image-atvbeqm45owlemfh0laigenblockf4be74ehyngm4\" height=\"1536\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/ShotClub-_A_Pale_White_Horse-04.jpg?v=1785388635&amp;width=800\" width=\"2688\"/>\n</div>\n</div>\n</div>\n</div>",
+      "css": "\n  .ai-image-gallery-atvbeqm45owlemfh0laigenblockf4be74ehyngm4 {\n    width: 100%;\n    padding: 40px 0;\n  }\n\n  .ai-image-gallery__container-atvbeqm45owlemfh0laigenblockf4be74ehyngm4 {\n    max-width: 1200px;\n    margin: 0 auto;\n    padding: 0 20px;\n  }\n\n  .ai-image-gallery__grid-atvbeqm45owlemfh0laigenblockf4be74ehyngm4 {\n    display: grid;\n    grid-template-columns: repeat(2, 1fr);\n    gap: 16px;\n    margin-top: 24px;\n  }\n\n  .ai-image-gallery__title-atvbeqm45owlemfh0laigenblockf4be74ehyngm4 {\n    text-align: center;\n    color: #000000;\n    font-size: 32px;\n    margin: 0;\n  }\n\n  .ai-image-gallery__item-atvbeqm45owlemfh0laigenblockf4be74ehyngm4 {\n    position: relative;\n    overflow: hidden;\n    border-radius: 8px;\n    background-color: #f4f4f4;\n    aspect-ratio: 16/9;\n  }\n\n  .ai-image-gallery__image-atvbeqm45owlemfh0laigenblockf4be74ehyngm4 {\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n    transition: transform 0.3s ease;\n  }\n\n  .ai-image-gallery__placeholder-atvbeqm45owlemfh0laigenblockf4be74ehyngm4 {\n    width: 100%;\n    height: 100%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    background-color: #f4f4f4;\n    position: relative;\n  }\n\n  .ai-image-gallery__placeholder-atvbeqm45owlemfh0laigenblockf4be74ehyngm4 svg {\n    width: 60%;\n    height: 60%;\n    opacity: 0.3;\n  }\n\n  .ai-image-gallery__empty-state-atvbeqm45owlemfh0laigenblockf4be74ehyngm4 {\n    position: absolute;\n    bottom: 10px;\n    left: 50%;\n    transform: translateX(-50%);\n    font-size: 12px;\n    color: #666;\n    text-align: center;\n    pointer-events: none;\n  }\n\n  \n    .ai-image-gallery__item-atvbeqm45owlemfh0laigenblockf4be74ehyngm4:hover .ai-image-gallery__image-atvbeqm45owlemfh0laigenblockf4be74ehyngm4 {\n      transform: scale(1.05);\n    }\n  \n\n  .ai-image-gallery__overlay-atvbeqm45owlemfh0laigenblockf4be74ehyngm4 {\n    position: absolute;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    background: linear-gradient(\n      to bottom,\n      rgba(0, 0, 0, 0) 0%,\n      rgba(0, 0, 0, 0.4) 100%\n    );\n    opacity: 0;\n    transition: opacity 0.3s ease;\n    display: flex;\n    align-items: flex-end;\n    padding: 20px;\n  }\n\n  \n\n  .ai-image-gallery__caption-atvbeqm45owlemfh0laigenblockf4be74ehyngm4 {\n    color: white;\n    font-size: 14px;\n    font-weight: 500;\n  }\n\n  @media screen and (max-width: 768px) {\n    .ai-image-gallery__grid-atvbeqm45owlemfh0laigenblockf4be74ehyngm4 {\n      grid-template-columns: repeat(2, 1fr);\n      gap: 12.0px;\n    }\n\n    .ai-image-gallery__container-atvbeqm45owlemfh0laigenblockf4be74ehyngm4 {\n      padding: 0 15px;\n    }\n  }\n\n  @media screen and (max-width: 480px) {\n    .ai-image-gallery__grid-atvbeqm45owlemfh0laigenblockf4be74ehyngm4 {\n      grid-template-columns: repeat(1, 1fr);\n      gap: 8.0px;\n    }\n\n    .ai-image-gallery__title-atvbeqm45owlemfh0laigenblockf4be74ehyngm4 {\n      font-size: 25.6px;\n    }\n\n    .ai-image-gallery__container-atvbeqm45owlemfh0laigenblockf4be74ehyngm4 {\n      padding: 0 10px;\n    }\n  }\n"
+     }
+    ]
+   }
+  },
+  {
+   "id": "shotclub_house_rules_DAKzyH",
+   "scheme": "scheme-1",
+   "type": "custom",
+   "name": "shotclub_house_rules",
+   "html": "<section class=\"shopify-section sc-rules-section\" id=\"shopify-section-template--23043659989235__shotclub_house_rules_DAKzyH\"><style data-shopify=\"\">\n  .sc-rules {\n    padding: 64px 20px 80px;\n    color: #f7f7f8;\n    font-family: 'Inter', system-ui, -apple-system, sans-serif;\n  }\n  .sc-rules__inner {\n    max-width: 1180px;\n    margin: 0 auto;\n  }\n  .sc-rules__card {\n    position: relative;\n    overflow: hidden;\n    background: #07070b;\n    color: #eeeef1;\n    border-radius: 28px;\n    padding: 48px 24px;\n  }\n  .sc-rules__halo {\n    pointer-events: none;\n    position: absolute;\n    top: -120px;\n    left: 50%;\n    transform: translateX(-50%);\n    width: 680px;\n    height: 420px;\n    border-radius: 9999px;\n    background: rgba(252, 211, 77, 0.18);\n    filter: blur(80px);\n  }\n  .sc-rules__head {\n    position: relative;\n    max-width: 720px;\n  }\n  .sc-rules__rule {\n    display: inline-flex;\n    align-items: center;\n    gap: 10px;\n    font-size: 10px;\n    text-transform: uppercase;\n    letter-spacing: 0.22em;\n    color: #b6b6c2;\n    font-weight: 500;\n  }\n  .sc-rules__rule-line {\n    width: 24px;\n    height: 1px;\n    background: #2e2e38;\n    display: inline-block;\n  }\n  .sc-rules__title {\n    margin: 16px 0 0;\n    font-size: 28px;\n    line-height: 1.06;\n    letter-spacing: -0.012em;\n    font-weight: 500;\n    color: #ffffff;\n  }\n  .sc-rules__title em {\n    font-family: 'Fraunces', 'Georgia', serif;\n    font-style: italic;\n    font-weight: 400;\n    color: #b6b6c2;\n  }\n  .sc-rules__grid {\n    margin-top: 36px;\n    display: grid;\n    grid-template-columns: 1fr;\n    gap: 24px;\n  }\n  .sc-rule {\n    border-top: 1px solid #1c1c24;\n    padding-top: 16px;\n  }\n  .sc-rule__head {\n    display: flex;\n    align-items: baseline;\n    gap: 12px;\n  }\n  .sc-rule__num {\n    font-family: 'Fraunces', 'Georgia', serif;\n    font-style: italic;\n    color: #60606e;\n    font-size: 22px;\n    line-height: 1;\n  }\n  .sc-rule__title {\n    margin: 0;\n    color: #ffffff;\n    font-size: 17px;\n    line-height: 1.2;\n    letter-spacing: -0.012em;\n    font-weight: 500;\n  }\n  .sc-rule__body {\n    margin: 12px 0 0 36px;\n    color: #8a8a99;\n    font-size: 14px;\n    line-height: 1.55;\n  }\n  .sc-rules__cta-row {\n    margin-top: 40px;\n    padding-top: 28px;\n    border-top: 1px solid #1c1c24;\n    display: flex;\n    flex-direction: column;\n    gap: 16px;\n  }\n  .sc-rules__cta-quote {\n    font-family: 'Fraunces', 'Georgia', serif;\n    font-style: italic;\n    font-size: 18px;\n    line-height: 1.45;\n    color: #d9d9e0;\n    max-width: 440px;\n  }\n  .sc-rules__cta-buttons {\n    display: flex;\n    flex-wrap: wrap;\n    gap: 12px;\n  }\n  .sc-rules__cta-primary {\n    display: inline-flex;\n    align-items: center;\n    gap: 8px;\n    border-radius: 9999px;\n    background: #fbbf24;\n    color: #07070b;\n    padding: 8px 8px 8px 18px;\n    font-size: 14px;\n    font-weight: 500;\n    text-decoration: none;\n    transition: background 200ms ease;\n  }\n  .sc-rules__cta-primary:hover {\n    background: #fcd34d;\n  }\n  .sc-rules__cta-primary-arrow {\n    display: grid;\n    place-items: center;\n    height: 28px;\n    width: 28px;\n    border-radius: 9999px;\n    background: #07070b;\n    color: #fbbf24;\n  }\n  .sc-rules__cta-secondary {\n    display: inline-flex;\n    align-items: center;\n    border-radius: 9999px;\n    border: 1px solid #2e2e38;\n    color: #eeeef1;\n    padding: 10px 18px;\n    font-size: 14px;\n    text-decoration: none;\n    transition: background 200ms ease;\n  }\n  .sc-rules__cta-secondary:hover {\n    background: #0e0e14;\n  }\n  @media (min-width: 640px) {\n    .sc-rules__card { padding: 64px 40px; }\n    .sc-rules__title { font-size: 40px; }\n    .sc-rules__grid { grid-template-columns: repeat(2, 1fr); gap: 32px; }\n  }\n  @media (min-width: 900px) {\n    .sc-rules__card { padding: 80px 56px; border-radius: 32px; }\n    .sc-rules__title { font-size: 56px; }\n    .sc-rules__cta-row {\n      flex-direction: row;\n      align-items: center;\n      justify-content: space-between;\n    }\n  }\n</style>\n<section class=\"sc-rules\">\n<div class=\"sc-rules__inner\">\n<div class=\"sc-rules__card\">\n<span aria-hidden=\"true\" class=\"sc-rules__halo\"></span>\n<div class=\"sc-rules__head\">\n<div class=\"sc-rules__rule\">\n<span class=\"sc-rules__rule-line\"></span>\n<span>House rules</span>\n</div>\n<h2 class=\"sc-rules__title\">\n          Four lines.\n          <em>Read them at the door.</em>\n</h2>\n</div>\n<div class=\"sc-rules__grid\"><div class=\"sc-rule\">\n<div class=\"sc-rule__head\">\n<span class=\"sc-rule__num\">01\n                </span>\n<h3 class=\"sc-rule__title\">No stock. No templates.</h3>\n</div>\n<p class=\"sc-rule__body\">Every image is original. Crafted by filmmakers, not scraped from a stock library.</p>\n</div><div class=\"sc-rule\">\n<div class=\"sc-rule__head\">\n<span class=\"sc-rule__num\">02\n                </span>\n<h3 class=\"sc-rule__title\">Members only.</h3>\n</div>\n<p class=\"sc-rule__body\">One subscription. Full access to every drop, every category, every aspect ratio.</p>\n</div><div class=\"sc-rule\">\n<div class=\"sc-rule__head\">\n<span class=\"sc-rule__num\">03\n                </span>\n<h3 class=\"sc-rule__title\">New drops, every month.</h3>\n</div>\n<p class=\"sc-rule__body\">Curated releases on theme. Fresh, ready to use, never bloated.</p>\n</div><div class=\"sc-rule\">\n<div class=\"sc-rule__head\">\n<span class=\"sc-rule__num\">04\n                </span>\n<h3 class=\"sc-rule__title\">Commercial license, included.</h3>\n</div>\n<p class=\"sc-rule__body\">Use the imagery in campaigns, decks, ads, launches. Full rights baked in.</p>\n</div></div>\n<div class=\"sc-rules__cta-row\">\n<p class=\"sc-rules__cta-quote\">\n          If the rules sound right, the door is open.\n        </p>\n<div class=\"sc-rules__cta-buttons\">\n<a class=\"sc-rules__cta-primary\" href=\"https://www.shotclubai.com/get-started?ref=moonbear&amp;utm_source=moonbear\">\n            Apply for membership\n            <span aria-hidden=\"true\" class=\"sc-rules__cta-primary-arrow\">→</span>\n</a><a class=\"sc-rules__cta-secondary\" href=\"https://shotclubai.com/pricing\">\n              See the dues\n            </a></div>\n</div>\n</div>\n</div>\n</section>\n</section>"
+  }
+ ]
+}

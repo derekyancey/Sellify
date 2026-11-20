@@ -5,6 +5,7 @@ import { storeSlug, useSite, useStorePath } from "../context/Site";
 import { create, list, remove, update } from "../lib/data";
 import { uploadFile } from "../lib/files";
 import { useAsync } from "../lib/useAsync";
+import { loadTheme } from "../lib/themes";
 import { money } from "../lib/format";
 import type { Product, ProductImage, Variant } from "../lib/types";
 import { Badge, Button, Card, ErrorBox, Field, Input, Loading, Modal, PageHeader, Select, Table, Td, Textarea } from "../components/ui";
@@ -76,6 +77,7 @@ export default function Products() {
 function ProductForm({ initial, onClose, onSaved }: { initial: Draft; onClose(): void; onSaved(): void }) {
   const { site } = useSite(); const s = site!;
   const [p, setP] = useState<Draft>(initial);
+  const theme = useAsync(() => s.themeId ? loadTheme(s.themeId) : Promise.resolve(null), [s.themeId]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const set = <K extends keyof Draft>(k: K, v: Draft[K]) => setP(x => ({ ...x, [k]: v }));
@@ -99,7 +101,7 @@ function ProductForm({ initial, onClose, onSaved }: { initial: Draft; onClose():
     const data: any = {
       title: p.title.trim(), description: p.description, status: p.status, vendor: p.vendor || undefined, productType: p.productType || undefined,
       tags: p.tags ?? [], seoTitle: p.seoTitle || undefined, seoDescription: p.seoDescription || undefined, handle: p.handle || undefined,
-      images: imgs, imageUrl: imgs[0]?.src ?? (p.imageUrl || undefined), variants: vs, tracksInventory: tracked,
+      images: imgs, imageUrl: imgs[0]?.src ?? (p.imageUrl || undefined), variants: vs, tracksInventory: tracked, templateSuffix: p.templateSuffix ?? "",
       price: cheapest.price, compareAtPrice: cheapest.compareAtPrice ?? undefined, sku: vs[0].sku || undefined,
       inventory: tracked ? vs.reduce((t, v) => t + Math.max(0, v.inventory || 0), 0) : 0,
     };
@@ -168,6 +170,14 @@ function ProductForm({ initial, onClose, onSaved }: { initial: Draft; onClose():
         <Field label="Vendor"><Input value={p.vendor ?? ""} onChange={e => set("vendor", e.target.value)} /></Field>
         <Field label="Tags" hint="Comma separated"><Input value={(p.tags ?? []).join(", ")} onChange={e => set("tags", e.target.value.split(",").map(t => t.trim()).filter(Boolean))} /></Field>
       </div>
+      {theme.data && (
+        <Field label="Theme template" hint={`Which ${theme.data.name} product page design this product uses.`}>
+          <Select value={p.templateSuffix ?? ""} onChange={e => set("templateSuffix", e.target.value)}>
+            {theme.data.productTemplates.map(t => <option key={t.suffix} value={t.suffix}>{t.label}</option>)}
+            {p.templateSuffix && !theme.data.productTemplates.some(t => t.suffix === p.templateSuffix) && <option value={p.templateSuffix}>{p.templateSuffix} (not in this theme: uses the default)</option>}
+          </Select>
+        </Field>
+      )}
       <details className="text-sm"><summary className="cursor-pointer font-medium">Search engine listing</summary>
         <div className="mt-2 space-y-2">
           <Field label="SEO title"><Input value={p.seoTitle ?? ""} onChange={e => set("seoTitle", e.target.value)} placeholder={p.title} /></Field>

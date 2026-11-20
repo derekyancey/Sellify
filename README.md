@@ -199,6 +199,16 @@ Re-run `python appwrite/setup.py` after pulling: it adds the new tables (collect
 - **Product feed:** the checkout function serves `/feed.xml?site=<id>` in Google Merchant Center format, which TikTok, Pinterest and Meta also accept. Set `VITE_CHECKOUT_PUBLIC_URL` so the dashboard can show the URL. Set each site's product page path under **Sales channels → Google & YouTube**. Products without an image are left out, because Google requires one.
 - **Shared code:** `appwrite/shared/` is the single source for code used by several functions. Run `python appwrite/sync_shared.py` after editing it, and `--check` before deploying.
 
+## Storefront themes (MoonBear)
+
+**Online store → Themes** shows a store's current theme with a live preview (desktop or phone, any page) using that store's own products, the theme library, and the theme's product templates with the products that use each. **Publish** makes a theme the store's current theme (`sites.themeId`). Each product picks its design under **Products → (product) → Theme template** (`products.templateSuffix`, same idea as Shopify's template suffix; an unknown suffix falls back to the default product page).
+
+- **Themes are folders** in `public/themes/<id>/`: `theme.json` (logo, fonts, color schemes, header menu, footer), `templates/index.json`, `templates/product.json`, `templates/product.<suffix>.json`, and `store.json` (Appwrite endpoint, project and store id used when the theme runs on the store's own domain). `public/themes/engine/` draws any theme: sections (hero, marquee, layout groups, product list, collection pills/icons, layered slideshow, blog posts, FAQ accordions, main product, recommendations, slideshow, before/after) plus header, mega menu, cart drawer, search and checkout through `yancey.js`. Routes: `/`, `/products/<handle>`, `/collections/<handle>`, `/cart`.
+- **MoonBear** (`public/themes/moonbear`) is rebuilt from moonbear.shop (the Shopify theme export of April 14, 2026): the home page and all 13 custom product templates (CINEFILM, Replica 2, Replica 3, Halation, Complete Access, Title Presets bundle 2026, ShotClub AI, Palette, Dream-er 2, Invoice, Best sellers, Analogue FX and the default), with the same fonts (Inter, Geist Mono), color schemes, layout values and content. It is the MoonBear store's current theme.
+- **How it was imported:** `scripts/horizon_import.py` turns a page's rendered HTML into a template (`curl https://moonbear.shop/products/<handle> > page.html`, plus `<handle>.js` for the product's own title, description and images). It keeps the merchant's content and layout values, not Shopify's theme code; the store's own custom sections (ShotClub, before/after, AI blocks) keep their markup and styles. Re-run it after changing a page on Shopify.
+- **Going live on the store's domain:** `python scripts/build_storefront.py moonbear dist-storefront/moonbear` writes a standalone site. Host it on Appwrite Sites (static, fallback file `index.html`), add the domain as a Web platform in Appwrite, then point the domain at it.
+- **Media:** theme images and videos still load from moonbear.shop's Shopify CDN. Copy them to Appwrite Storage before closing the Shopify store.
+
 ## Moving from Shopify: Import data
 
 Each store has **Import data** (sidebar, and the Import buttons on Products and Customers). Drop in Shopify exports: *Products → Export*, *Customers → Export*, *Orders → Export*, choosing "All" and CSV. Zips from Shopify's email are fine too. Yancey recognises each file, shows what's in it, and imports in the right order (products → customers → orders).
@@ -225,6 +235,10 @@ src/                       React dashboard
   lib/demo.ts              sample data and mocked integration responses
   pages/                   one file per screen
 public/yancey.js          storefront cart + checkout script (served by the dashboard)
+public/themes/engine/      storefront theme engine (renders a theme's JSON templates)
+public/themes/moonbear/    the MoonBear theme (moonbear.shop rebuilt)
+scripts/horizon_import.py  converts a live Shopify page into a theme template
+scripts/build_storefront.py packages a theme for a store's own domain
 examples/storefront.html   starter storefront page
 appwrite/setup.py          creates the database schema, team and admin user
 appwrite/shared/           code shared by functions (sync with appwrite/sync_shared.py)

@@ -1,0 +1,1710 @@
+{
+ "sections": [
+  {
+   "id": "hero_bicDfh",
+   "scheme": "scheme-6",
+   "type": "hero",
+   "style": {
+    "--blur-opacity": "0.75",
+    "--hero-min-height": "90svh",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 100px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 72px))",
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "0px",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center"
+   },
+   "media": [
+    {
+     "video": "https://moonbear.shop/cdn/shop/videos/c/vp/61363da9107b416ea256b05272ee8e77/61363da9107b416ea256b05272ee8e77.HD-1080p-7.2Mbps-95826598.mp4?v=0",
+     "poster": "https://moonbear.shop/cdn/shop/files/preview_images/61363da9107b416ea256b05272ee8e77.thumbnail.0000000000_small.jpg?v=1790633245",
+     "desktop": true,
+     "mobile": true
+    }
+   ],
+   "overlay": {
+    "--overlay-layer": "var(--layer-flat)",
+    "--overlay-color": "#12121266",
+    "--overlay-color--end": "rgba(18, 18, 18, 0)",
+    "--overlay-direction": "to bottom",
+    "kind": "solid"
+   },
+   "href": null,
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "0px",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "50%",
+       "--size-style-height": "100%",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "19px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "flex-end",
+       "--vertical-alignment-mobile": "flex-end"
+      },
+      "children": [
+       {
+        "t": "text",
+        "cls": "h1",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground-heading)",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<h1>Make every edit cinematic.</h1>"
+       },
+       {
+        "t": "text",
+        "cls": "custom",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground)",
+         "--font-size": "1.125rem",
+         "--font-weight": "var(--font-body--weight)",
+         "--font-family": "var(--font-body--family)",
+         "--text-transform": "none",
+         "--line-height": "var(--line-height--body-normal)",
+         "--letter-spacing": "var(--letter-spacing--body-normal)",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<p>Create more + Edit Faster<br/>With powerful LUTs, Templates, Fonts and Effects.</p>"
+       },
+       {
+        "t": "group",
+        "style": {
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--size-style-width": "fit-content",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "fit-content",
+         "--size-style-width-mobile-min": "fit-content",
+         "--flex-direction": "row",
+         "--flex-wrap": "nowrap",
+         "--flex-wrap-mobile": "wrap",
+         "--gap": "22px",
+         "--horizontal-alignment": "flex-start",
+         "--vertical-alignment": "center",
+         "--vertical-alignment-mobile": "center"
+        },
+        "children": [
+         {
+          "t": "button",
+          "variant": "link",
+          "label": "Shop All ->",
+          "href": "/collections/bundles",
+          "style": {
+           "--size-style-width": "fit-content",
+           "--size-style-width-mobile": "fit-content",
+           "--size-style-width-mobile-min": "fit-content"
+          }
+         }
+        ],
+        "mobileColumn": true,
+        "sizes": [
+         "height-fit",
+         "width-fit-content"
+        ]
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fill",
+       "width-custom"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "marquee_PUKEmA",
+   "scheme": "scheme-2",
+   "type": "marquee",
+   "style": {
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 24px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 24px))",
+    "--marquee-gap": "max(24px, calc(var(--gap-scale, 1.0) * 96px))",
+    "--marquee-direction": "normal"
+   },
+   "items": [
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/vice-logo.png?v=1785401582",
+     "style": {
+      "--icon-width": "88px"
+     }
+    },
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/Bulgari-Logo.webp?v=1786033402",
+     "style": {
+      "--icon-width": "92px"
+     }
+    },
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/McDonalds-logo.png?v=1785401616",
+     "style": {
+      "--icon-width": "94px"
+     }
+    },
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/143-1432148_nascar-logo-nascar-logo-white-png_2ee2e49e-052a-45e1-8b00-5a2f305e33b2.png?v=1786033449",
+     "style": {
+      "--icon-width": "82px"
+     }
+    },
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/adidasnew_4f3edcf8-79ea-4579-ae87-4bbe067adfb1.png-2.png?v=1786033464",
+     "style": {
+      "--icon-width": "54px"
+     }
+    },
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/shein-logo-1-p-800_349e4637-cf95-426b-8fd6-cc53240e9dff.png?v=1786033449",
+     "style": {
+      "--icon-width": "96px"
+     }
+    },
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/Collabx-logo.avif?v=1786033611",
+     "style": {
+      "--icon-width": "42px"
+     }
+    },
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/Samsung-Logo.png?v=1786033611",
+     "style": {
+      "--icon-width": "94px"
+     }
+    },
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/schon-logo.png?v=1786033611",
+     "style": {
+      "--icon-width": "94px"
+     }
+    },
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/flaunt-logo.png?v=1786033611",
+     "style": {
+      "--icon-width": "94px"
+     }
+    },
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/L_27Officiel_logo_copy.png?v=1786033775",
+     "style": {
+      "--icon-width": "88px"
+     }
+    },
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/Warner-logo.svg?v=1786033923",
+     "style": {
+      "--icon-width": "50px"
+     }
+    }
+   ]
+  },
+  {
+   "id": "section_RhkneY",
+   "scheme": "scheme-5",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 26px))",
+    "--horizontal-alignment": "center",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 32px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 32px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 26px))",
+     "--horizontal-alignment": "center",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 32px))",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 32px))"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "max(20px, calc(var(--spacing-scale) * 28px))",
+       "--padding-inline-end": "max(20px, calc(var(--spacing-scale) * 28px))",
+       "--size-style-width": "fit-content",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "fit-content",
+       "--size-style-width-mobile-min": "fit-content",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "center",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<h2>High-quality resources,<br/>curated for creatives.</h2>"
+       },
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "16px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "100%",
+         "--max-width": "var(--max-width--body-normal)",
+         "--text-align": "center"
+        },
+        "html": "<p>Effects, Transitions, Fonts, Textures, Mockups + more.</p>"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fit-content"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "product_list_K3pcPx",
+   "scheme": "scheme-5",
+   "type": "product-list",
+   "style": {
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 28px))"
+   },
+   "products": [
+    "texture-bundle",
+    "complete-font-bundle-1",
+    "video-editing-lut-bundle",
+    "title-presets-bundle",
+    "complete-access-bundle",
+    "frame-overlays-bundle"
+   ],
+   "carousel": true,
+   "header": []
+  },
+  {
+   "id": "collection_list_piLnya",
+   "scheme": "scheme-5",
+   "type": "collection-list",
+   "style": {
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 42px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 42px))",
+    "--gap": "12px",
+    "--resource-list-column-gap-desktop": "8px",
+    "--resource-list-row-gap-desktop": "8px",
+    "--resource-list-columns": "repeat(6, 1fr)",
+    "--resource-list-columns-mobile": "repeat(2, 1fr)"
+   },
+   "cardStyle": {
+    "--border-width": "0.5px",
+    "--border-style": "solid",
+    "--border-color": "rgb(var(--color-border-rgb) / 0.19)",
+    "--border-radius": "100px",
+    "--horizontal-alignment": "center",
+    "--vertical-alignment": "center",
+    "--gap": "0px"
+   },
+   "items": [
+    {
+     "title": "All",
+     "href": "/collections/all",
+     "image": null,
+     "showTitle": true
+    },
+    {
+     "title": "Bundles",
+     "href": "/collections/bundles",
+     "image": null,
+     "showTitle": true
+    },
+    {
+     "title": "Color",
+     "href": "/collections/color",
+     "image": null,
+     "showTitle": true
+    },
+    {
+     "title": "Effects",
+     "href": "/collections/effects",
+     "image": null,
+     "showTitle": true
+    },
+    {
+     "title": "Free",
+     "href": "/collections/free",
+     "image": null,
+     "showTitle": true
+    },
+    {
+     "title": "Mobile",
+     "href": "/collections/mobile",
+     "image": null,
+     "showTitle": true
+    },
+    {
+     "title": "Mockups",
+     "href": "/collections/mockups",
+     "image": null,
+     "showTitle": true
+    },
+    {
+     "title": "Overlays",
+     "href": "/collections/overlays",
+     "image": null,
+     "showTitle": true
+    },
+    {
+     "title": "SALE",
+     "href": "/collections/sale",
+     "image": null,
+     "showTitle": true
+    },
+    {
+     "title": "Textures",
+     "href": "/collections/textures",
+     "image": null,
+     "showTitle": true
+    },
+    {
+     "title": "Title Templates",
+     "href": "/collections/title-templates",
+     "image": null,
+     "showTitle": true
+    },
+    {
+     "title": "Transitions",
+     "href": "/collections/transitions",
+     "image": null,
+     "showTitle": true
+    }
+   ],
+   "variant": "pills"
+  },
+  {
+   "id": "collection_list_nn6dny",
+   "scheme": "scheme-5",
+   "type": "collection-list",
+   "style": {
+    "--padding-block-start": "0px",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 24px))",
+    "--gap": "12px",
+    "--resource-list-column-gap-desktop": "8px",
+    "--resource-list-row-gap-desktop": "8px",
+    "--resource-list-columns": "repeat(6, 1fr)",
+    "--resource-list-columns-mobile": "repeat(2, 1fr)"
+   },
+   "cardStyle": {
+    "--border-width": "1px",
+    "--border-style": "none",
+    "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+    "--border-radius": "0px",
+    "--horizontal-alignment": "center",
+    "--vertical-alignment": "flex-end",
+    "--gap": "8px"
+   },
+   "items": [
+    {
+     "title": "Adobe After Effects",
+     "href": "/collections/adobe-after-effects",
+     "image": "https://moonbear.shop/cdn/shop/collections/Adobe_After_Effects_CC_icon.svg-2_409189b7-d8fb-47be-ad69-0f74dbd6cfb8.webp?v=1785388662",
+     "showTitle": false
+    },
+    {
+     "title": "Adobe Photoshop",
+     "href": "/collections/adobe-photoshop",
+     "image": "https://moonbear.shop/cdn/shop/collections/Adobe_Photoshop_CC_icon.svg-2_96be5bc0-d7b7-49c2-85c8-ecaf7c84d8e2.webp?v=1785388662",
+     "showTitle": false
+    },
+    {
+     "title": "Adobe Premiere",
+     "href": "/collections/adobe-premiere",
+     "image": "https://moonbear.shop/cdn/shop/collections/Adobe_Premiere_Pro_CC_icon_svg_e0c77ae3-c6ce-4cad-9d1b-afb0feaa3a74.webp?v=1785388660",
+     "showTitle": false
+    },
+    {
+     "title": "DaVinci Resolve",
+     "href": "/collections/davinci-resolve",
+     "image": "https://moonbear.shop/cdn/shop/collections/DaVinci_Resolve_17_logo.svg-2_04d87e3c-506b-43e8-bc60-dcc7ce6275f1.webp?v=1785388658",
+     "showTitle": false
+    },
+    {
+     "title": "CapCut",
+     "href": "/collections/capcut",
+     "image": "https://moonbear.shop/cdn/shop/collections/CapCut-Logo_31f46c89-db4e-4d3d-a106-453dfa541d64.png?v=1785388664",
+     "showTitle": false
+    },
+    {
+     "title": "Final Cut Pro",
+     "href": "/collections/final-cut-pro",
+     "image": "https://moonbear.shop/cdn/shop/collections/2015_Final_Cut_Pro_Logo_ce85f703-290c-4760-aeba-ede8977d1405.png?v=1785388660",
+     "showTitle": false
+    }
+   ],
+   "variant": "icons"
+  },
+  {
+   "id": "section_UzYWCG",
+   "scheme": "scheme-5",
+   "type": "section",
+   "full": true,
+   "style": {
+    "--section-min-height": "var(--section-height-medium)",
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "17px",
+    "--horizontal-alignment": "center",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 51px))",
+    "--padding-block-end": "0px"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "17px",
+     "--horizontal-alignment": "center",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 51px))",
+     "--padding-block-end": "0px"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "icon",
+      "src": "https://moonbear.shop/cdn/shop/files/LunarStudio_Logo_-_White-1.png?v=1786038103",
+      "style": {
+       "--icon-width": "200px"
+      }
+     },
+     {
+      "t": "text",
+      "cls": "rte",
+      "style": {
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--width": "fit-content",
+       "--max-width": "var(--max-width--body-normal)"
+      },
+      "html": "<h2>Unleash Your Creativity.</h2>"
+     },
+     {
+      "t": "text",
+      "cls": "paragraph",
+      "style": {
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--color": "var(--color-foreground)",
+       "--width": "fit-content",
+       "--max-width": "var(--max-width--body-normal)"
+      },
+      "html": "<p>A new video editor for the future.</p>"
+     },
+     {
+      "t": "button",
+      "variant": "link",
+      "label": "Join the waitlist ->",
+      "href": "/pages/coming-soon",
+      "style": {
+       "--size-style-width": "fit-content",
+       "--size-style-width-mobile": "fit-content",
+       "--size-style-width-mobile-min": "fit-content"
+      }
+     }
+    ]
+   },
+   "bg": {
+    "image": "https://moonbear.shop/cdn/shop/files/Screenshot_2026-09-28_at_6.56.35_PM.png?v=1790636206",
+    "alt": ""
+   }
+  },
+  {
+   "id": "hero_JL7tdg",
+   "scheme": "scheme-5",
+   "type": "hero",
+   "style": {
+    "--blur-opacity": "0.17",
+    "--hero-min-height": "var(--section-height-medium)",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))",
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "16px",
+    "--horizontal-alignment": "center",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center"
+   },
+   "media": [
+    {
+     "video": "https://moonbear.shop/cdn/shop/videos/c/vp/76e11336d0564d41a091efd8569e6da6/76e11336d0564d41a091efd8569e6da6.HD-1080p-7.2Mbps-95828458.mp4?v=0",
+     "poster": "https://moonbear.shop/cdn/shop/files/preview_images/76e11336d0564d41a091efd8569e6da6.thumbnail.0000000000_small.jpg?v=1790635113",
+     "desktop": true,
+     "mobile": false
+    },
+    {
+     "video": "https://moonbear.shop/cdn/shop/videos/c/vp/6c2e166481934ff09fd72ebb0372551c/6c2e166481934ff09fd72ebb0372551c.HD-1080p-7.2Mbps-95828161.mp4?v=0",
+     "poster": "https://moonbear.shop/cdn/shop/files/preview_images/6c2e166481934ff09fd72ebb0372551c.thumbnail.0000000000_small.jpg?v=1790634741",
+     "desktop": false,
+     "mobile": true
+    }
+   ],
+   "overlay": {
+    "--overlay-layer": "var(--layer-flat)",
+    "--overlay-color": "#0000006e",
+    "--overlay-color--end": "rgba(0, 0, 0, 0)",
+    "--overlay-direction": "to top",
+    "kind": "solid"
+   },
+   "href": "/products/archive-film-textures",
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "16px",
+     "--horizontal-alignment": "center",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "text",
+      "cls": "rte",
+      "style": {
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--width": "fit-content",
+       "--max-width": "var(--max-width--body-normal)"
+      },
+      "html": "<p>Most Popular!</p>"
+     },
+     {
+      "t": "text",
+      "cls": "h1",
+      "style": {
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--color": "var(--color-foreground)",
+       "--width": "fit-content",
+       "--max-width": "var(--max-width--body-narrow)"
+      },
+      "html": "<h2>Archive Film Textures</h2>"
+     },
+     {
+      "t": "button",
+      "variant": "link",
+      "label": "Buy Now >",
+      "href": "/products/archive-film-textures",
+      "style": {
+       "--size-style-width": "fit-content",
+       "--size-style-width-mobile": "fit-content",
+       "--size-style-width-mobile-min": "fit-content"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "hero_J4qhJp",
+   "scheme": "scheme-5",
+   "type": "hero",
+   "style": {
+    "--blur-opacity": "0.17",
+    "--hero-min-height": "var(--section-height-medium)",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))",
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "16px",
+    "--horizontal-alignment": "center",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center"
+   },
+   "media": [
+    {
+     "image": "https://moonbear.shop/cdn/shop/files/Replica_3_-_Cover.jpg?v=1785388397",
+     "alt": "Cover image of Replica 3 Title Presets by moonbear.shop, showcasing a sleek, modern title design for video editing projects.",
+     "desktop": true,
+     "mobile": true
+    }
+   ],
+   "overlay": {
+    "--overlay-layer": "var(--layer-flat)",
+    "--overlay-color": "#0000006e",
+    "--overlay-color--end": "rgba(0, 0, 0, 0)",
+    "--overlay-direction": "to top",
+    "kind": "solid"
+   },
+   "href": "/products/replica-3-title-presets",
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "16px",
+     "--horizontal-alignment": "center",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "text",
+      "cls": "rte",
+      "style": {
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--width": "fit-content",
+       "--max-width": "var(--max-width--body-normal)"
+      },
+      "html": "<p>New!</p>"
+     },
+     {
+      "t": "text",
+      "cls": "h1",
+      "style": {
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--color": "var(--color-foreground)",
+       "--width": "fit-content",
+       "--max-width": "var(--max-width--body-narrow)"
+      },
+      "html": "<h2>Music Video Title Presets</h2>"
+     },
+     {
+      "t": "text",
+      "cls": "paragraph",
+      "style": {
+       "--padding-block-start": "0px",
+       "--padding-block-end": "32px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--color": "var(--color-foreground)",
+       "--width": "fit-content",
+       "--max-width": "var(--max-width--body-narrow)"
+      },
+      "html": "<p>REPLICA 3</p>"
+     },
+     {
+      "t": "button",
+      "variant": "link",
+      "label": "Learn more >",
+      "href": "/products/replica-3-title-presets",
+      "style": {
+       "--size-style-width": "fit-content",
+       "--size-style-width-mobile": "fit-content",
+       "--size-style-width-mobile-min": "fit-content"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "section_k3zkie",
+   "scheme": "scheme-5",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--section-min-height": "var(--section-height-small)",
+    "--flex-direction": "row",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "12px",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 32px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 32px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "row",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "12px",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 32px))",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 32px))"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "image",
+        "image": "https://moonbear.shop/cdn/shop/files/ShotClub_AI_-_Father_s_Day_37.jpg?v=1785388634",
+        "alt": "Father's Day themed image from MoonBear's Shot Club AI Stock Image Library, featuring a father and child celebrating together.",
+        "style": {
+         "--ratio": "1.7777777777777777",
+         "--size-style-width": "100%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "100%",
+         "--size-style-width-mobile-min": "5rem",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "13px"
+        }
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "text",
+        "cls": "paragraph",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground)",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<p>Most Popular!</p>"
+       },
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<h2>Cinematic LUTs</h2>"
+       },
+       {
+        "t": "button",
+        "variant": "primary",
+        "label": "Learn more",
+        "href": "/products/cinefilm-cinematic-film-lut-pack",
+        "style": {
+         "--size-style-width": "fit-content",
+         "--size-style-width-mobile": "fit-content",
+         "--size-style-width-mobile-min": "fit-content"
+        }
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "layered_slideshow_WQP7xf",
+   "scheme": "scheme-5",
+   "type": "layered-slideshow",
+   "style": {
+    "--padding-block-start": "40px",
+    "--padding-block-end": "40px",
+    "--padding-inline-start": "0px",
+    "--padding-inline-end": "0px"
+   },
+   "slides": [
+    {
+     "bg": {
+      "image": "https://moonbear.shop/cdn/shop/files/products_f3bbcc74-a383-47e2-a9f1-240d1c6a8feb.gif?v=1786216027",
+      "alt": ""
+     },
+     "content": {
+      "t": "group",
+      "style": {
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "flex-end",
+       "--vertical-alignment-mobile": "flex-end"
+      },
+      "mobileColumn": true,
+      "children": [
+       {
+        "t": "text",
+        "cls": "h2",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground)",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<h3>Unleash your creativity.</h3>"
+       },
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<p>Everything in 1 bundle. No Subscriptions.</p>"
+       },
+       {
+        "t": "button",
+        "variant": "primary",
+        "label": "Shop Now",
+        "href": "/products/complete-access",
+        "style": {
+         "--size-style-width": "fit-content",
+         "--size-style-width-mobile": "fit-content",
+         "--size-style-width-mobile-min": "fit-content"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "bg": {
+      "image": "https://moonbear.shop/cdn/shop/files/frame-000039.jpg?v=1785388502",
+      "alt": "Minimalist title preset frame featuring clean, modern typography with the \"Portal\" design by moonbear.shop for stylish video titles."
+     },
+     "content": {
+      "t": "group",
+      "style": {
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "flex-end",
+       "--vertical-alignment-mobile": "flex-end"
+      },
+      "mobileColumn": true,
+      "children": [
+       {
+        "t": "text",
+        "cls": "h2",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground)",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<h3>Bestsellers</h3>"
+       },
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<p>Discover the bestsellers that have captured the hearts of our customers with their perfect blend of functionality and style.</p>"
+       },
+       {
+        "t": "button",
+        "variant": "primary",
+        "label": "Shop now",
+        "href": "/products/best-sellers-bundle",
+        "style": {
+         "--size-style-width": "fit-content",
+         "--size-style-width-mobile": "fit-content",
+         "--size-style-width-mobile-min": "fit-content"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "bg": {
+      "image": "https://moonbear.shop/cdn/shop/files/largebackground2_33499fe0-1c46-4fac-9543-8f07ac89c9aa.png?v=1785400182",
+      "alt": ""
+     },
+     "content": {
+      "t": "group",
+      "style": {
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-end",
+       "--vertical-alignment": "flex-end",
+       "--vertical-alignment-mobile": "flex-end"
+      },
+      "mobileColumn": true,
+      "children": [
+       {
+        "t": "text",
+        "cls": "h2",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground)",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<h3>ABOUT US</h3>"
+       },
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<p>Introducing our latest products, made especially for the season. Shop your favorites before they're gone!</p>"
+       },
+       {
+        "t": "button",
+        "variant": "primary",
+        "label": "Learn more",
+        "href": "/pages/about-us",
+        "style": {
+         "--size-style-width": "fit-content",
+         "--size-style-width-mobile": "fit-content",
+         "--size-style-width-mobile-min": "fit-content"
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "tabs": [
+    "",
+    "",
+    ""
+   ]
+  },
+  {
+   "id": "featured_blog_posts_dPcTpg",
+   "scheme": "scheme-2",
+   "type": "blog-posts",
+   "style": {
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))",
+    "--gap": "12px",
+    "--resource-list-column-gap-desktop": "8px"
+   },
+   "posts": [
+    {
+     "title": "What Is the Soap Font for DaVinci Resolve?",
+     "href": "/blogs/news/what-is-the-soap-font-for-davinci-resolve",
+     "image": "https://moonbear.shop/cdn/shop/articles/soapcover_0b08e712-2008-497c-b0a2-90fb876dbee4.webp?v=1787669125",
+     "meta": [
+      "August 21, 2026",
+      "derek yancey"
+     ]
+    },
+    {
+     "title": "What Are Apple Log LUTs for After Effects?",
+     "href": "/blogs/news/what-are-apple-log-luts-for-after-effects",
+     "image": "https://moonbear.shop/cdn/shop/articles/After-01.webp?v=1787669253",
+     "meta": [
+      "August 21, 2026",
+      "derek yancey"
+     ]
+    },
+    {
+     "title": "What Is LIQUID for Premiere Pro?",
+     "href": "/blogs/news/what-is-liquid-for-premiere-pro",
+     "image": "https://moonbear.shop/cdn/shop/articles/LIQUID_V.1.jpg?v=1787669161",
+     "meta": [
+      "August 21, 2026",
+      "derek yancey"
+     ]
+    }
+   ],
+   "header": {
+    "t": "text",
+    "cls": "custom",
+    "style": {
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px",
+     "--padding-inline-start": "0px",
+     "--padding-inline-end": "0px",
+     "--color": "var(--color-foreground)",
+     "--font-size": "1rem",
+     "--font-weight": "var(--font-body--weight)",
+     "--font-family": "var(--font-body--family)",
+     "--text-transform": "none",
+     "--line-height": "var(--line-height--body-normal)",
+     "--letter-spacing": "var(--letter-spacing--body-normal)",
+     "--width": "fit-content",
+     "--max-width": "var(--max-width--body-normal)"
+    },
+    "html": "<h3>Blog</h3>"
+   }
+  },
+  {
+   "id": "section_DaEngh",
+   "scheme": "scheme-2",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "0px",
+    "--horizontal-alignment": "center",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 27px))",
+    "--padding-block-end": "14px"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "0px",
+     "--horizontal-alignment": "center",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 27px))",
+     "--padding-block-end": "14px"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "text",
+      "cls": "rte",
+      "style": {
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--width": "fit-content",
+       "--max-width": "var(--max-width--body-normal)"
+      },
+      "html": "<p>Trusted by Creatives working with these brands</p>"
+     }
+    ]
+   }
+  },
+  {
+   "id": "marquee_K8mLdG",
+   "scheme": "scheme-2",
+   "type": "marquee",
+   "style": {
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 24px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 24px))",
+    "--marquee-gap": "max(24px, calc(var(--gap-scale, 1.0) * 96px))",
+    "--marquee-direction": "normal"
+   },
+   "items": [
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/vice-logo.png?v=1785401582",
+     "style": {
+      "--icon-width": "88px"
+     }
+    },
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/Bulgari-Logo.webp?v=1786033402",
+     "style": {
+      "--icon-width": "92px"
+     }
+    },
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/McDonalds-logo.png?v=1785401616",
+     "style": {
+      "--icon-width": "94px"
+     }
+    },
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/143-1432148_nascar-logo-nascar-logo-white-png_2ee2e49e-052a-45e1-8b00-5a2f305e33b2.png?v=1786033449",
+     "style": {
+      "--icon-width": "82px"
+     }
+    },
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/adidasnew_4f3edcf8-79ea-4579-ae87-4bbe067adfb1.png-2.png?v=1786033464",
+     "style": {
+      "--icon-width": "54px"
+     }
+    },
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/shein-logo-1-p-800_349e4637-cf95-426b-8fd6-cc53240e9dff.png?v=1786033449",
+     "style": {
+      "--icon-width": "96px"
+     }
+    },
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/Collabx-logo.avif?v=1786033611",
+     "style": {
+      "--icon-width": "42px"
+     }
+    },
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/Samsung-Logo.png?v=1786033611",
+     "style": {
+      "--icon-width": "94px"
+     }
+    },
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/schon-logo.png?v=1786033611",
+     "style": {
+      "--icon-width": "94px"
+     }
+    },
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/flaunt-logo.png?v=1786033611",
+     "style": {
+      "--icon-width": "94px"
+     }
+    },
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/L_27Officiel_logo_copy.png?v=1786033775",
+     "style": {
+      "--icon-width": "88px"
+     }
+    },
+    {
+     "t": "icon",
+     "src": "https://moonbear.shop/cdn/shop/files/Warner-logo.svg?v=1786033923",
+     "style": {
+      "--icon-width": "50px"
+     }
+    }
+   ]
+  },
+  {
+   "id": "section_M8c8wQ",
+   "scheme": "scheme-2",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "text",
+      "cls": "h3",
+      "style": {
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--color": "var(--color-foreground)",
+       "--width": "fit-content",
+       "--max-width": "var(--max-width--body-normal)"
+      },
+      "html": "<h3>Frequently asked questions</h3>"
+     },
+     {
+      "t": "accordion",
+      "style": {
+       "--summary-font-family": "var(--font-h5--family)",
+       "--summary-font-style": "var(--font-h5--style)",
+       "--summary-font-weight": "var(--font-h5--weight)",
+       "--summary-font-size": "var(--font-h5--size)",
+       "--summary-font-line-height": "var(--font-h5--line-height)",
+       "--summary-font-case": "var(--font-h5--case)",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px"
+      },
+      "items": [
+       {
+        "title": "What is MoonBear?",
+        "open": false,
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>MoonBear is a creative powerhouse built for filmmakers, editors, and content creators. We provide premium creative assets for filmmakers—including cinematic LUTs, video editing templates, title packs, sound design, and more—to help you bring your stories to life.</p>"
+         }
+        ]
+       },
+       {
+        "title": "What types of products does MoonBear sell?",
+        "open": false,
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>MoonBear offers a full library of filmmaking resources, including:LUTs &amp; color grading packs for cinematic looksTitle templates &amp; graphics for Final Cut Pro, Premiere, and DaVinci ResolveTransitions &amp; effects to elevate your editsSound packs &amp; audio design tools for immersive storytellingFilmmaker bundles with everything you need to build a professional editing toolkit.</p>"
+         }
+        ]
+       },
+       {
+        "title": "Who is MoonBear for?",
+        "open": false,
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>MoonBear is designed for filmmakers, editors, YouTubers, and content creators who want high-quality, easy-to-use tools. Whether you’re working on music videos, commercials, indie films, or social content, MoonBear gives you assets that save time and elevate production value.</p><p>Our products have been used by professionals at Nsascar, Adidas, L'Officiel, Lashify, Bulgari &amp; more.</p>"
+         }
+        ]
+       },
+       {
+        "title": "How Is MoonBear different?",
+        "open": false,
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>Our assets are built with professional workflows in mind, tested in real productions, and offered at affordable prices. We focus on <strong>quality, usability, and innovation</strong>, ensuring your toolkit is both powerful, accessible and utilizing leading technology.</p>"
+         }
+        ]
+       },
+       {
+        "title": "Who founded MoonBear?",
+        "open": false,
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>MoonBear was co-founded by Derek Yancey jr.in May of 2019 as a video production company. 2 years into business the team launched moonbear.shop as a resource for creative assets and software for creatives.</p>"
+         }
+        ]
+       }
+      ],
+      "plus": false,
+      "dividers": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "section_ABCNPF",
+   "scheme": "scheme-5",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--section-min-height": "var(--section-height-small)",
+    "--flex-direction": "row",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "12px",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "16px",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 32px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "row",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "12px",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "16px",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 32px))"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 53px))",
+       "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 50px))",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "group",
+        "style": {
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "14px",
+         "--padding-inline-end": "0px",
+         "--size-style-width": "100%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "100%",
+         "--size-style-width-mobile-min": "5rem",
+         "--flex-direction": "column",
+         "--flex-wrap": "nowrap",
+         "--flex-wrap-mobile": "wrap",
+         "--gap": "12px",
+         "--horizontal-alignment": "flex-start",
+         "--vertical-alignment": "center",
+         "--vertical-alignment-mobile": "center"
+        },
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "fit-content",
+           "--max-width": "var(--max-width--body-normal)"
+          },
+          "html": "<h2>OUR STORY</h2>"
+         },
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "fit-content",
+           "--max-width": "var(--max-width--body-normal)"
+          },
+          "html": "<p>MoonBear was founded in 2019 by  filmmaker &amp; graphic designer, Derek Yancey Jr.</p>"
+         }
+        ],
+        "mobileColumn": true,
+        "sizes": [
+         "height-fit",
+         "width-fill"
+        ]
+       },
+       {
+        "t": "group",
+        "style": {
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "14px",
+         "--padding-inline-end": "0px",
+         "--size-style-width": "100%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "100%",
+         "--size-style-width-mobile-min": "5rem",
+         "--flex-direction": "column",
+         "--flex-wrap": "nowrap",
+         "--flex-wrap-mobile": "wrap",
+         "--gap": "12px",
+         "--horizontal-alignment": "flex-start",
+         "--vertical-alignment": "center",
+         "--vertical-alignment-mobile": "center"
+        },
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "40px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>Over the course of 10+ years editing &amp; filming music videos, commercials and everything in between. </p><p>The mission is to build a platform for video &amp; design creatives to elevate their work. From color grading, LUTs, Title Templates, film grain, textures, &amp; more.</p>"
+         },
+         {
+          "t": "button",
+          "variant": "link",
+          "label": "Learn more ->",
+          "href": "/pages/about-us",
+          "style": {
+           "--size-style-width": "fit-content",
+           "--size-style-width-mobile": "fit-content",
+           "--size-style-width-mobile-min": "fit-content"
+          }
+         }
+        ],
+        "sizes": [
+         "height-fit",
+         "width-fill"
+        ]
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,118 @@
+{
+  "name": "MoonBear",
+  "version": "1.0.0",
+  "description": "Rebuilt from moonbear.shop (Shopify theme export of April 14, 2026): home page and every product template.",
+  "logo": "https://moonbear.shop/cdn/shop/files/MoonBear-slant-logo_2.png?v=1785401514",
+  "favicon": "https://moonbear.shop/cdn/shop/files/MB_ICON_copy_c1c64521-e1c0-45fd-a83f-db816c60ddf1.png",
+  "fonts": {
+    "body": "\"Geist Mono\"",
+    "heading": "Inter",
+    "subheading": "Inter",
+    "accent": "\"Geist Mono\"",
+    "googleFontsUrl": "https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;700&family=Inter:wght@500;700&display=swap"
+  },
+  "type": { "h1": 56, "h2": 48, "h3": 32, "h4": 24, "h5": 14, "h6": 12, "body": 16 },
+  "schemes": {
+    "scheme-1": { "background": "#ffffff", "foreground": "#000000cf", "heading": "#000000", "border": "#0000000f", "buttonBackground": "#000000", "buttonText": "#ffffff", "buttonBorder": "#000000", "secondaryButtonText": "#000000" },
+    "scheme-2": { "background": "#000000", "foreground": "#ffffff", "heading": "#ffffff", "border": "#dfdfdf", "buttonBackground": "#000000", "buttonText": "#ffffff", "buttonBorder": "#000000", "secondaryButtonText": "#000000" },
+    "scheme-3": { "background": "#eef1ea", "foreground": "#000000cf", "heading": "#000000", "border": "#000000cf", "buttonBackground": "#000000", "buttonText": "#ffffff", "buttonBorder": "#000000", "secondaryButtonText": "#000000" },
+    "scheme-4": { "background": "#f23232", "foreground": "#ffffffcf", "heading": "#000000", "border": "#1d368680", "buttonBackground": "#000000", "buttonText": "#ffffff", "buttonBorder": "#1d3686", "secondaryButtonText": "#000000" },
+    "scheme-5": { "background": "#000000", "foreground": "#ffffff", "heading": "#ffffff", "border": "#ffffffb0", "buttonBackground": "#ffffff", "buttonText": "#000000", "buttonBorder": "#ffffff", "secondaryButtonText": "#ffffff" },
+    "scheme-6": { "background": "transparent", "foreground": "#ffffff", "heading": "#ffffff", "border": "#e6e6e6", "buttonBackground": "#ffffff", "buttonText": "#000000", "buttonBorder": "#ffffff", "secondaryButtonText": "#ffffff" },
+    "scheme-58084d4c-a86e-4d0a-855e-a0966e5043f7": { "background": "transparent", "foreground": "#000000", "heading": "#000000", "border": "#e6e6e6", "buttonBackground": "#000000", "buttonText": "#ffffff", "buttonBorder": "#000000", "secondaryButtonText": "#000000" }
+  },
+  "css": ":root{--logo-height:36px;--logo-height-mobile:28px;--radius-btn:48px;--radius-btn-2:14px;--card-radius:4px}",
+  "header": {
+    "scheme": "scheme-2",
+    "transparentOverHero": true,
+    "accountUrl": "https://moonbear.shop/account",
+    "menu": [
+      { "title": "Home", "href": "/" },
+      { "title": "Browse", "children": [
+        { "title": "All", "href": "/collections/all" },
+        { "title": "Browse by Software", "href": "/collections/all", "children": [
+          { "title": "DaVinci Resolve", "href": "/collections/davinci-resolve" },
+          { "title": "Premiere", "href": "/collections/adobe-premiere" },
+          { "title": "Final Cut Pro", "href": "/collections/final-cut-pro" },
+          { "title": "CapCut", "href": "/collections/capcut" },
+          { "title": "After Effects", "href": "/collections/adobe-after-effects" },
+          { "title": "Photoshop", "href": "/collections/adobe-photoshop" } ] },
+        { "title": "Browse by Type", "href": "/collections/all", "children": [
+          { "title": "Bundles", "href": "/collections/bundles" },
+          { "title": "Color", "href": "/collections/color" },
+          { "title": "Effects", "href": "/collections/effects" },
+          { "title": "Mobile", "href": "/collections/mobile" },
+          { "title": "Overlays", "href": "/collections/overlays" },
+          { "title": "Textures", "href": "/collections/textures" },
+          { "title": "Title Templates", "href": "/collections/title-templates" },
+          { "title": "Transitions", "href": "/collections/transitions" } ] },
+        { "title": "SALE", "href": "/collections/sale" },
+        { "title": "Free", "href": "/collections/free" },
+        { "title": "Fonts", "href": "/collections/fonts" } ] },
+      { "title": "Contact", "href": "/pages/contact" }
+    ]
+  },
+  "footer": {
+    "scheme": "scheme-2",
+    "utilitiesScheme": "scheme-1",
+    "copyright": "MoonBear.shop",
+    "menus": [
+      { "title": "Footer menu", "links": [
+        { "title": "Search", "href": "/search" }, { "title": "Policy", "href": "/policies/refund-policy" },
+        { "title": "Privacy Policy", "href": "/policies/privacy-policy" }, { "title": "Stock Image Visuals", "href": "https://shotclubai.com" } ] },
+      { "title": "Browse by Asset Type", "links": [
+        { "title": "Bundles", "href": "/collections/bundles" }, { "title": "LUTs & Color Filters", "href": "/collections/color" },
+        { "title": "Effects", "href": "/collections/effects" }, { "title": "Fonts", "href": "/collections/fonts" },
+        { "title": "Free Assets", "href": "/collections/free" }, { "title": "Mobile", "href": "/collections/mobile" },
+        { "title": "Overlays", "href": "/collections/overlays" }, { "title": "Textures", "href": "/collections/textures" },
+        { "title": "Title Templates", "href": "/collections/title-templates" }, { "title": "Transitions", "href": "/collections/transitions" },
+        { "title": "Products on SALE", "href": "/collections/sale" } ] },
+      { "title": "Browse by Software", "links": [
+        { "title": "Adobe After Effects", "href": "/collections/adobe-after-effects" }, { "title": "Adobe Premiere", "href": "/collections/adobe-premiere" },
+        { "title": "Adobe Photoshop", "href": "/collections/adobe-photoshop" }, { "title": "CapCut", "href": "/collections/capcut" },
+        { "title": "DaVinci Resolve", "href": "/collections/davinci-resolve" }, { "title": "Final Cut Pro", "href": "/collections/final-cut-pro" },
+        { "title": "Luma Fusion", "href": "/products/replica-luma-fusion-title-presets" }, { "title": "Sony Vegas", "href": "/collections/sony-vegas" },
+        { "title": "Avid Media Composer", "href": "/collections/avid-media-composer" } ] }
+    ],
+    "policies": [
+      { "title": "Privacy policy", "href": "/policies/privacy-policy" }, { "title": "Terms of service", "href": "/policies/terms-of-service" },
+      { "title": "Refund policy", "href": "/policies/refund-policy" }, { "title": "Shipping policy", "href": "/policies/shipping-policy" },
+      { "title": "Contact information", "href": "/policies/contact-information" }
+    ]
+  },
+  "blogBase": "https://moonbear.shop",
+  "collectionScheme": "scheme-2",
+  "collections": {
+    "bundles": { "title": "Bundles", "match": ["bundle"] },
+    "color": { "title": "LUTs & Color Filters", "match": ["lut", "color", "colour", "grade", "preset"] },
+    "effects": { "title": "Effects", "match": ["effect", "glitch", "blur", "halation", "fx"] },
+    "fonts": { "title": "Fonts", "match": ["font", "typeface"] },
+    "mobile": { "title": "Mobile", "match": ["mobile", "capcut"] },
+    "mockups": { "title": "Mockups", "match": ["mockup", "mock-up", "mock up"] },
+    "overlays": { "title": "Overlays", "match": ["overlay", "frame"] },
+    "textures": { "title": "Textures", "match": ["texture", "grain", "film"] },
+    "title-templates": { "title": "Title Templates", "match": ["title", "text preset"] },
+    "transitions": { "title": "Transitions", "match": ["transition"] },
+    "adobe-after-effects": { "title": "Adobe After Effects", "match": ["after effects", "after-effects"] },
+    "adobe-premiere": { "title": "Adobe Premiere", "match": ["premiere"] },
+    "adobe-photoshop": { "title": "Adobe Photoshop", "match": ["photoshop"] },
+    "davinci-resolve": { "title": "DaVinci Resolve", "match": ["davinci", "resolve"] },
+    "final-cut-pro": { "title": "Final Cut Pro", "match": ["final cut", "fcpx"] },
+    "capcut": { "title": "CapCut", "match": ["capcut"] }
+  },
+  "productTemplates": [
+    { "suffix": "", "label": "Default product" },
+    { "suffix": "analogue-effect", "label": "Analogue FX" },
+    { "suffix": "best-sellers", "label": "Best sellers bundle" },
+    { "suffix": "cinefilm", "label": "CINEFILM (LUT pack)" },
+    { "suffix": "complete-access", "label": "Complete Access bundle" },
+    { "suffix": "dream-er-2", "label": "Dream-er 2" },
+    { "suffix": "halation", "label": "Film Halation" },
+    { "suffix": "invoice", "label": "Invoice template" },
+    { "suffix": "palette_1", "label": "Palette" },
+    { "suffix": "replica-2", "label": "Replica 2" },
+    { "suffix": "replica3.novideo", "label": "Replica 3" },
+    { "suffix": "shotclub-ai", "label": "ShotClub AI" },
+    { "suffix": "textbundle2026", "label": "Title Presets bundle 2026" }
+  ]
+}

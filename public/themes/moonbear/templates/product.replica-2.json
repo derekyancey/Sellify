@@ -1,0 +1,1260 @@
+{
+ "sections": [
+  {
+   "id": "main",
+   "scheme": "scheme-2",
+   "type": "main-product",
+   "style": {
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 100px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 25px))",
+    "--gap": "24px"
+   },
+   "mediaPosition": "left",
+   "split": "half",
+   "gallery": {
+    "t": "gallery",
+    "layout": "carousel",
+    "thumbnails": true,
+    "columns": 2,
+    "extend": true,
+    "style": {
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px",
+     "--padding-inline-start": "0px",
+     "--padding-inline-end": "0px",
+     "--thumbnail-width": "48px",
+     "--media-radius": "0px",
+     "--image-gap": "0px"
+    }
+   },
+   "details": [
+    {
+     "t": "group",
+     "style": {
+      "--border-width": "1px",
+      "--border-style": "none",
+      "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+      "--border-radius": "0px",
+      "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+      "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))",
+      "--padding-inline-start": "0px",
+      "--padding-inline-end": "0px",
+      "--size-style-width": "100%",
+      "--size-style-height": "fit",
+      "--size-style-width-mobile": "100%",
+      "--size-style-width-mobile-min": "5rem",
+      "--flex-direction": "column",
+      "--flex-wrap": "nowrap",
+      "--flex-wrap-mobile": "wrap",
+      "--gap": "24px"
+     },
+     "children": [
+      {
+       "t": "group",
+       "style": {
+        "--border-width": "1px",
+        "--border-style": "none",
+        "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+        "--border-radius": "0px",
+        "--padding-block-start": "0px",
+        "--padding-block-end": "0px",
+        "--padding-inline-start": "0px",
+        "--padding-inline-end": "0px",
+        "--size-style-width": "100%",
+        "--size-style-height": "fit",
+        "--size-style-width-mobile": "100%",
+        "--size-style-width-mobile-min": "5rem",
+        "--flex-direction": "column",
+        "--flex-wrap": "nowrap",
+        "--flex-wrap-mobile": "wrap",
+        "--gap": "12px",
+        "--horizontal-alignment": "flex-start",
+        "--vertical-alignment": "center",
+        "--vertical-alignment-mobile": "center"
+       },
+       "children": [
+        {
+         "t": "title",
+         "cls": "h1",
+         "style": {
+          "--padding-block-start": "0px",
+          "--padding-block-end": "0px",
+          "--padding-inline-start": "0px",
+          "--padding-inline-end": "0px",
+          "--color": "var(--color-foreground-heading)",
+          "--width": "fit-content",
+          "--max-width": "var(--max-width--body-normal)"
+         }
+        },
+        {
+         "t": "group",
+         "style": {
+          "--border-width": "1px",
+          "--border-style": "none",
+          "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+          "--border-radius": "0px",
+          "--padding-block-start": "0px",
+          "--padding-block-end": "0px",
+          "--padding-inline-start": "0px",
+          "--padding-inline-end": "0px",
+          "--size-style-width": "100%",
+          "--size-style-height": "fit",
+          "--size-style-width-mobile": "100%",
+          "--size-style-width-mobile-min": "5rem",
+          "--flex-direction": "row",
+          "--flex-wrap": "nowrap",
+          "--flex-wrap-mobile": "wrap",
+          "--gap": "24px",
+          "--horizontal-alignment": "flex-start",
+          "--vertical-alignment": "center",
+          "--vertical-alignment-mobile": "center"
+         },
+         "children": [
+          {
+           "t": "price",
+           "style": {
+            "--color": "var(--color-foreground)",
+            "--padding-block-start": "4px",
+            "--padding-block-end": "0px",
+            "--padding-inline-start": "0px",
+            "--padding-inline-end": "0px",
+            "--width": "100%"
+           },
+           "taxNote": true
+          }
+         ],
+         "mobileColumn": true,
+         "sizes": [
+          "height-fit",
+          "width-fill"
+         ]
+        }
+       ],
+       "mobileColumn": true,
+       "sizes": [
+        "height-fit",
+        "width-fill"
+       ]
+      },
+      {
+       "t": "buy",
+       "accelerated": true
+      },
+      {
+       "t": "accordion",
+       "style": {
+        "--summary-font-family": "var(--font-h6--family)",
+        "--summary-font-style": "var(--font-h6--style)",
+        "--summary-font-weight": "var(--font-h6--weight)",
+        "--summary-font-size": "var(--font-h6--size)",
+        "--summary-font-line-height": "var(--font-h6--line-height)",
+        "--summary-font-case": "var(--font-h6--case)",
+        "--padding-block-start": "20px",
+        "--padding-block-end": "0px",
+        "--padding-inline-start": "0px",
+        "--padding-inline-end": "0px",
+        "--border-width": "1px",
+        "--border-style": "none",
+        "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+        "--border-radius": "0px"
+       },
+       "items": [
+        {
+         "title": "What's included",
+         "open": true,
+         "children": [
+          {
+           "t": "text",
+           "cls": "rte",
+           "style": {
+            "--padding-block-start": "0px",
+            "--padding-block-end": "0px",
+            "--padding-inline-start": "0px",
+            "--padding-inline-end": "0px",
+            "--width": "100%",
+            "--max-width": "var(--max-width--body-normal)",
+            "--text-align": "left"
+           },
+           "html": "<p>81 title presets inspired by music videos, built for directors and editors looking for complex unique designs.</p>"
+          }
+         ]
+        },
+        {
+         "title": "Compatibility",
+         "open": false,
+         "children": [
+          {
+           "t": "text",
+           "cls": "rte",
+           "style": {
+            "--padding-block-start": "0px",
+            "--padding-block-end": "0px",
+            "--padding-inline-start": "0px",
+            "--padding-inline-end": "0px",
+            "--width": "100%",
+            "--max-width": "var(--max-width--body-normal)",
+            "--text-align": "left"
+           },
+           "html": "<p>After Effects | Premiere Pro | Final Cut Pro | DaVinci Resolve</p>"
+          }
+         ]
+        },
+        {
+         "title": "Licence info",
+         "open": false,
+         "children": [
+          {
+           "t": "text",
+           "cls": "rte",
+           "style": {
+            "--padding-block-start": "0px",
+            "--padding-block-end": "0px",
+            "--padding-inline-start": "0px",
+            "--padding-inline-end": "0px",
+            "--width": "100%",
+            "--max-width": "var(--max-width--body-normal)",
+            "--text-align": "left"
+           },
+           "html": "<p>License covers personal and commercial use. Pre-cleared for Youtube. For broadcast, please request an extended license at hello@MoonBear.shop</p>"
+          }
+         ]
+        }
+       ],
+       "plus": true,
+       "dividers": true
+      }
+     ],
+     "sizes": [
+      "height-fit",
+      "width-fill"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "section_hVnwkn",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "16px",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 32px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 32px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "16px",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 32px))",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 32px))"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "row",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "space-between",
+       "--vertical-alignment": "last baseline",
+       "--vertical-alignment-mobile": "flex-end"
+      },
+      "children": [],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "section_bg8fAx",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--section-min-height": "var(--section-height-small)",
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "12px",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "0px",
+    "--padding-block-end": "0px"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "12px",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "row",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "group",
+        "style": {
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--size-style-width": "100%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "100%",
+         "--size-style-width-mobile-min": "5rem",
+         "--flex-direction": "column",
+         "--flex-wrap": "nowrap",
+         "--flex-wrap-mobile": "wrap",
+         "--gap": "12px",
+         "--horizontal-alignment": "flex-start",
+         "--vertical-alignment": "center",
+         "--vertical-alignment-mobile": "center"
+        },
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "fit-content",
+           "--max-width": "var(--max-width--body-normal)"
+          },
+          "html": "<h2>Replica 2 - Title Presets - </h2>"
+         },
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "fit-content",
+           "--max-width": "var(--max-width--body-normal)"
+          },
+          "html": "<p>Bring cinematic title design to your edits. <em>Replica 3</em> is MoonBear’s ultimate experience in motion titles: polished, powerful, and packed with presets that turn any scene into a visual anthem. </p><p>Perfect for music videos, trailers, stylized intros — when you want your text to <em>hit</em> as hard as your visuals.</p>"
+         }
+        ],
+        "mobileColumn": true,
+        "sizes": [
+         "height-fit",
+         "width-fill"
+        ]
+       },
+       {
+        "t": "accordion",
+        "style": {
+         "--summary-font-family": "var(--font-h6--family)",
+         "--summary-font-style": "var(--font-h6--style)",
+         "--summary-font-weight": "var(--font-h6--weight)",
+         "--summary-font-size": "var(--font-h6--size)",
+         "--summary-font-line-height": "var(--font-h6--line-height)",
+         "--summary-font-case": "var(--font-h6--case)",
+         "--padding-block-start": "20px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px"
+        },
+        "items": [
+         {
+          "title": "What's included",
+          "open": true,
+          "children": [
+           {
+            "t": "text",
+            "cls": "rte",
+            "style": {
+             "--padding-block-start": "0px",
+             "--padding-block-end": "0px",
+             "--padding-inline-start": "0px",
+             "--padding-inline-end": "0px",
+             "--width": "100%",
+             "--max-width": "var(--max-width--body-normal)",
+             "--text-align": "left"
+            },
+            "html": "<p>81 title presets inspired by music videos, built for directors and editors looking for complex unique designs.</p>"
+           }
+          ]
+         },
+         {
+          "title": "Compatibility",
+          "open": false,
+          "children": [
+           {
+            "t": "text",
+            "cls": "rte",
+            "style": {
+             "--padding-block-start": "0px",
+             "--padding-block-end": "0px",
+             "--padding-inline-start": "0px",
+             "--padding-inline-end": "0px",
+             "--width": "100%",
+             "--max-width": "var(--max-width--body-normal)",
+             "--text-align": "left"
+            },
+            "html": "<p>After Effects | Premiere Pro | Final Cut Pro | DaVinci Resolve</p>"
+           }
+          ]
+         },
+         {
+          "title": "Licence info",
+          "open": false,
+          "children": [
+           {
+            "t": "text",
+            "cls": "rte",
+            "style": {
+             "--padding-block-start": "0px",
+             "--padding-block-end": "0px",
+             "--padding-inline-start": "0px",
+             "--padding-inline-end": "0px",
+             "--width": "100%",
+             "--max-width": "var(--max-width--body-normal)",
+             "--text-align": "left"
+            },
+            "html": "<p>License covers personal and commercial use. Pre-cleared for Youtube. For broadcast, please request an extended license at hello@MoonBear.shop</p>"
+           }
+          ]
+         }
+        ],
+        "plus": true,
+        "dividers": true
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "section_zGLKh6",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "row",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "row",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "image",
+      "image": "https://moonbear.shop/cdn/shop/files/REPLIXA_2_-_gif_11-2.gif?v=1786215926",
+      "alt": "",
+      "style": {
+       "--ratio": "1.7777777777777777",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px"
+      }
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "text",
+        "cls": "h2",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground)",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<p>Make your text stand out</p>"
+       },
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<p>Replica 2 title templates make your title designs pulse, pop, and move from subtle overlay to headline-grabbing kinetic motion. </p><p>Every preset is built to take your project futher.</p>"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-custom"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "hero_LfH7Mx",
+   "scheme": "scheme-5",
+   "type": "hero",
+   "style": {
+    "--blur-opacity": "0.75",
+    "--hero-min-height": "var(--section-height-small)",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))",
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "0px",
+    "--horizontal-alignment": "center",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center"
+   },
+   "media": [
+    {
+     "image": "https://moonbear.shop/cdn/shop/files/frame-000327.jpg?v=1785388502",
+     "alt": "Minimalist title preset by moonbear.shop displayed on a clean, modern digital graphic with sleek font design.",
+     "desktop": true,
+     "mobile": true
+    }
+   ],
+   "overlay": {
+    "--overlay-layer": "var(--layer-flat)",
+    "--overlay-color": "#00000026",
+    "--overlay-color--end": "rgba(0, 0, 0, 0)",
+    "--overlay-direction": "to top",
+    "kind": "gradient"
+   },
+   "href": null,
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "0px",
+     "--horizontal-alignment": "center",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center"
+    },
+    "mobileColumn": true,
+    "children": []
+   }
+  },
+  {
+   "id": "blocks_8PQazf",
+   "scheme": "scheme-2",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "12px",
+    "--horizontal-alignment": "center",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "0px",
+    "--padding-block-end": "0px"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "12px",
+     "--horizontal-alignment": "center",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "html",
+      "html": "<div class=\"ai-image-gallery-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\">\n<div class=\"ai-image-gallery__container-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\">\n<div class=\"ai-image-gallery__grid-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\">\n<div class=\"ai-image-gallery__item-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\">\n<img alt=\"Kendrick screenshot showcasing the Replica 2 Title Presets by moonbear.shop for customizable video titles.\" class=\"ai-image-gallery__image-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/Kendrick_Screenshot.jpg?v=1785388502&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\">\n<img alt=\"Moonbear.shop best sellers bundle featuring multiple popular products in a colorful, eye-catching display.\" class=\"ai-image-gallery__image-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/REPLIXA_2_-_gif_5.gif?v=1785388485&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\">\n<img alt=\"Screenshot of Bjork title preset from Replica 2 Title Presets by moonbear.shop, showcasing stylized text design for creative projects.\" class=\"ai-image-gallery__image-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/Bjork_Screenshot.jpg?v=1785388502&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\">\n<img alt=\"Moonbear.shop Best Sellers Bundle featuring multiple popular products in a colorful, eye-catching display.\" class=\"ai-image-gallery__image-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/REPLIXA_2_-_gif_7.gif?v=1785388485&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\">\n<img alt=\"Animated GIF of Replica 2 Title Preset by moonbear.shop, showcasing a stylish text animation design.\" class=\"ai-image-gallery__image-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\" height=\"304\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/Replica2.gif?v=1785388501&amp;width=800\" width=\"540\"/>\n</div>\n<div class=\"ai-image-gallery__item-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\">\n<img alt=\"\" class=\"ai-image-gallery__image-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/newfreezer_Screenshot.jpg?v=1786215901&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\">\n<img alt=\"Close-up of textured graphic design details from IKONIK collection by moonbear.shop, showcasing intricate patterns and textures.\" class=\"ai-image-gallery__image-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/frame-000620.jpg?v=1785388550&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\">\n<img alt=\"\" class=\"ai-image-gallery__image-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/JID_Screenshot.jpg?v=1786215892&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\">\n<img alt=\"Close-up of textured graphic design details from IKONIK collection by moonbear.shop, showcasing intricate patterns and visual textures.\" class=\"ai-image-gallery__image-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/frame-000465.jpg?v=1785388551&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\">\n<img alt=\"Moonbear.shop Luma Fusion title preset frame, showcasing stylish video title design with vibrant colors and modern typography.\" class=\"ai-image-gallery__image-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/frame-000006.jpg?v=1785388513&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\">\n<img alt=\"\" class=\"ai-image-gallery__image-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/Porsche_Screenshot.jpg?v=1786215898&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\">\n<img alt=\"\" class=\"ai-image-gallery__image-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/Reel_It_In_Screenshot.jpg?v=1786215901&amp;width=800\" width=\"1920\"/>\n</div>\n</div>\n</div>\n</div>",
+      "css": "\n  .ai-image-gallery-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk {\n    width: 100%;\n    padding: 40px 0;\n  }\n\n  .ai-image-gallery__container-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk {\n    max-width: 1200px;\n    margin: 0 auto;\n    padding: 0 20px;\n  }\n\n  .ai-image-gallery__grid-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk {\n    display: grid;\n    grid-template-columns: repeat(3, 1fr);\n    gap: 16px;\n    margin-top: 24px;\n  }\n\n  .ai-image-gallery__title-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk {\n    text-align: center;\n    color: #000000;\n    font-size: 32px;\n    margin: 0;\n  }\n\n  .ai-image-gallery__item-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk {\n    position: relative;\n    overflow: hidden;\n    border-radius: 8px;\n    background-color: #f4f4f4;\n    aspect-ratio: 16/9;\n  }\n\n  .ai-image-gallery__image-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk {\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n    transition: transform 0.3s ease;\n  }\n\n  .ai-image-gallery__placeholder-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk {\n    width: 100%;\n    height: 100%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    background-color: #f4f4f4;\n    position: relative;\n  }\n\n  .ai-image-gallery__placeholder-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk svg {\n    width: 60%;\n    height: 60%;\n    opacity: 0.3;\n  }\n\n  .ai-image-gallery__empty-state-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk {\n    position: absolute;\n    bottom: 10px;\n    left: 50%;\n    transform: translateX(-50%);\n    font-size: 12px;\n    color: #666;\n    text-align: center;\n    pointer-events: none;\n  }\n\n  \n    .ai-image-gallery__item-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk {\n      transition: transform 0.3s ease, box-shadow 0.3s ease;\n    }\n    .ai-image-gallery__item-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk:hover {\n      transform: translateY(-5px);\n      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);\n    }\n  \n\n  .ai-image-gallery__overlay-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk {\n    position: absolute;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    background: linear-gradient(\n      to bottom,\n      rgba(0, 0, 0, 0) 0%,\n      rgba(0, 0, 0, 0.4) 100%\n    );\n    opacity: 0;\n    transition: opacity 0.3s ease;\n    display: flex;\n    align-items: flex-end;\n    padding: 20px;\n  }\n\n  \n\n  .ai-image-gallery__caption-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk {\n    color: white;\n    font-size: 14px;\n    font-weight: 500;\n  }\n\n  @media screen and (max-width: 768px) {\n    .ai-image-gallery__grid-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk {\n      grid-template-columns: repeat(2, 1fr);\n      gap: 12.0px;\n    }\n\n    .ai-image-gallery__container-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk {\n      padding: 0 15px;\n    }\n  }\n\n  @media screen and (max-width: 480px) {\n    .ai-image-gallery__grid-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk {\n      grid-template-columns: repeat(2, 1fr);\n      gap: 8.0px;\n    }\n\n    .ai-image-gallery__title-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk {\n      font-size: 25.6px;\n    }\n\n    .ai-image-gallery__container-awkpodenlcjdstgfduaigenblockf4be74ejtzcyk {\n      padding: 0 10px;\n    }\n  }\n"
+     }
+    ]
+   }
+  },
+  {
+   "id": "section_QMrnk7",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "row",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "16px",
+    "--horizontal-alignment": "space-between",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "row",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "16px",
+     "--horizontal-alignment": "space-between",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "16px",
+       "--horizontal-alignment": "center",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "group",
+        "style": {
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--size-style-width": "100%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "100%",
+         "--size-style-width-mobile-min": "5rem",
+         "--flex-direction": "column",
+         "--flex-wrap": "nowrap",
+         "--flex-wrap-mobile": "wrap",
+         "--gap": "4px",
+         "--horizontal-alignment": "flex-start",
+         "--vertical-alignment": "center",
+         "--vertical-alignment-mobile": "center"
+        },
+        "children": [
+         {
+          "t": "text",
+          "cls": "h3",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--color": "var(--color-foreground)",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "center"
+          },
+          "html": "<p><strong>Full Customization</strong></p>"
+         },
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "center"
+          },
+          "html": "<p>Tweak fonts, colors, motion, size — mix &amp; match to suit your vibe.</p>"
+         }
+        ],
+        "mobileColumn": true,
+        "sizes": [
+         "height-fit",
+         "width-fill"
+        ]
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "16px",
+       "--horizontal-alignment": "center",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "group",
+        "style": {
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--size-style-width": "100%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "100%",
+         "--size-style-width-mobile-min": "5rem",
+         "--flex-direction": "column",
+         "--flex-wrap": "nowrap",
+         "--flex-wrap-mobile": "wrap",
+         "--gap": "4px",
+         "--horizontal-alignment": "flex-start",
+         "--vertical-alignment": "center",
+         "--vertical-alignment-mobile": "center"
+        },
+        "children": [
+         {
+          "t": "text",
+          "cls": "h3",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--color": "var(--color-foreground)",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "center"
+          },
+          "html": "<p><strong>81 Styles</strong></p>"
+         },
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "center"
+          },
+          "html": "<p>A massive set of expressive title presets covering everything from clean modern to chaotic energy.</p>"
+         }
+        ],
+        "mobileColumn": true,
+        "sizes": [
+         "height-fit",
+         "width-fill"
+        ]
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "16px",
+       "--horizontal-alignment": "center",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "group",
+        "style": {
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--size-style-width": "100%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "100%",
+         "--size-style-width-mobile-min": "5rem",
+         "--flex-direction": "column",
+         "--flex-wrap": "nowrap",
+         "--flex-wrap-mobile": "wrap",
+         "--gap": "4px",
+         "--horizontal-alignment": "flex-start",
+         "--vertical-alignment": "center",
+         "--vertical-alignment-mobile": "center"
+        },
+        "children": [
+         {
+          "t": "text",
+          "cls": "h3",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--color": "var(--color-foreground)",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "center"
+          },
+          "html": "<p><strong>Cross-Platform Support</strong></p>"
+         },
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "center"
+          },
+          "html": "<p>Works natively in Premiere Pro, Final Cut Pro, After Effects, DaVinci Resolve, and Photoshop.</p>"
+         }
+        ],
+        "mobileColumn": true,
+        "sizes": [
+         "height-fit",
+         "width-fill"
+        ]
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "17581248119f5690c4",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "row",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "12px",
+    "--horizontal-alignment": "center",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "0px",
+    "--padding-block-end": "0px"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "row",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "12px",
+     "--horizontal-alignment": "center",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px"
+    },
+    "mobileColumn": true,
+    "children": []
+   }
+  },
+  {
+   "id": "blocks_6jJG4B",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "12px",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "0px",
+    "--padding-block-end": "0px"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "12px",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "html",
+      "html": "<definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw class=\"ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw\">\n<div class=\"ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw__content\">\n<h3 aria-expanded=\"false\" class=\"ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw__term\" role=\"button\" tabindex=\"0\">\n      What Are Replica 2 - Title Presets?\n      \n        <span class=\"ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw__pronunciation\">/ ˈrepləkə /</span>\n<svg class=\"ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw__icon\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" viewbox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">\n<polyline points=\"6,9 12,15 18,9\"></polyline>\n</svg>\n</h3>\n<div class=\"ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw__definition\">\n<p>Replica 2 - Title Presets is a collection of 81   made for video editors who demand visual identity.</p><p>These are ready-to-use text animations packed with style — not templates you have to rebuild.</p><p>They include built-in fonts, a variety of styles, and full control over color, scale, timing, and layout.</p><p>Think: professional titles without the tedious setup.</p>\n</div>\n</div>\n</definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw>",
+      "css": "\n  .ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw {\n    background-color: #f8f9fa;\n    border-radius: 12px;\n    padding: 32px;\n    max-width: 600px;\n    margin: 0 auto;\n    position: relative;\n    overflow: hidden;\n  }\n\n  .ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw::before {\n    content: '';\n    position: absolute;\n    top: 0;\n    left: -100%;\n    width: 100%;\n    height: 100%;\n    background: linear-gradient(\n      90deg,\n      transparent,\n      #ce313120,\n      transparent\n    );\n    transition: left 0.6s ease;\n  }\n\n  .ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw:hover::before {\n    left: 100%;\n  }\n\n  .ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw__content {\n    position: relative;\n    z-index: 2;\n  }\n\n  .ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw__term {\n    color: #1a1a1a;\n    font-size: 24px;\n    font-weight: 700;\n    margin: 0 0 16px 0;\n    cursor: pointer;\n    display: flex;\n    align-items: center;\n    gap: 12px;\n    transition: color 0.3s ease;\n  }\n\n  .ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw__term:hover {\n    color: #ce3131;\n  }\n\n  .ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw__icon {\n    width: 24px;\n    height: 24px;\n    transition: transform 0.3s ease;\n    color: #ce3131;\n  }\n\n  .ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw__icon.rotated {\n    transform: rotate(180deg);\n  }\n\n  .ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw__definition {\n    color: #4a5568;\n    font-size: 16px;\n    line-height: 1.6;\n    margin: 0;\n    max-height: 0;\n    opacity: 0;\n    overflow: hidden;\n    transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease;\n  }\n\n  .ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw__definition.expanded {\n    max-height: 200px;\n    opacity: 1;\n    padding-top: 16px;\n  }\n\n  .ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw__examples {\n    margin-top: 16px;padding-top: 16px;\n    border-top: 1px solid #e2e8f0;\n  }\n\n  .ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw__examples-title {\n    color: #ce3131;\n    font-size: 14px;\n    font-weight: 600;\n    margin: 0 0 8px 0;\n    text-transform: uppercase;\n    letter-spacing: 0.5px;\n  }\n\n  .ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw__examples-list {\n    color: #4a5568;\n    font-size: 15px;\n    margin: 0;\n    padding-left: 20px;\n  }\n\n  .ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw__examples-list li {\n    margin-bottom: 4px;\n  }\n\n  .ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw__pronunciation {\n    color: #ce3131;\n    font-size: 14px;\n    font-style: italic;\n    margin-left: 8px;\n    opacity: 0.8;\n  }\n\n  @media screen and (max-width: 749px) {\n    .ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw {\n      padding: 24.0px;\n    }\n\n    .ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw__term {\n      font-size: 21.6px;\n    }\n\n    .ai-definition-panel-actlwvet3tgvgrtbvsaigenblock40b610ayuk4aw__definition {\n      font-size: 14.4px;\n    }\n  }\n"
+     },
+     {
+      "t": "accordion",
+      "style": {
+       "--summary-font-family": "var(--font-h6--family)",
+       "--summary-font-style": "var(--font-h6--style)",
+       "--summary-font-weight": "var(--font-h6--weight)",
+       "--summary-font-size": "var(--font-h6--size)",
+       "--summary-font-line-height": "var(--font-h6--line-height)",
+       "--summary-font-case": "var(--font-h6--case)",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px"
+      },
+      "items": [
+       {
+        "title": "Description",
+        "open": true,
+        "children": [
+         {
+          "t": "description"
+         }
+        ]
+       }
+      ],
+      "plus": false,
+      "dividers": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "section_cnKqnH",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "text",
+      "cls": "rte",
+      "style": {
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--width": "fit-content",
+       "--max-width": "var(--max-width--body-narrow)"
+      },
+      "html": "<h3>Frequently asked questions</h3>"
+     },
+     {
+      "t": "accordion",
+      "style": {
+       "--summary-font-family": "var(--font-h5--family)",
+       "--summary-font-style": "var(--font-h5--style)",
+       "--summary-font-weight": "var(--font-h5--weight)",
+       "--summary-font-size": "var(--font-h5--size)",
+       "--summary-font-line-height": "var(--font-h5--line-height)",
+       "--summary-font-case": "var(--font-h5--case)",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px"
+      },
+      "items": [
+       {
+        "title": "Which software are these presets compatible with?",
+        "open": false,
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>Replica 3 works in all the majors — Premiere Pro, Final Cut Pro, After Effects, DaVinci Resolve, and Photoshop. No obscure plugins required. moonbear.shop</p>"
+         }
+        ]
+       },
+       {
+        "title": "Can I change the fonts, colors, and animation settings?",
+        "open": false,
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>Yes. Every preset is fully customizable: edit text, adjust color, size, timing, animation style to fit your project. moonbear.shop</p>"
+         }
+        ]
+       },
+       {
+        "title": "Do these come with fonts?",
+        "open": false,
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>Yes — Replica 3 includes exclusive MoonBear-designed fonts like Wasted, Schoolyard, Spazz, Soap, Off-Vibe, and Vibe to give your titles character. moonbear.shop</p>"
+         }
+        ]
+       }
+      ],
+      "plus": false,
+      "dividers": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "product-recommendations",
+   "scheme": "scheme-1",
+   "type": "product-recommendations",
+   "style": {
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 24px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 24px))",
+    "--gap": "24px",
+    "--resource-list-column-gap-desktop": "12px",
+    "--resource-list-row-gap-desktop": "12px",
+    "--resource-list-columns": "repeat(4, 1fr)",
+    "--resource-list-columns-mobile": "repeat(2, 1fr)"
+   },
+   "heading": "Complete your collection"
+  }
+ ]
+}

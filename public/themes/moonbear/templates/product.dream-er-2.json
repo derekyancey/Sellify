@@ -1,0 +1,671 @@
+{
+ "sections": [
+  {
+   "id": "main",
+   "scheme": "scheme-1",
+   "type": "main-product",
+   "style": {
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 24px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 23px))",
+    "--gap": "12px"
+   },
+   "mediaPosition": "left",
+   "split": "half",
+   "gallery": {
+    "t": "gallery",
+    "layout": "carousel",
+    "thumbnails": true,
+    "columns": 2,
+    "extend": false,
+    "style": {
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px",
+     "--padding-inline-start": "12px",
+     "--padding-inline-end": "12px",
+     "--thumbnail-width": "44px",
+     "--media-radius": "12px",
+     "--image-gap": "4px"
+    }
+   },
+   "details": [
+    {
+     "t": "group",
+     "style": {
+      "--border-width": "1px",
+      "--border-style": "none",
+      "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+      "--border-radius": "0px",
+      "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 24px))",
+      "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 24px))",
+      "--padding-inline-start": "0px",
+      "--padding-inline-end": "0px",
+      "--size-style-width": "100%",
+      "--size-style-height": "100%",
+      "--size-style-width-mobile": "100%",
+      "--size-style-width-mobile-min": "5rem",
+      "--flex-direction": "column",
+      "--flex-wrap": "nowrap",
+      "--flex-wrap-mobile": "wrap",
+      "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 28px))"
+     },
+     "children": [
+      {
+       "t": "image",
+       "image": "https://moonbear.shop/cdn/shop/files/DREAM-ER2Cover.webp?v=1785388513",
+       "alt": "Star effect filter for cameras, DREAM-ER 2 by moonbear.shop, showing the filter's star-shaped light pattern.",
+       "style": {
+        "--ratio": "1.0",
+        "--size-style-width": "100%",
+        "--size-style-height": "fit",
+        "--size-style-width-mobile": "100%",
+        "--size-style-width-mobile-min": "5rem",
+        "--padding-block-start": "0px",
+        "--padding-block-end": "0px",
+        "--padding-inline-start": "0px",
+        "--padding-inline-end": "0px",
+        "--border-width": "1px",
+        "--border-style": "none",
+        "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+        "--border-radius": "0px"
+       },
+       "dynamic": "featured"
+      },
+      {
+       "t": "group",
+       "style": {
+        "--border-width": "1px",
+        "--border-style": "none",
+        "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+        "--border-radius": "0px",
+        "--padding-block-start": "0px",
+        "--padding-block-end": "0px",
+        "--padding-inline-start": "0px",
+        "--padding-inline-end": "0px",
+        "--size-style-width": "100%",
+        "--size-style-height": "fit",
+        "--size-style-width-mobile": "100%",
+        "--size-style-width-mobile-min": "5rem",
+        "--flex-direction": "column",
+        "--flex-wrap": "nowrap",
+        "--flex-wrap-mobile": "wrap",
+        "--gap": "12px",
+        "--horizontal-alignment": "flex-start",
+        "--vertical-alignment": "center",
+        "--vertical-alignment-mobile": "center"
+       },
+       "children": [
+        {
+         "t": "title",
+         "cls": "h1",
+         "style": {
+          "--padding-block-start": "0px",
+          "--padding-block-end": "0px",
+          "--padding-inline-start": "0px",
+          "--padding-inline-end": "0px",
+          "--color": "var(--color-foreground-heading)",
+          "--width": "100%",
+          "--max-width": "var(--max-width--body-normal)",
+          "--text-align": "left"
+         }
+        },
+        {
+         "t": "price",
+         "style": {
+          "--color": "var(--color-foreground)",
+          "--padding-block-start": "4px",
+          "--padding-block-end": "0px",
+          "--padding-inline-start": "0px",
+          "--padding-inline-end": "0px",
+          "--width": "100%"
+         },
+         "taxNote": false
+        }
+       ],
+       "mobileColumn": true,
+       "sizes": [
+        "height-fit",
+        "width-fill"
+       ]
+      },
+      {
+       "t": "accordion",
+       "style": {
+        "--summary-font-family": "var(--font-h6--family)",
+        "--summary-font-style": "var(--font-h6--style)",
+        "--summary-font-weight": "var(--font-h6--weight)",
+        "--summary-font-size": "var(--font-h6--size)",
+        "--summary-font-line-height": "var(--font-h6--line-height)",
+        "--summary-font-case": "var(--font-h6--case)",
+        "--padding-block-start": "0px",
+        "--padding-block-end": "0px",
+        "--padding-inline-start": "0px",
+        "--padding-inline-end": "0px",
+        "--border-width": "1px",
+        "--border-style": "none",
+        "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+        "--border-radius": "0px"
+       },
+       "items": [
+        {
+         "title": "Description",
+         "open": false,
+         "children": [
+          {
+           "t": "description"
+          }
+         ]
+        }
+       ],
+       "plus": true,
+       "dividers": true
+      },
+      {
+       "t": "buy",
+       "accelerated": false
+      }
+     ],
+     "sizes": [
+      "height-fill",
+      "width-fill"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "section_niQTzg",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--section-min-height": "var(--section-height-small)",
+    "--flex-direction": "row",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "12px",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "0px",
+    "--padding-block-end": "0px"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "row",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "12px",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "image",
+        "image": "https://moonbear.shop/cdn/shop/files/frame-000238.jpg?v=1786215853",
+        "alt": "",
+        "style": {
+         "--ratio": "1.7777777777777777",
+         "--size-style-width": "100%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "100%",
+         "--size-style-width-mobile-min": "5rem",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px"
+        }
+       },
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<h3>Subtle looks</h3>"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "image",
+        "image": "https://moonbear.shop/cdn/shop/files/frame-000268.jpg?v=1786215854",
+        "alt": "",
+        "style": {
+         "--ratio": "1.7777777777777777",
+         "--size-style-width": "100%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "100%",
+         "--size-style-width-mobile-min": "5rem",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px"
+        }
+       },
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<h3>Dramatic flare</h3>"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "section_gUa6Eh",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--section-min-height": "var(--section-height-small)",
+    "--flex-direction": "row",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "12px",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "0px",
+    "--padding-block-end": "0px"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "row",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "12px",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<p><strong>COMPLETE CREATIVE CONTROL</strong></p>"
+       },
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<p>WITH DREAM-ER 2 YOU'LL SIMPLY DRAG &amp; DROP THE EFFECT ONTO YOUR FOOTAGE.</p><p>4 CATEGORIES TO CONTROL: BLUR + GLOW + GLINT + STAR</p><p>WITH 17 (FINAL CUT PRO) SETTINGS TO CONTROL YOU CAN TAKE FULL CREATIVE CONTROL OF THE</p><p>LOOK OF THE EFFECT AND YOUR AESTHETICS.</p><p>KEYFRAME</p><p>ANIMATE SETTINGS WITH KEYFRAME CONTROL OVER EACH SETTING TO CREATE THE PERFECT</p><p>TRANSITION BETWEEN CLIPS IN YOUR SEQUENCE.</p>"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "group",
+        "style": {
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--size-style-width": "100%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "100%",
+         "--size-style-width-mobile-min": "5rem",
+         "--flex-direction": "row",
+         "--flex-wrap": "nowrap",
+         "--flex-wrap-mobile": "wrap",
+         "--gap": "12px",
+         "--horizontal-alignment": "center",
+         "--vertical-alignment": "center",
+         "--vertical-alignment-mobile": "center"
+        },
+        "children": [
+         {
+          "t": "image",
+          "image": "https://moonbear.shop/cdn/shop/files/Best_Sellers_-_DREAM-ER2_dbe637af-3719-45d7-9db9-122730450ed5.jpg?v=1786244645",
+          "alt": "",
+          "style": {
+           "--ratio": "1",
+           "--size-style-width": "100%",
+           "--size-style-height": "fit",
+           "--size-style-width-mobile": "100%",
+           "--size-style-width-mobile-min": "5rem",
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--border-width": "1px",
+           "--border-style": "none",
+           "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+           "--border-radius": "9px"
+          }
+         }
+        ],
+        "sizes": [
+         "height-fit",
+         "width-fill"
+        ]
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "section_N8DMqy",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "row",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "row",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "image",
+      "image": "https://moonbear.shop/cdn/shop/files/Best_Sellers_-_dreamer2_9778767e-8435-4792-ab97-e856942fe52c.jpg?v=1786244645",
+      "alt": "",
+      "style": {
+       "--ratio": "1",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px"
+      }
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "text",
+        "cls": "h3",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground)",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<p>DESIGNED FOR ANYTHING</p>"
+       },
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-narrow)"
+        },
+        "html": "<p>APPLY DREAM-ER 2 TO YOUR FOOTAGE, LOGOS, TEXT, BACKGROUNDS &amp; MORE</p><p>FOR STUNNING EFFECTS NOT POSSIBLE ANY OTHER WAY!</p>"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-custom"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "hero_RjiAgN",
+   "scheme": "scheme-5",
+   "type": "hero",
+   "style": {
+    "--blur-opacity": "0.75",
+    "--hero-min-height": "var(--section-height-large)",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))",
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 80px))",
+    "--horizontal-alignment": "center",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center"
+   },
+   "media": [
+    {
+     "image": "https://moonbear.shop/cdn/shop/files/frame-000388_91f8296d-6c85-440d-9d17-3a8ca899245b.jpg?v=1786215853",
+     "alt": "",
+     "desktop": true,
+     "mobile": true
+    }
+   ],
+   "overlay": {
+    "--overlay-layer": "var(--layer-flat)",
+    "--overlay-color": "#00000026",
+    "--overlay-color--end": "rgba(0, 0, 0, 0)",
+    "--overlay-direction": "to top",
+    "kind": "gradient"
+   },
+   "href": null,
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 80px))",
+     "--horizontal-alignment": "center",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center"
+    },
+    "mobileColumn": true,
+    "children": []
+   }
+  }
+ ]
+}

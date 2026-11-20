@@ -18,6 +18,7 @@ export interface Site extends Base {
   emailOwnerAlerts?: boolean;
   emailShipping?: boolean;
   feedProductPath?: string;    // product page path for shopping feeds, e.g. /products/{id}
+  themeId?: string;            // the storefront theme this store uses (folder under public/themes), e.g. "moonbear"
 }
 export type EmailStatus = "none" | "pending" | "verified" | "failed";
 
@@ -42,6 +43,7 @@ export interface Product extends Base {
   handle?: string; vendor?: string; productType?: string; tags?: string[];
   images?: ProductImage[]; variants?: Variant[]; seoTitle?: string; seoDescription?: string;
   tracksInventory?: boolean; costPerItem?: number; externalId?: string; source?: string;
+  templateSuffix?: string;      // which theme product template renders this product ("" = the default), like Shopify's template suffix
 }
 
 export interface Customer extends Base {

@@ -28,6 +28,7 @@ import Files from "./pages/content/Files";
 import Designer from "./pages/marketing/Designer";
 import Campaigns from "./pages/marketing/Campaigns";
 import OnlineStore from "./pages/channels/OnlineStore";
+import Themes from "./pages/channels/Themes";
 import Feed from "./pages/channels/Feed";
 import Automations from "./pages/marketing/Automations";
 import { plannedPages } from "./lib/nav";
@@ -87,6 +88,7 @@ function StoreRoutes() {
         <Route path="seo" element={needsUrl(<Seo />)} />
         <Route path="deploys" element={<Deploys />} />
         <Route path="channels/online-store" element={needsUrl(<OnlineStore />)} />
+        <Route path="channels/online-store/themes" element={<Themes />} />
         <Route path="channels/google" element={needsUrl(<Feed key="google" platform="google" />)} />
         <Route path="channels/tiktok" element={needsUrl(<Feed key="tiktok" platform="tiktok" />)} />
         {plannedPages.map(p => <Route key={p.to} path={p.to.slice(1)} element={<Planned label={p.label} planned={p.planned} />} />)}

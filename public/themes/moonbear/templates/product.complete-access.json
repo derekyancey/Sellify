@@ -1,0 +1,798 @@
+{
+ "sections": [
+  {
+   "id": "hero_hUh84q",
+   "scheme": "scheme-5",
+   "type": "hero",
+   "style": {
+    "--blur-opacity": "0.75",
+    "--hero-min-height": "var(--section-height-large)",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))",
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "16px",
+    "--horizontal-alignment": "center",
+    "--vertical-alignment": "flex-end",
+    "--vertical-alignment-mobile": "flex-end"
+   },
+   "media": [
+    {
+     "video": "https://moonbear.shop/cdn/shop/videos/c/vp/40d14ff5a5214a9e9ac798b79a68477a/40d14ff5a5214a9e9ac798b79a68477a.HD-1080p-7.2Mbps-91133355.mp4?v=0",
+     "poster": "https://moonbear.shop/cdn/shop/files/preview_images/40d14ff5a5214a9e9ac798b79a68477a.thumbnail.0000000000_small.jpg?v=1786246953",
+     "desktop": true,
+     "mobile": true
+    }
+   ],
+   "overlay": {
+    "--overlay-layer": "var(--layer-flat)",
+    "--overlay-color": "#000000CF",
+    "--overlay-color--end": "rgba(0, 0, 0, 0)",
+    "--overlay-direction": "to top",
+    "kind": "gradient"
+   },
+   "href": null,
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "16px",
+     "--horizontal-alignment": "center",
+     "--vertical-alignment": "flex-end",
+     "--vertical-alignment-mobile": "flex-end"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "row",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "18px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "last baseline",
+       "--vertical-alignment-mobile": "flex-end"
+      },
+      "children": [
+       {
+        "t": "group",
+        "style": {
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--size-style-width": "100%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "100%",
+         "--size-style-width-mobile-min": "5rem",
+         "--flex-direction": "column",
+         "--flex-wrap": "nowrap",
+         "--flex-wrap-mobile": "wrap",
+         "--gap": "6px",
+         "--horizontal-alignment": "flex-start",
+         "--vertical-alignment": "center",
+         "--vertical-alignment-mobile": "center"
+        },
+        "children": [
+         {
+          "t": "text",
+          "cls": "h6",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--color": "var(--color-foreground)",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p><em>UNLOCK</em></p>"
+         },
+         {
+          "t": "text",
+          "cls": "h2",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--color": "var(--color-foreground)",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<h2>COMPLETE ACCESS</h2>"
+         }
+        ],
+        "mobileColumn": true,
+        "sizes": [
+         "height-fit",
+         "width-custom"
+        ]
+       },
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-none)"
+        },
+        "html": "<p>The Complete Access Master Bundle includes all of our products across more than +1,500 files.</p>"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "main",
+   "scheme": "scheme-5",
+   "type": "main-product",
+   "style": {
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 24px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 23px))",
+    "--gap": "12px"
+   },
+   "mediaPosition": "right",
+   "split": "half",
+   "gallery": {
+    "t": "gallery",
+    "layout": "carousel",
+    "thumbnails": false,
+    "columns": 2,
+    "extend": false,
+    "style": {
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px",
+     "--padding-inline-start": "12px",
+     "--padding-inline-end": "12px",
+     "--thumbnail-width": "44px",
+     "--media-radius": "12px",
+     "--image-gap": "4px",
+     "--gallery-aspect-ratio": "1"
+    }
+   },
+   "details": [
+    {
+     "t": "group",
+     "style": {
+      "--border-width": "1px",
+      "--border-style": "none",
+      "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+      "--border-radius": "0px",
+      "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 24px))",
+      "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 24px))",
+      "--padding-inline-start": "0px",
+      "--padding-inline-end": "0px",
+      "--size-style-width": "100%",
+      "--size-style-height": "100%",
+      "--size-style-width-mobile": "100%",
+      "--size-style-width-mobile-min": "5rem",
+      "--flex-direction": "column",
+      "--flex-wrap": "nowrap",
+      "--flex-wrap-mobile": "wrap",
+      "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 28px))"
+     },
+     "children": [
+      {
+       "t": "group",
+       "style": {
+        "--border-width": "1px",
+        "--border-style": "none",
+        "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+        "--border-radius": "0px",
+        "--padding-block-start": "0px",
+        "--padding-block-end": "0px",
+        "--padding-inline-start": "0px",
+        "--padding-inline-end": "0px",
+        "--size-style-width": "100%",
+        "--size-style-height": "fit",
+        "--size-style-width-mobile": "100%",
+        "--size-style-width-mobile-min": "5rem",
+        "--flex-direction": "column",
+        "--flex-wrap": "nowrap",
+        "--flex-wrap-mobile": "wrap",
+        "--gap": "12px",
+        "--horizontal-alignment": "flex-start",
+        "--vertical-alignment": "center",
+        "--vertical-alignment-mobile": "center"
+       },
+       "children": [
+        {
+         "t": "title",
+         "cls": "h1",
+         "style": {
+          "--padding-block-start": "0px",
+          "--padding-block-end": "0px",
+          "--padding-inline-start": "0px",
+          "--padding-inline-end": "0px",
+          "--color": "var(--color-foreground-heading)",
+          "--width": "100%",
+          "--max-width": "var(--max-width--body-normal)",
+          "--text-align": "left"
+         }
+        },
+        {
+         "t": "price",
+         "style": {
+          "--color": "var(--color-foreground)",
+          "--padding-block-start": "4px",
+          "--padding-block-end": "0px",
+          "--padding-inline-start": "0px",
+          "--padding-inline-end": "0px",
+          "--width": "100%"
+         },
+         "taxNote": false
+        }
+       ],
+       "mobileColumn": true,
+       "sizes": [
+        "height-fit",
+        "width-fill"
+       ]
+      },
+      {
+       "t": "accordion",
+       "style": {
+        "--summary-font-family": "var(--font-h6--family)",
+        "--summary-font-style": "var(--font-h6--style)",
+        "--summary-font-weight": "var(--font-h6--weight)",
+        "--summary-font-size": "var(--font-h6--size)",
+        "--summary-font-line-height": "var(--font-h6--line-height)",
+        "--summary-font-case": "var(--font-h6--case)",
+        "--padding-block-start": "0px",
+        "--padding-block-end": "0px",
+        "--padding-inline-start": "0px",
+        "--padding-inline-end": "0px",
+        "--border-width": "1px",
+        "--border-style": "none",
+        "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+        "--border-radius": "0px"
+       },
+       "items": [
+        {
+         "title": "Description",
+         "open": false,
+         "children": [
+          {
+           "t": "description"
+          }
+         ]
+        }
+       ],
+       "plus": true,
+       "dividers": true
+      },
+      {
+       "t": "buy",
+       "accelerated": false
+      }
+     ],
+     "sizes": [
+      "height-fill",
+      "width-fill"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "section_LfMVXx",
+   "scheme": "scheme-5",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "image",
+      "image": "https://moonbear.shop/cdn/shop/files/MAster_Bundle_-_TEXTURES.gif?v=1786216029",
+      "alt": "",
+      "style": {
+       "--ratio": "1.7777777777777777",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px"
+      }
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "text",
+        "cls": "h3",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground)",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<h2>TEXTURES</h2>"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-custom"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "section_hD3393",
+   "scheme": "scheme-5",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "image",
+      "image": "https://moonbear.shop/cdn/shop/files/COSMOScover_0918f08e-add2-4304-9305-e8d0178761c2.gif?v=1785388600",
+      "alt": "Animated cinematic titles and text presets from moonbear.shop's COSMOS collection, featuring stylish motion graphics.",
+      "style": {
+       "--ratio": "1.7777777777777777",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px"
+      }
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "text",
+        "cls": "h3",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground)",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<h2>TITLES</h2>"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-custom"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "section_YpPmLm",
+   "scheme": "scheme-5",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "image",
+      "image": "https://moonbear.shop/cdn/shop/files/MAster_Bundle_-_Color.gif?v=1786216024",
+      "alt": "",
+      "style": {
+       "--ratio": "1.7777777777777777",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px"
+      }
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "text",
+        "cls": "h3",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground)",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<h2>LUTS + COLOR PRESETS</h2>"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-custom"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "blocks_xUhmnz",
+   "scheme": "scheme-5",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "12px",
+    "--horizontal-alignment": "center",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "0px",
+    "--padding-block-end": "0px"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "12px",
+     "--horizontal-alignment": "center",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "html",
+      "html": "<div class=\"ai-image-gallery-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\">\n<div class=\"ai-image-gallery__container-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\">\n<h2 class=\"ai-image-gallery__title-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\">INCLUDED IN THE BUNDLE + MORE</h2>\n<div class=\"ai-image-gallery__grid-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\">\n<div class=\"ai-image-gallery__item-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\">\n<img alt=\"\" class=\"ai-image-gallery__image-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/frame-000028_c7eb7483-5a13-4246-b891-73284d17ca4c.jpg?v=1786214258&amp;width=800\" width=\"1080\"/>\n</div>\n<div class=\"ai-image-gallery__item-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\">\n<img alt=\"Moonbear.shop best sellers bundle featuring a colorful portal-themed cover with vibrant, eye-catching artwork.\" class=\"ai-image-gallery__image-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\" height=\"1200\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/PORTALcover_8d7bfd42-c452-4a73-8d89-dd0f6b3f2c49.webp?v=1785388485&amp;width=800\" width=\"1200\"/>\n</div>\n<div class=\"ai-image-gallery__item-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\">\n<img alt=\"Star effect filter for cameras, DREAM-ER 2 by moonbear.shop, showing the filter's star-shaped light pattern.\" class=\"ai-image-gallery__image-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\" height=\"1200\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/DREAM-ER2Cover.webp?v=1785388513&amp;width=800\" width=\"1200\"/>\n</div>\n<div class=\"ai-image-gallery__item-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\">\n<img alt=\"\" class=\"ai-image-gallery__image-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/ALBUM_ART_ARCHIVE.jpg?v=1787037667&amp;width=800\" width=\"1080\"/>\n</div>\n<div class=\"ai-image-gallery__item-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\">\n<img alt=\"\" class=\"ai-image-gallery__image-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\" height=\"945\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/Replica-2---Text-Presets-Moon-Bear-LLC-1645774292_jpg.webp?v=1786215881&amp;width=800\" width=\"1680\"/>\n</div>\n<div class=\"ai-image-gallery__item-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\">\n<img alt=\"COSMOS cinematic titles and text presets cover featuring sleek, modern design for video editing by moonbear.shop.\" class=\"ai-image-gallery__image-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/COSMOScover.jpg?v=1785388599&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\">\n<img alt=\"\" class=\"ai-image-gallery__image-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\" height=\"1400\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/LUTBUNDLECOVER.png?v=1788646538&amp;width=800\" width=\"1250\"/>\n</div>\n<div class=\"ai-image-gallery__item-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\">\n<img alt=\"\" class=\"ai-image-gallery__image-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\" height=\"1200\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/63b49682152a027b7308bdd1_NOKTACover_70cf35bb-a443-4355-80c0-905a56262b5d_copy.jpg?v=1787287868&amp;width=800\" width=\"1200\"/>\n</div>\n<div class=\"ai-image-gallery__item-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\">\n<img alt=\"Cinematic gradients overlay by moonbear.shop featuring vibrant color transitions and dynamic visual effects for video editing.\" class=\"ai-image-gallery__image-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/CINEMATICGRADIENTS.webp?v=1785388440&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\">\n<img alt=\"CineFilm Cinematic Film LUT Pack by moonbear.shop, showcasing colorful sample images of cinematic color grading effects.\" class=\"ai-image-gallery__image-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/MB-CINEFILMCover2_a7117b54-534b-4574-93ef-b4210054905d.jpg?v=1785388609&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\">\n<img alt=\"Title Presets Bundle by MoonBear.shop showing a colorful cover with preset names and design elements for photo editing.\" class=\"ai-image-gallery__image-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\" height=\"990\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/txtbundlecover-12pxx12px_webp_1df1bb75-f4d4-4dea-9786-955e85070809.png?v=1786336915&amp;width=800\" width=\"990\"/>\n</div>\n<div class=\"ai-image-gallery__item-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\">\n<img alt=\"\" class=\"ai-image-gallery__image-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql\" height=\"1200\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/TRANSITIONS_BUNDLE_COVER.jpg?v=1786034516&amp;width=800\" width=\"1200\"/>\n</div>\n</div>\n</div>\n</div>",
+      "css": "\n  .ai-image-gallery-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql {\n    width: 100%;\n    padding: 40px 0;\n  }\n\n  .ai-image-gallery__container-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql {\n    max-width: 1200px;\n    margin: 0 auto;\n    padding: 0 20px;\n  }\n\n  .ai-image-gallery__grid-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql {\n    display: grid;\n    grid-template-columns: repeat(3, 1fr);\n    gap: 16px;\n    margin-top: 24px;\n  }\n\n  .ai-image-gallery__title-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql {\n    text-align: center;\n    color: #000000;\n    font-size: 32px;\n    margin: 0;\n  }\n\n  .ai-image-gallery__item-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql {\n    position: relative;\n    overflow: hidden;\n    border-radius: 8px;\n    background-color: #f4f4f4;\n    aspect-ratio: 16/9;\n  }\n\n  .ai-image-gallery__image-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql {\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n    transition: transform 0.3s ease;\n  }\n\n  .ai-image-gallery__placeholder-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql {\n    width: 100%;\n    height: 100%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    background-color: #f4f4f4;\n    position: relative;\n  }\n\n  .ai-image-gallery__placeholder-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql svg {\n    width: 60%;\n    height: 60%;\n    opacity: 0.3;\n  }\n\n  .ai-image-gallery__empty-state-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql {\n    position: absolute;\n    bottom: 10px;\n    left: 50%;\n    transform: translateX(-50%);\n    font-size: 12px;\n    color: #666;\n    text-align: center;\n    pointer-events: none;\n  }\n\n  \n\n  .ai-image-gallery__overlay-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql {\n    position: absolute;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    background: linear-gradient(\n      to bottom,\n      rgba(0, 0, 0, 0) 0%,\n      rgba(0, 0, 0, 0.4) 100%\n    );\n    opacity: 0;\n    transition: opacity 0.3s ease;\n    display: flex;\n    align-items: flex-end;\n    padding: 20px;\n  }\n\n  \n\n  .ai-image-gallery__caption-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql {\n    color: white;\n    font-size: 14px;\n    font-weight: 500;\n  }\n\n  @media screen and (max-width: 768px) {\n    .ai-image-gallery__grid-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql {\n      grid-template-columns: repeat(2, 1fr);\n      gap: 12.0px;\n    }\n\n    .ai-image-gallery__container-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql {\n      padding: 0 15px;\n    }\n  }\n\n  @media screen and (max-width: 480px) {\n    .ai-image-gallery__grid-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql {\n      grid-template-columns: repeat(1, 1fr);\n      gap: 8.0px;\n    }\n\n    .ai-image-gallery__title-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql {\n      font-size: 25.6px;\n    }\n\n    .ai-image-gallery__container-atgxpvllruuvldgzeaaigenblockf4be74ea8rvql {\n      padding: 0 10px;\n    }\n  }\n"
+     }
+    ]
+   }
+  },
+  {
+   "id": "section_dzfYbA",
+   "scheme": "scheme-5",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "image",
+      "image": "https://moonbear.shop/cdn/shop/files/MAster_Bundle_-_EFFECTS.gif?v=1786216035",
+      "alt": "",
+      "style": {
+       "--ratio": "1.7777777777777777",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px"
+      }
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "text",
+        "cls": "h3",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground)",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<h2>EFFECTS</h2>"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-custom"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "blocks_pBNPdc",
+   "scheme": "scheme-5",
+   "type": "section",
+   "full": true,
+   "style": {
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "0px",
+    "--horizontal-alignment": "center",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "0px",
+    "--padding-block-end": "0px"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "0px",
+     "--horizontal-alignment": "center",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "html",
+      "html": "<div class=\"ai-image-gallery-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\">\n<div class=\"ai-image-gallery__container-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\">\n<h2 class=\"ai-image-gallery__title-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\">INCLUDED IN THE BUNDLE + MORE</h2>\n<div class=\"ai-image-gallery__grid-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\">\n<div class=\"ai-image-gallery__item-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\">\n<img alt=\"\" class=\"ai-image-gallery__image-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/360d691e-52b3-45c0-ad16-56c86133031a.jpg?v=1787293676&amp;width=800\" width=\"1080\"/>\n</div>\n<div class=\"ai-image-gallery__item-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\">\n<img alt=\"\" class=\"ai-image-gallery__image-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/Titles_9c2262af-b62d-4963-9220-2ed7a2261ccd.gif?v=1786246440&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\">\n<img alt=\"\" class=\"ai-image-gallery__image-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/CRTTESLA_8c2dae15-bf74-4052-a1bf-b5ad8f17508b.gif?v=1786216040&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\">\n<img alt=\"\" class=\"ai-image-gallery__image-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\" height=\"619\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/REPLIXA_2_-_gif_11-3.gif?v=1786215899&amp;width=800\" width=\"1100\"/>\n</div>\n<div class=\"ai-image-gallery__item-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\">\n<img alt=\"\" class=\"ai-image-gallery__image-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\" height=\"1800\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/BLACK_embroidary_SWEATSHIRT.jpg?v=1786215905&amp;width=800\" width=\"1800\"/>\n</div>\n<div class=\"ai-image-gallery__item-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\">\n<img alt=\"\" class=\"ai-image-gallery__image-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/Element_Screenshot_copy.jpg?v=1786215891&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\">\n<img alt=\"\" class=\"ai-image-gallery__image-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\" height=\"815\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/Group_15.jpg?v=1787766505&amp;width=800\" width=\"1080\"/>\n</div>\n<div class=\"ai-image-gallery__item-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\">\n<img alt=\"\" class=\"ai-image-gallery__image-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\" height=\"1100\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/drake_lambo_jpg.jpg?v=1786215859&amp;width=800\" width=\"1100\"/>\n</div>\n<div class=\"ai-image-gallery__item-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\">\n<img alt=\"\" class=\"ai-image-gallery__image-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/fonts_-_example.jpg?v=1786246738&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\">\n<img alt=\"\" class=\"ai-image-gallery__image-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\" height=\"768\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/ShotClub_-_Cowboy_Studio_34.jpg?v=1786246225&amp;width=800\" width=\"1408\"/>\n</div>\n<div class=\"ai-image-gallery__item-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\">\n<img alt=\"\" class=\"ai-image-gallery__image-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\" height=\"2700\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/DIRTYSCANNERCOVERcopy.jpg?v=1786215894&amp;width=800\" width=\"4800\"/>\n</div>\n<div class=\"ai-image-gallery__item-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\">\n<img alt=\"\" class=\"ai-image-gallery__image-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/ex2_14fa23a2-1287-453a-a08e-89544f8a1f08.jpg?v=1786215856&amp;width=800\" width=\"1080\"/>\n</div>\n</div>\n</div>\n</div>",
+      "css": "\n  .ai-image-gallery-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng {\n    width: 100%;\n    padding: 40px 0;\n  }\n\n  .ai-image-gallery__container-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng {\n    max-width: 1200px;\n    margin: 0 auto;\n    padding: 0 20px;\n  }\n\n  .ai-image-gallery__grid-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng {\n    display: grid;\n    grid-template-columns: repeat(3, 1fr);\n    gap: 16px;\n    margin-top: 24px;\n  }\n\n  .ai-image-gallery__title-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng {\n    text-align: center;\n    color: #000000;\n    font-size: 32px;\n    margin: 0;\n  }\n\n  .ai-image-gallery__item-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng {\n    position: relative;\n    overflow: hidden;\n    border-radius: 8px;\n    background-color: #f4f4f4;\n    aspect-ratio: 16/9;\n  }\n\n  .ai-image-gallery__image-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng {\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n    transition: transform 0.3s ease;\n  }\n\n  .ai-image-gallery__placeholder-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng {\n    width: 100%;\n    height: 100%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    background-color: #f4f4f4;\n    position: relative;\n  }\n\n  .ai-image-gallery__placeholder-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng svg {\n    width: 60%;\n    height: 60%;\n    opacity: 0.3;\n  }\n\n  .ai-image-gallery__empty-state-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng {\n    position: absolute;\n    bottom: 10px;\n    left: 50%;\n    transform: translateX(-50%);\n    font-size: 12px;\n    color: #666;\n    text-align: center;\n    pointer-events: none;\n  }\n\n  \n\n  .ai-image-gallery__overlay-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng {\n    position: absolute;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    background: linear-gradient(\n      to bottom,\n      rgba(0, 0, 0, 0) 0%,\n      rgba(0, 0, 0, 0.4) 100%\n    );\n    opacity: 0;\n    transition: opacity 0.3s ease;\n    display: flex;\n    align-items: flex-end;\n    padding: 20px;\n  }\n\n  \n\n  .ai-image-gallery__caption-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng {\n    color: white;\n    font-size: 14px;\n    font-weight: 500;\n  }\n\n  @media screen and (max-width: 768px) {\n    .ai-image-gallery__grid-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng {\n      grid-template-columns: repeat(2, 1fr);\n      gap: 12.0px;\n    }\n\n    .ai-image-gallery__container-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng {\n      padding: 0 15px;\n    }\n  }\n\n  @media screen and (max-width: 480px) {\n    .ai-image-gallery__grid-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng {\n      grid-template-columns: repeat(1, 1fr);\n      gap: 8.0px;\n    }\n\n    .ai-image-gallery__title-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng {\n      font-size: 25.6px;\n    }\n\n    .ai-image-gallery__container-alzbtdedyk0xtb2hmqaigenblockf4be74eqr7eng {\n      padding: 0 10px;\n    }\n  }\n"
+     }
+    ]
+   }
+  },
+  {
+   "id": "product_recommendations_qggXJq",
+   "scheme": "scheme-5",
+   "type": "product-recommendations",
+   "style": {
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 28px))",
+    "--resource-list-column-gap-desktop": "12px",
+    "--resource-list-row-gap-desktop": "24px",
+    "--resource-list-columns": "repeat(4, 1fr)",
+    "--resource-list-columns-mobile": "repeat(2, 1fr)"
+   },
+   "heading": "You may also like"
+  }
+ ]
+}

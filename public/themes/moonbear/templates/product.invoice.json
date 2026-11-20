@@ -1,0 +1,104 @@
+{
+ "sections": [
+  {
+   "id": "slideshow_NXh3Q7",
+   "scheme": "scheme-1",
+   "type": "slideshow",
+   "style": {
+    "--padding-block-start": "42px",
+    "--padding-block-end": "0px",
+    "--padding-inline-start": "0px",
+    "--padding-inline-end": "0px"
+   },
+   "slides": [
+    {
+     "bg": {
+      "image": "https://moonbear.shop/cdn/shop/files/Screenshot2026-04-22at12.22.46AM.png?v=1785388406",
+      "alt": "Screenshot of a production invoice template mockup by moonbear.shop, showing a professional invoice layout on a computer screen."
+     },
+     "content": {
+      "t": "group",
+      "style": {
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "6px",
+       "--horizontal-alignment": "center",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "mobileColumn": true,
+      "children": [
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<p>New!</p>"
+       },
+       {
+        "t": "text",
+        "cls": "h1",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground)",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<h1>Free Production Invoice Template</h1>"
+       },
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "20px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<p>No need to download, our FREE production invoice template is now available on our site. Click below!</p>"
+       },
+       {
+        "t": "button",
+        "variant": "primary",
+        "label": "Try",
+        "href": "https://invoice.moonbear.shop?landing-page",
+        "style": {
+         "--size-style-width": "fit-content",
+         "--size-style-width-mobile": "fit-content",
+         "--size-style-width-mobile-min": "fit-content"
+        }
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "product_recommendations_qggXJq",
+   "scheme": "scheme-1",
+   "type": "product-recommendations",
+   "style": {
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 28px))",
+    "--resource-list-column-gap-desktop": "12px",
+    "--resource-list-row-gap-desktop": "24px",
+    "--resource-list-columns": "repeat(4, 1fr)",
+    "--resource-list-columns-mobile": "repeat(2, 1fr)"
+   },
+   "heading": "You may also like"
+  }
+ ]
+}

@@ -61,7 +61,7 @@ SCHEMA = {
     "sites": {
         "public_read": False,
         "columns": [S("name", 128, True), S("domain", 255), S("currency", 8), S("cloudflareZoneId", 64),
-                    S("hostingSiteId", 64), S("gscProperty", 255), S("ga4PropertyId", 32), S("feedProductPath", 255),
+                    S("hostingSiteId", 64), S("gscProperty", 255), S("ga4PropertyId", 32), S("feedProductPath", 255), S("themeId", 64),
                     # email setup: nothing is sent until ownerEmail is confirmed and emailStatus is "verified"
                     S("ownerEmail", 255), S("senderName", 128), S("senderAddress", 255), S("emailDomainId", 64),
                     E("emailStatus", ["none", "pending", "verified", "failed"], "none"),
@@ -75,7 +75,7 @@ SCHEMA = {
                     # imported / richer catalog data (Shopify-compatible)
                     S("handle", 255), S("vendor", 255), S("productType", 255), LT("tags"), LT("images"), LT("variants"),
                     S("seoTitle", 255), S("seoDescription", 1024), B("tracksInventory", default=True), F("costPerItem", min=0),
-                    S("externalId", 64), S("source", 32)],
+                    S("externalId", 64), S("source", 32), S("templateSuffix", 64)],
         "indexes": [("by_site", TablesDBIndexType.KEY, ["siteId"]), ("by_handle", TablesDBIndexType.KEY, ["siteId", "handle"])],
     },
     "customers": {

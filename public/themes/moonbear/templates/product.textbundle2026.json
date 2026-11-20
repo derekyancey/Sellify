@@ -1,0 +1,2058 @@
+{
+ "sections": [
+  {
+   "id": "section_PTtW99",
+   "scheme": "scheme-2",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--section-min-height": "var(--section-height-medium)",
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "12px",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "0px",
+    "--padding-block-end": "0px"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "12px",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "center",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "logo",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px"
+        }
+       },
+       {
+        "t": "title",
+        "cls": "h1",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground-heading)",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        }
+       },
+       {
+        "t": "text",
+        "cls": "custom",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground)",
+         "--font-size": "0.75rem",
+         "--font-weight": "var(--font-accent--weight)",
+         "--font-family": "var(--font-accent--family)",
+         "--text-transform": "none",
+         "--line-height": "var(--line-height--body-normal)",
+         "--letter-spacing": "var(--letter-spacing--body-normal)",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<p>300+ Professionally designed templates ready to customize. Each preset is built for clarity and impact, so your work does the talking.</p>"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     }
+    ]
+   },
+   "bg": {
+    "image": "https://moonbear.shop/cdn/shop/files/Titles_9c2262af-b62d-4963-9220-2ed7a2261ccd.gif?v=1786246440",
+    "alt": ""
+   }
+  },
+  {
+   "id": "main",
+   "scheme": "scheme-5",
+   "type": "main-product",
+   "style": {
+    "--padding-block-start": "0px",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 23px))",
+    "--gap": "12px"
+   },
+   "mediaPosition": "left",
+   "split": "half",
+   "gallery": {
+    "t": "gallery",
+    "layout": "carousel",
+    "thumbnails": false,
+    "columns": 2,
+    "extend": false,
+    "style": {
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px",
+     "--padding-inline-start": "0px",
+     "--padding-inline-end": "0px",
+     "--thumbnail-width": "44px",
+     "--media-radius": "0px",
+     "--image-gap": "4px"
+    }
+   },
+   "details": [
+    {
+     "t": "group",
+     "style": {
+      "--border-width": "1px",
+      "--border-style": "none",
+      "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+      "--border-radius": "0px",
+      "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 24px))",
+      "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 24px))",
+      "--padding-inline-start": "0px",
+      "--padding-inline-end": "0px",
+      "--size-style-width": "100%",
+      "--size-style-height": "fit",
+      "--size-style-width-mobile": "100%",
+      "--size-style-width-mobile-min": "5rem",
+      "--flex-direction": "column",
+      "--flex-wrap": "nowrap",
+      "--flex-wrap-mobile": "wrap",
+      "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 28px))"
+     },
+     "children": [
+      {
+       "t": "group",
+       "style": {
+        "--border-width": "1px",
+        "--border-style": "none",
+        "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+        "--border-radius": "0px",
+        "--padding-block-start": "0px",
+        "--padding-block-end": "0px",
+        "--padding-inline-start": "0px",
+        "--padding-inline-end": "0px",
+        "--size-style-width": "100%",
+        "--size-style-height": "fit",
+        "--size-style-width-mobile": "100%",
+        "--size-style-width-mobile-min": "5rem",
+        "--flex-direction": "column",
+        "--flex-wrap": "nowrap",
+        "--flex-wrap-mobile": "wrap",
+        "--gap": "12px",
+        "--horizontal-alignment": "flex-start",
+        "--vertical-alignment": "center",
+        "--vertical-alignment-mobile": "center"
+       },
+       "children": [
+        {
+         "t": "price",
+         "style": {
+          "--color": "var(--color-foreground)",
+          "--padding-block-start": "4px",
+          "--padding-block-end": "0px",
+          "--padding-inline-start": "0px",
+          "--padding-inline-end": "0px",
+          "--width": "100%"
+         },
+         "taxNote": false
+        }
+       ],
+       "mobileColumn": true,
+       "sizes": [
+        "height-fit",
+        "width-fill"
+       ]
+      },
+      {
+       "t": "variants"
+      },
+      {
+       "t": "accordion",
+       "style": {
+        "--summary-font-family": "var(--font-h6--family)",
+        "--summary-font-style": "var(--font-h6--style)",
+        "--summary-font-weight": "var(--font-h6--weight)",
+        "--summary-font-size": "var(--font-h6--size)",
+        "--summary-font-line-height": "var(--font-h6--line-height)",
+        "--summary-font-case": "var(--font-h6--case)",
+        "--padding-block-start": "0px",
+        "--padding-block-end": "0px",
+        "--padding-inline-start": "0px",
+        "--padding-inline-end": "0px",
+        "--border-width": "1px",
+        "--border-style": "none",
+        "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+        "--border-radius": "0px"
+       },
+       "items": [
+        {
+         "title": "Description",
+         "open": false,
+         "children": [
+          {
+           "t": "description"
+          }
+         ]
+        }
+       ],
+       "plus": true,
+       "dividers": true
+      },
+      {
+       "t": "buy",
+       "accelerated": false
+      }
+     ],
+     "sizes": [
+      "height-fit",
+      "width-fill"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "blocks_JB7rGq",
+   "scheme": "scheme-2",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "12px",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "0px",
+    "--padding-block-end": "0px"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "12px",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "html",
+      "html": "<div class=\"ai-image-gallery-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\">\n<div class=\"ai-image-gallery__container-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\">\n<div class=\"ai-image-gallery__grid-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\">\n<div class=\"ai-image-gallery__item-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\">\n<img alt=\"Animated GIF showing various stylish title designs using Moonbear.shop's Replica Title Presets for creative video editing.\" class=\"ai-image-gallery__image-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/Titles.gif?v=1785388495&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\">\n<img alt=\"Castaway Font by moonbear.shop displayed in a digital font preview with textured, hand-crafted letter styles on a neutral background.\" class=\"ai-image-gallery__image-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/frame-000175.jpg?v=1785388460&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\">\n<img alt=\"Minimalist title preset called PORTAL2-15 from moonbear.shop, featuring sleek, modern design for professional video editing.\" class=\"ai-image-gallery__image-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/PORTAL2-15.gif?v=1785388503&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\">\n<img alt=\"CRT text effect title in a retro style with glowing, pixelated font, created by moonbear.shop for digital design projects.\" class=\"ai-image-gallery__image-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/frame-000578.jpg?v=1785388556&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\">\n<img alt=\"\" class=\"ai-image-gallery__image-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\" height=\"3240\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/tempImageP6LvXy.png?v=1786329940&amp;width=800\" width=\"5760\"/>\n</div>\n<div class=\"ai-image-gallery__item-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\">\n<img alt=\"CRT Text Effect title in a retro CRT style, featuring glowing, vintage-inspired text effect for digital design projects.\" class=\"ai-image-gallery__image-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/CRTWET.gif?v=1785388557&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\">\n<img alt=\"Moonbear.shop Best Sellers Bundle featuring multiple popular products in a colorful, eye-catching display.\" class=\"ai-image-gallery__image-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/REPLIXA_2_-_gif_7.gif?v=1785388485&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\">\n<img alt=\"Minimalist title preset from Portal by moonbear.shop, featuring clean, modern design for video or photo projects.\" class=\"ai-image-gallery__image-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/PORTAL2-14.gif?v=1785388502&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\">\n<img alt=\"Close-up of IKONIK graphic design textures by moonbear.shop, showcasing detailed textured patterns on a neutral background.\" class=\"ai-image-gallery__image-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/frame-000628.jpg?v=1785388551&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\">\n<img alt=\"\" class=\"ai-image-gallery__image-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\" height=\"3240\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/tempImage3v6iFw.png?v=1786329951&amp;width=800\" width=\"5760\"/>\n</div>\n<div class=\"ai-image-gallery__item-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\">\n<img alt=\"Close-up of textured graphic design details from IKONIK collection by moonbear.shop, showcasing intricate patterns and visual textures.\" class=\"ai-image-gallery__image-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/frame-000465.jpg?v=1785388551&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\">\n<img alt=\"Minimalist title preset by moonbear.shop displayed on a clean, modern digital graphic with sleek font design.\" class=\"ai-image-gallery__image-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/frame-000327.jpg?v=1785388502&amp;width=800\" width=\"1920\"/>\n</div>\n</div>\n</div>\n</div>",
+      "css": "\n  .ai-image-gallery-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e {\n    width: 100%;\n    padding: 40px 0;\n  }\n\n  .ai-image-gallery__container-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e {\n    max-width: 1200px;\n    margin: 0 auto;\n    padding: 0 20px;\n  }\n\n  .ai-image-gallery__grid-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e {\n    display: grid;\n    grid-template-columns: repeat(3, 1fr);\n    gap: 16px;\n    margin-top: 24px;\n  }\n\n  .ai-image-gallery__title-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e {\n    text-align: center;\n    color: #000000;\n    font-size: 32px;\n    margin: 0;\n  }\n\n  .ai-image-gallery__item-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e {\n    position: relative;\n    overflow: hidden;\n    border-radius: 8px;\n    background-color: #f4f4f4;\n    aspect-ratio: 16/9;\n  }\n\n  .ai-image-gallery__image-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e {\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n    transition: transform 0.3s ease;\n  }\n\n  .ai-image-gallery__placeholder-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e {\n    width: 100%;\n    height: 100%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    background-color: #f4f4f4;\n    position: relative;\n  }\n\n  .ai-image-gallery__placeholder-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e svg {\n    width: 60%;\n    height: 60%;\n    opacity: 0.3;\n  }\n\n  .ai-image-gallery__empty-state-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e {\n    position: absolute;\n    bottom: 10px;\n    left: 50%;\n    transform: translateX(-50%);\n    font-size: 12px;\n    color: #666;\n    text-align: center;\n    pointer-events: none;\n  }\n\n  \n    .ai-image-gallery__item-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e:hover .ai-image-gallery__image-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e {\n      transform: scale(1.05);\n    }\n  \n\n  .ai-image-gallery__overlay-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e {\n    position: absolute;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    background: linear-gradient(\n      to bottom,\n      rgba(0, 0, 0, 0) 0%,\n      rgba(0, 0, 0, 0.4) 100%\n    );\n    opacity: 0;\n    transition: opacity 0.3s ease;\n    display: flex;\n    align-items: flex-end;\n    padding: 20px;\n  }\n\n  \n    .ai-image-gallery__item-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e:hover .ai-image-gallery__overlay-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e {\n      opacity: 1;\n    }\n  \n\n  .ai-image-gallery__caption-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e {\n    color: white;\n    font-size: 14px;\n    font-weight: 500;\n  }\n\n  @media screen and (max-width: 768px) {\n    .ai-image-gallery__grid-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e {\n      grid-template-columns: repeat(2, 1fr);\n      gap: 12.0px;\n    }\n\n    .ai-image-gallery__container-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e {\n      padding: 0 15px;\n    }\n  }\n\n  @media screen and (max-width: 480px) {\n    .ai-image-gallery__grid-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e {\n      grid-template-columns: repeat(1, 1fr);\n      gap: 8.0px;\n    }\n\n    .ai-image-gallery__title-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e {\n      font-size: 25.6px;\n    }\n\n    .ai-image-gallery__container-aakv6zgi2athlcwhqbaigenblockf4be74efgi87e {\n      padding: 0 10px;\n    }\n  }\n"
+     }
+    ]
+   }
+  },
+  {
+   "id": "section_6a6Rw6",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "4px",
+    "--horizontal-alignment": "center",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+    "--padding-block-end": "16px"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "4px",
+     "--horizontal-alignment": "center",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+     "--padding-block-end": "16px"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "text",
+      "cls": "h2",
+      "style": {
+       "--padding-block-start": "0px",
+       "--padding-block-end": "20px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--color": "var(--color-foreground)",
+       "--width": "fit-content",
+       "--max-width": "var(--max-width--body-normal)"
+      },
+      "html": "<h2>300+ styles to make title design Easy.</h2>"
+     },
+     {
+      "t": "text",
+      "cls": "custom",
+      "style": {
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--color": "var(--color-foreground)",
+       "--font-size": "1rem",
+       "--font-weight": "var(--font-accent--weight)",
+       "--font-family": "var(--font-accent--family)",
+       "--text-transform": "none",
+       "--line-height": "var(--line-height--body-normal)",
+       "--letter-spacing": "var(--letter-spacing--body-normal)",
+       "--width": "fit-content",
+       "--max-width": "var(--max-width--body-normal)"
+      },
+      "html": "<p>Why settle for one style when you can have the Best? The <em>Title Template Bundle</em> is MoonBear’s ultimate collection — giving you access to <strong>every Title Preset pack</strong> we’ve ever made.</p><p>From the Replica series, to our Cinematic Title Presets collection.</p>"
+     }
+    ]
+   }
+  },
+  {
+   "id": "section_wbjHMC",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--section-min-height": "var(--section-height-medium)",
+    "--flex-direction": "row",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "0px",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "row",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "0px",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "video",
+      "video": "https://moonbear.shop/cdn/shop/videos/c/vp/b75357e91e2340fbbcbecbf7b499dc9f/b75357e91e2340fbbcbecbf7b499dc9f.HD-1080p-7.2Mbps-94070875.mp4?v=0",
+      "poster": "https://moonbear.shop/cdn/shop/files/preview_images/b75357e91e2340fbbcbecbf7b499dc9f.thumbnail.0000000000_2500x.jpg?v=1789082772",
+      "style": {
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "17px",
+       "--size-style-width": "100%",
+       "--size-style-width-mobile": "100%",
+       "--size-style-aspect-ratio": "1.0"
+      }
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "text",
+        "cls": "h3",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground)",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<h2>ALL THE TITLES YOU WILL EVER NEED.</h2>"
+       },
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-narrow)"
+        },
+        "html": "<p>Unleash Your Full Potential with MoonBear’s Title Templates Bundle.</p><p>Build your entire creative workflow with over 300 creative asset files.</p>"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-custom"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "section_gDkjbi",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--section-min-height": "var(--section-height-small)",
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "12px",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "0px",
+    "--padding-block-end": "0px"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "12px",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "image",
+      "image": "https://moonbear.shop/cdn/shop/files/frame-000022.jpg?v=1786214261",
+      "alt": "",
+      "style": {
+       "--ratio": "1.7777777777777777",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px"
+      }
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<h3>COMPATIBILITY</h3>"
+       },
+       {
+        "t": "text",
+        "cls": "custom",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground)",
+         "--font-size": "0.875rem",
+         "--font-weight": "var(--font-accent--weight)",
+         "--font-family": "var(--font-accent--family)",
+         "--text-transform": "none",
+         "--line-height": "var(--line-height--body-normal)",
+         "--letter-spacing": "var(--letter-spacing--body-normal)",
+         "--width": "100%",
+         "--max-width": "var(--max-width--body-normal)",
+         "--text-align": "left"
+        },
+        "html": "<p><strong>Final Cut Pro</strong>: (Cosmos, CRT Toolkit, Portal. Replica, Replica 2, Sketch, Zine)<br/></p><p><strong>Davinci Resolve:</strong> (Portal, Replica, Replica 2, Replica 3,  Sketch, Zine</p><p><strong>Premiere Pro:</strong> (Cosmos, CRT Toolkit, Portal. Replica, Replica 0.5, Replica 2, Replica 3, Sketch, Zine)</p><p><br/><strong>After Effects:</strong> (Cosmos, CRT Toolkit, Portal. Replica, Replica 0.5, Replica 2, Replica 3, Sketch, Zine)</p><p><br/><strong>Photoshop</strong>: (Cosmos, Portal, Replica, Replica 0.5, Replica 2, Replica 3, Sketch, Zine)</p><p><strong>Luma Fusion: </strong>(Replica Luma Fusion, Sketch, Zine)</p>"
+       }
+      ],
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "section_Wz9c9c",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "row",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "row",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 40px))"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "text",
+        "cls": "h3",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground)",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<h2>YOUR CREATIVE EDGE.</h2>"
+       },
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-narrow)"
+        },
+        "html": "<p>Stand out in a world of cookie-cutter edits. With the Title Presets Bundle, you get tools that push your work further from experimental looks to polished cinematic finishing.</p>"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-custom"
+      ]
+     },
+     {
+      "t": "video",
+      "video": "https://moonbear.shop/cdn/shop/videos/c/vp/7ab5c779e53848708cd5bb4b1986f20b/7ab5c779e53848708cd5bb4b1986f20b.HD-1080p-7.2Mbps-91106549.mp4?v=0",
+      "poster": "https://moonbear.shop/cdn/shop/files/preview_images/7ab5c779e53848708cd5bb4b1986f20b.thumbnail.0000000000_2500x.jpg?v=1786204834",
+      "style": {
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--size-style-width": "100%",
+       "--size-style-width-mobile": "100%",
+       "--size-style-aspect-ratio": "1.0"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "section_PgBCFW",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--section-min-height": "var(--section-height-small)",
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "12px",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "0px",
+    "--padding-block-end": "0px"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "12px",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "row",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "space-between",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "image",
+        "image": "https://moonbear.shop/cdn/shop/files/COSMOS-loveyoutodeath.jpg?v=1785388599",
+        "alt": "Cosmos cinematic title preset by moonbear.shop, featuring creative text overlay with a love you to death theme.",
+        "style": {
+         "--ratio": "16 / 9",
+         "--size-style-width": "50%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "fit-content",
+         "--size-style-width-mobile-min": "fit-content",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px"
+        }
+       },
+       {
+        "t": "group",
+        "style": {
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--size-style-width": "100%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "100%",
+         "--size-style-width-mobile-min": "5rem",
+         "--flex-direction": "column",
+         "--flex-wrap": "nowrap",
+         "--flex-wrap-mobile": "wrap",
+         "--gap": "12px",
+         "--horizontal-alignment": "flex-end",
+         "--vertical-alignment": "center",
+         "--vertical-alignment-mobile": "center"
+        },
+        "children": [
+         {
+          "t": "text",
+          "cls": "custom",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--color": "var(--color-foreground)",
+           "--font-size": "1rem",
+           "--font-weight": "var(--font-accent--weight)",
+           "--font-family": "var(--font-accent--family)",
+           "--text-transform": "none",
+           "--line-height": "var(--line-height--body-normal)",
+           "--letter-spacing": "var(--letter-spacing--body-normal)",
+           "--width": "fit-content",
+           "--max-width": "var(--max-width--body-normal)"
+          },
+          "html": "<p>Title Presets Bundle INCLUDES</p>"
+         },
+         {
+          "t": "text",
+          "cls": "h2",
+          "style": {
+           "--padding-block-start": "15px",
+           "--padding-block-end": "15px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--color": "var(--color-foreground)",
+           "--width": "fit-content",
+           "--max-width": "var(--max-width--body-normal)"
+          },
+          "html": "<h2>300+ TEMPLATES</h2>"
+         },
+         {
+          "t": "text",
+          "cls": "custom",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "40px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--color": "var(--color-foreground)",
+           "--font-size": "1rem",
+           "--font-weight": "var(--font-accent--weight)",
+           "--font-family": "var(--font-accent--family)",
+           "--text-transform": "none",
+           "--line-height": "var(--line-height--body-normal)",
+           "--letter-spacing": "var(--letter-spacing--body-normal)",
+           "--width": "fit-content",
+           "--max-width": "var(--max-width--body-normal)"
+          },
+          "html": "<p>Get access to more than 300+ title preset templates.<br/>Designed to speed up your workflow in a professional setting.</p>"
+         }
+        ],
+        "mobileColumn": true,
+        "sizes": [
+         "height-fit",
+         "width-fill"
+        ]
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 24px))",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "center",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<h4>Try before you Buy</h4>"
+       },
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "fit-content",
+         "--max-width": "var(--max-width--body-normal)"
+        },
+        "html": "<p>Complete the title by dragging the slider.</p>"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     },
+     {
+      "t": "compare",
+      "before": "https://moonbear.shop/cdn/shop/files/try_b4_buy_2.jpg?v=1786206390",
+      "after": "https://moonbear.shop/cdn/shop/files/try_b4_buy.jpg?v=1786206390",
+      "labels": [],
+      "style": {
+       "--ratio": "16 / 9",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "fit-content",
+       "--size-style-width-mobile-min": "fit-content",
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "8px"
+      }
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 25px))",
+       "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 25px))",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "row",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-end",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "image",
+        "image": "https://moonbear.shop/cdn/shop/files/frame-000175.jpg?v=1785388460",
+        "alt": "Castaway Font by moonbear.shop displayed in a digital font preview with textured, hand-crafted letter styles on a neutral background.",
+        "style": {
+         "--ratio": "16 / 9",
+         "--size-style-width": "65%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "fit-content",
+         "--size-style-width-mobile-min": "fit-content",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px"
+        }
+       },
+       {
+        "t": "group",
+        "style": {
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--size-style-width": "100%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "100%",
+         "--size-style-width-mobile-min": "5rem",
+         "--flex-direction": "column",
+         "--flex-wrap": "nowrap",
+         "--flex-wrap-mobile": "wrap",
+         "--gap": "12px",
+         "--horizontal-alignment": "flex-end",
+         "--vertical-alignment": "center",
+         "--vertical-alignment-mobile": "center"
+        },
+        "children": [
+         {
+          "t": "text",
+          "cls": "custom",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--color": "var(--color-foreground)",
+           "--font-size": "1rem",
+           "--font-weight": "var(--font-accent--weight)",
+           "--font-family": "var(--font-accent--family)",
+           "--text-transform": "none",
+           "--line-height": "var(--line-height--body-normal)",
+           "--letter-spacing": "var(--letter-spacing--body-normal)",
+           "--width": "fit-content",
+           "--max-width": "var(--max-width--body-normal)"
+          },
+          "html": "<p>SPEED UP YOUR WORKFLOW</p>"
+         },
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "fit-content",
+           "--max-width": "var(--max-width--body-normal)"
+          },
+          "html": "<h2>PRO TITLES</h2>"
+         },
+         {
+          "t": "text",
+          "cls": "custom",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--color": "var(--color-foreground)",
+           "--font-size": "1rem",
+           "--font-weight": "var(--font-accent--weight)",
+           "--font-family": "var(--font-accent--family)",
+           "--text-transform": "none",
+           "--line-height": "var(--line-height--body-normal)",
+           "--letter-spacing": "var(--letter-spacing--body-normal)",
+           "--width": "fit-content",
+           "--max-width": "var(--max-width--body-normal)"
+          },
+          "html": "<p>Expedite your workflow by getting your ideas out faster!</p><p>As an editor who's looking to meet tight deadlines, The Video Editing Text Bundle helps you do just that!</p>"
+         }
+        ],
+        "mobileColumn": true,
+        "sizes": [
+         "height-fit",
+         "width-fill"
+        ]
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 22px))",
+       "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 22px))",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "row",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "space-between",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "image",
+        "image": "https://moonbear.shop/cdn/shop/files/EMINENCE_2_Example_155.jpg?v=1786034514",
+        "alt": "",
+        "style": {
+         "--ratio": "16 / 9",
+         "--size-style-width": "50%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "fit-content",
+         "--size-style-width-mobile-min": "fit-content",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px"
+        }
+       },
+       {
+        "t": "group",
+        "style": {
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--size-style-width": "100%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "100%",
+         "--size-style-width-mobile-min": "5rem",
+         "--flex-direction": "column",
+         "--flex-wrap": "nowrap",
+         "--flex-wrap-mobile": "wrap",
+         "--gap": "12px",
+         "--horizontal-alignment": "flex-start",
+         "--vertical-alignment": "center",
+         "--vertical-alignment-mobile": "center"
+        },
+        "children": [
+         {
+          "t": "text",
+          "cls": "custom",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--color": "var(--color-foreground)",
+           "--font-size": "1rem",
+           "--font-weight": "var(--font-accent--weight)",
+           "--font-family": "var(--font-accent--family)",
+           "--text-transform": "none",
+           "--line-height": "var(--line-height--body-normal)",
+           "--letter-spacing": "var(--letter-spacing--body-normal)",
+           "--width": "fit-content",
+           "--max-width": "var(--max-width--body-normal)"
+          },
+          "html": "<p>INCLUDES</p>"
+         },
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "fit-content",
+           "--max-width": "var(--max-width--body-normal)"
+          },
+          "html": "<h2>DETAILS</h2>"
+         },
+         {
+          "t": "text",
+          "cls": "custom",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--color": "var(--color-foreground)",
+           "--font-size": "1rem",
+           "--font-weight": "var(--font-accent--weight)",
+           "--font-family": "var(--font-accent--family)",
+           "--text-transform": "none",
+           "--line-height": "var(--line-height--body-normal)",
+           "--letter-spacing": "var(--letter-spacing--body-normal)",
+           "--width": "fit-content",
+           "--max-width": "var(--max-width--body-normal)"
+          },
+          "html": "<p>Make your titles stand out even more with custom details and icons to add to your design!</p>"
+         }
+        ],
+        "mobileColumn": true,
+        "sizes": [
+         "height-fit",
+         "width-fill"
+        ]
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 21px))",
+       "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 28px))",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "row",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-end",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "group",
+        "style": {
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--size-style-width": "100%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "100%",
+         "--size-style-width-mobile-min": "5rem",
+         "--flex-direction": "column",
+         "--flex-wrap": "nowrap",
+         "--flex-wrap-mobile": "wrap",
+         "--gap": "12px",
+         "--horizontal-alignment": "flex-start",
+         "--vertical-alignment": "center",
+         "--vertical-alignment-mobile": "center"
+        },
+        "children": [
+         {
+          "t": "text",
+          "cls": "custom",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--color": "var(--color-foreground)",
+           "--font-size": "1rem",
+           "--font-weight": "var(--font-accent--weight)",
+           "--font-family": "var(--font-accent--family)",
+           "--text-transform": "none",
+           "--line-height": "var(--line-height--body-normal)",
+           "--letter-spacing": "var(--letter-spacing--body-normal)",
+           "--width": "fit-content",
+           "--max-width": "var(--max-width--body-normal)"
+          },
+          "html": "<p>INCLUDES</p>"
+         },
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "fit-content",
+           "--max-width": "var(--max-width--body-normal)"
+          },
+          "html": "<h2>FONTS</h2>"
+         },
+         {
+          "t": "text",
+          "cls": "custom",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--color": "var(--color-foreground)",
+           "--font-size": "1rem",
+           "--font-weight": "var(--font-accent--weight)",
+           "--font-family": "var(--font-accent--family)",
+           "--text-transform": "none",
+           "--line-height": "var(--line-height--body-normal)",
+           "--letter-spacing": "var(--letter-spacing--body-normal)",
+           "--width": "fit-content",
+           "--max-width": "var(--max-width--body-normal)"
+          },
+          "html": "<p>Custom-designed fonts that carry personality.</p><p>Built for titles, credits, or branding moments where standard typefaces just don’t cut it.</p>"
+         }
+        ],
+        "mobileColumn": true,
+        "sizes": [
+         "height-fit",
+         "width-fill"
+        ]
+       },
+       {
+        "t": "image",
+        "image": "https://moonbear.shop/cdn/shop/files/fonts_-_example.jpg?v=1786246738",
+        "alt": "",
+        "style": {
+         "--ratio": "16 / 9",
+         "--size-style-width": "50%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "fit-content",
+         "--size-style-width-mobile-min": "fit-content",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px"
+        }
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 40px))",
+       "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 30px))",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "row",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "space-between",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "image",
+        "image": "https://moonbear.shop/cdn/shop/files/MB-ZineCutoutTitlesExample3.jpg?v=1785388518",
+        "alt": "Close-up of moonbear.shop ZINE textures with cutout text and symbols, showcasing intricate designs and creative typography.",
+        "style": {
+         "--ratio": "16 / 9",
+         "--size-style-width": "50%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "fit-content",
+         "--size-style-width-mobile-min": "fit-content",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px"
+        }
+       },
+       {
+        "t": "group",
+        "style": {
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--size-style-width": "100%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "100%",
+         "--size-style-width-mobile-min": "5rem",
+         "--flex-direction": "column",
+         "--flex-wrap": "nowrap",
+         "--flex-wrap-mobile": "wrap",
+         "--gap": "12px",
+         "--horizontal-alignment": "flex-start",
+         "--vertical-alignment": "center",
+         "--vertical-alignment-mobile": "center"
+        },
+        "children": [
+         {
+          "t": "text",
+          "cls": "custom",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--color": "var(--color-foreground)",
+           "--font-size": "1rem",
+           "--font-weight": "var(--font-accent--weight)",
+           "--font-family": "var(--font-accent--family)",
+           "--text-transform": "none",
+           "--line-height": "var(--line-height--body-normal)",
+           "--letter-spacing": "var(--letter-spacing--body-normal)",
+           "--width": "fit-content",
+           "--max-width": "var(--max-width--body-normal)"
+          },
+          "html": "<p>PUNK INSPIRED</p>"
+         },
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "fit-content",
+           "--max-width": "var(--max-width--body-normal)"
+          },
+          "html": "<h2>CUTOUT ELEMENTS</h2>"
+         },
+         {
+          "t": "text",
+          "cls": "custom",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--color": "var(--color-foreground)",
+           "--font-size": "1rem",
+           "--font-weight": "var(--font-accent--weight)",
+           "--font-family": "var(--font-accent--family)",
+           "--text-transform": "none",
+           "--line-height": "var(--line-height--body-normal)",
+           "--letter-spacing": "var(--letter-spacing--body-normal)",
+           "--width": "fit-content",
+           "--max-width": "var(--max-width--body-normal)"
+          },
+          "html": "<p>Some call them ransom notes, others call it collage. We call it Zine!</p><p>Included in the text bundle are our punk inspired magazine cutouts. Designed to capture punk era zines.</p><p>ZINE includes real scanned output magazine elements and everything you need to start creating collages.</p>"
+         }
+        ],
+        "mobileColumn": true,
+        "sizes": [
+         "height-fit",
+         "width-fill"
+        ]
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "row",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "12px",
+       "--horizontal-alignment": "flex-end",
+       "--vertical-alignment": "center",
+       "--vertical-alignment-mobile": "center"
+      },
+      "children": [
+       {
+        "t": "image",
+        "image": "https://moonbear.shop/cdn/shop/files/frame-000327.jpg?v=1785388502",
+        "alt": "Minimalist title preset by moonbear.shop displayed on a clean, modern digital graphic with sleek font design.",
+        "style": {
+         "--ratio": "16 / 9",
+         "--size-style-width": "100%",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "fit-content",
+         "--size-style-width-mobile-min": "fit-content",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px"
+        }
+       },
+       {
+        "t": "group",
+        "style": {
+         "--border-width": "1px",
+         "--border-style": "none",
+         "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+         "--border-radius": "0px",
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--size-style-width": "fit-content",
+         "--size-style-height": "fit",
+         "--size-style-width-mobile": "fit-content",
+         "--size-style-width-mobile-min": "fit-content",
+         "--flex-direction": "column",
+         "--flex-wrap": "nowrap",
+         "--flex-wrap-mobile": "wrap",
+         "--gap": "12px",
+         "--horizontal-alignment": "flex-start",
+         "--vertical-alignment": "center",
+         "--vertical-alignment-mobile": "center"
+        },
+        "children": [
+         {
+          "t": "text",
+          "cls": "custom",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--color": "var(--color-foreground)",
+           "--font-size": "1rem",
+           "--font-weight": "var(--font-accent--weight)",
+           "--font-family": "var(--font-accent--family)",
+           "--text-transform": "none",
+           "--line-height": "var(--line-height--body-normal)",
+           "--letter-spacing": "var(--letter-spacing--body-normal)",
+           "--width": "fit-content",
+           "--max-width": "var(--max-width--body-normal)"
+          },
+          "html": "<p>TAKE COMPLETE</p>"
+         },
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "fit-content",
+           "--max-width": "var(--max-width--body-normal)"
+          },
+          "html": "<h2>CREATIVE CONTROL</h2>"
+         },
+         {
+          "t": "text",
+          "cls": "custom",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--color": "var(--color-foreground)",
+           "--font-size": "1rem",
+           "--font-weight": "var(--font-accent--weight)",
+           "--font-family": "var(--font-accent--family)",
+           "--text-transform": "none",
+           "--line-height": "var(--line-height--body-normal)",
+           "--letter-spacing": "var(--letter-spacing--body-normal)",
+           "--width": "fit-content",
+           "--max-width": "var(--max-width--body-normal)"
+          },
+          "html": "<p>Control Fonts, Colors, Positions, Size &amp; more! You can customize our templates exactly to your liking!</p>"
+         }
+        ],
+        "mobileColumn": true,
+        "sizes": [
+         "height-fit",
+         "width-fit-content"
+        ]
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "section_VXn3YV",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "row",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 48px))",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "flex-start",
+    "--vertical-alignment-mobile": "flex-start",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "row",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 48px))",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "flex-start",
+     "--vertical-alignment-mobile": "flex-start",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "10px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "8px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "flex-start",
+       "--vertical-alignment-mobile": "flex-start"
+      },
+      "children": [
+       {
+        "t": "text",
+        "cls": "h4",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground)",
+         "--width": "100%",
+         "--max-width": "var(--max-width--body-normal)",
+         "--text-align": "center"
+        },
+        "html": "<h3>MASSIVE CREATIVE LIBRAY</h3>"
+       },
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "100%",
+         "--max-width": "var(--max-width--body-normal)",
+         "--text-align": "center"
+        },
+        "html": "<p>1,200+ LUTs, effects, titles, and presets covering every genre and style.</p>"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "10px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "8px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "flex-start",
+       "--vertical-alignment-mobile": "flex-start"
+      },
+      "children": [
+       {
+        "t": "text",
+        "cls": "h4",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground)",
+         "--width": "100%",
+         "--max-width": "var(--max-width--body-normal)",
+         "--text-align": "center"
+        },
+        "html": "<h3>ONE-TIME ACCESS LIFETIME USE</h3>"
+       },
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "100%",
+         "--max-width": "var(--max-width--body-normal)",
+         "--text-align": "center"
+        },
+        "html": "<p>Download instantly, own forever, no subscriptions.</p>"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     },
+     {
+      "t": "group",
+      "style": {
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px",
+       "--padding-block-start": "10px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--size-style-width": "100%",
+       "--size-style-height": "fit",
+       "--size-style-width-mobile": "100%",
+       "--size-style-width-mobile-min": "5rem",
+       "--flex-direction": "column",
+       "--flex-wrap": "nowrap",
+       "--flex-wrap-mobile": "wrap",
+       "--gap": "8px",
+       "--horizontal-alignment": "flex-start",
+       "--vertical-alignment": "flex-start",
+       "--vertical-alignment-mobile": "flex-start"
+      },
+      "children": [
+       {
+        "t": "text",
+        "cls": "h4",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--color": "var(--color-foreground)",
+         "--width": "100%",
+         "--max-width": "var(--max-width--body-normal)",
+         "--text-align": "center"
+        },
+        "html": "<h3>PROFESSIONAL RESULTS, FAST</h3>"
+       },
+       {
+        "t": "text",
+        "cls": "rte",
+        "style": {
+         "--padding-block-start": "0px",
+         "--padding-block-end": "0px",
+         "--padding-inline-start": "0px",
+         "--padding-inline-end": "0px",
+         "--width": "100%",
+         "--max-width": "var(--max-width--body-normal)",
+         "--text-align": "center"
+        },
+        "html": "<p>Everything optimized for Final Cut Pro, Premiere, DaVinci Resolve, After Effects, CapCut &amp; more.</p>"
+       }
+      ],
+      "mobileColumn": true,
+      "sizes": [
+       "height-fit",
+       "width-fill"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "blocks_iXYV4r",
+   "scheme": "scheme-2",
+   "type": "section",
+   "full": true,
+   "style": {
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "12px",
+    "--horizontal-alignment": "center",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "0px",
+    "--padding-block-end": "0px"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "12px",
+     "--horizontal-alignment": "center",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "0px",
+     "--padding-block-end": "0px"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "html",
+      "html": "<div class=\"ai-image-gallery-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\">\n<div class=\"ai-image-gallery__container-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\">\n<h2 class=\"ai-image-gallery__title-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\">TITLE TEMPLATES PREVIEW</h2>\n<div class=\"ai-image-gallery__grid-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\">\n<div class=\"ai-image-gallery__item-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\">\n<img alt=\"\" class=\"ai-image-gallery__image-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/PORTAL6.gif?v=1786215960&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\">\n<img alt=\"Cover image of Replica 3 Title Presets by moonbear.shop, showcasing a sleek, modern title design for video editing projects.\" class=\"ai-image-gallery__image-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\" height=\"1350\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/Replica_3_-_Cover.jpg?v=1785388397&amp;width=800\" width=\"1080\"/>\n</div>\n<div class=\"ai-image-gallery__item-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\">\n<img alt=\"\" class=\"ai-image-gallery__image-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/Titles_9c2262af-b62d-4963-9220-2ed7a2261ccd.gif?v=1786246440&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\">\n<img alt=\"Summer-themed cinematic title preset called COSMOS by moonbear.shop, featuring vibrant, stylish text overlays for videos.\" class=\"ai-image-gallery__image-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/COSMOS-summer.jpg?v=1785388599&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\">\n<img alt=\"Close-up of IKONIK graphic design textures by moonbear.shop, showcasing detailed, abstract patterns on a textured surface.\" class=\"ai-image-gallery__image-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/frame-000635.jpg?v=1785388551&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\">\n<img alt=\"Animated cinematic titles and text presets from moonbear.shop's COSMOS collection, featuring stylish motion graphics.\" class=\"ai-image-gallery__image-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/COSMOScover_0918f08e-add2-4304-9305-e8d0178761c2.gif?v=1785388600&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\">\n<img alt=\"Cinematic title preset from COSMOS by moonbear.shop featuring stylish, modern text effects on a dark background.\" class=\"ai-image-gallery__image-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/COSMOS2.jpg?v=1785388599&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\">\n<img alt='Minimalist title preset frame featuring clean, modern typography with the \"Portal\" design by moonbear.shop for stylish video titles.' class=\"ai-image-gallery__image-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/frame-000039.jpg?v=1785388502&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\">\n<img alt=\"Minimalist title preset by moonbear.shop displayed on a clean screen with modern typography and subtle design elements.\" class=\"ai-image-gallery__image-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/frame-000049.jpg?v=1785388502&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\">\n<img alt=\"Animated GIF of Replica 2 Title Preset by moonbear.shop, showcasing a stylish text animation design.\" class=\"ai-image-gallery__image-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\" height=\"304\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/Replica2.gif?v=1785388501&amp;width=800\" width=\"540\"/>\n</div>\n<div class=\"ai-image-gallery__item-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\">\n<img alt=\"\" class=\"ai-image-gallery__image-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\" height=\"1080\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/Golf_Screenshot_ec66b075-7dae-4475-ad76-5cf4ceb1a59b.jpg?v=1786215893&amp;width=800\" width=\"1920\"/>\n</div>\n<div class=\"ai-image-gallery__item-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\">\n<img alt=\"\" class=\"ai-image-gallery__image-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk\" height=\"960\" loading=\"lazy\" src=\"https://moonbear.shop/cdn/shop/files/ikonik_caf84ace-233d-4192-a788-ebe546ca2c6f.gif?v=1786215959&amp;width=800\" width=\"1280\"/>\n</div>\n</div>\n</div>\n</div>",
+      "css": "\n  .ai-image-gallery-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk {\n    width: 100%;\n    padding: 40px 0;\n  }\n\n  .ai-image-gallery__container-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk {\n    max-width: 1200px;\n    margin: 0 auto;\n    padding: 0 20px;\n  }\n\n  .ai-image-gallery__grid-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk {\n    display: grid;\n    grid-template-columns: repeat(4, 1fr);\n    gap: 12px;\n    margin-top: 8px;\n  }\n\n  .ai-image-gallery__title-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk {\n    text-align: center;\n    color: #000000;\n    font-size: 16px;\n    margin: 0;\n  }\n\n  .ai-image-gallery__item-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk {\n    position: relative;\n    overflow: hidden;\n    border-radius: 8px;\n    background-color: #f4f4f4;\n    aspect-ratio: 16/9;\n  }\n\n  .ai-image-gallery__image-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk {\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n    transition: transform 0.3s ease;\n  }\n\n  .ai-image-gallery__placeholder-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk {\n    width: 100%;\n    height: 100%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    background-color: #f4f4f4;\n    position: relative;\n  }\n\n  .ai-image-gallery__placeholder-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk svg {\n    width: 60%;\n    height: 60%;\n    opacity: 0.3;\n  }\n\n  .ai-image-gallery__empty-state-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk {\n    position: absolute;\n    bottom: 10px;\n    left: 50%;\n    transform: translateX(-50%);\n    font-size: 12px;\n    color: #666;\n    text-align: center;\n    pointer-events: none;\n  }\n\n  \n    .ai-image-gallery__item-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk:hover .ai-image-gallery__image-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk {\n      transform: scale(1.05);\n    }\n  \n\n  .ai-image-gallery__overlay-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk {\n    position: absolute;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    background: linear-gradient(\n      to bottom,\n      rgba(0, 0, 0, 0) 0%,\n      rgba(0, 0, 0, 0.4) 100%\n    );\n    opacity: 0;\n    transition: opacity 0.3s ease;\n    display: flex;\n    align-items: flex-end;\n    padding: 20px;\n  }\n\n  \n    .ai-image-gallery__item-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk:hover .ai-image-gallery__overlay-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk {\n      opacity: 1;\n    }\n  \n\n  .ai-image-gallery__caption-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk {\n    color: white;\n    font-size: 14px;\n    font-weight: 500;\n  }\n\n  @media screen and (max-width: 768px) {\n    .ai-image-gallery__grid-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk {\n      grid-template-columns: repeat(2, 1fr);\n      gap: 9.0px;\n    }\n\n    .ai-image-gallery__container-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk {\n      padding: 0 15px;\n    }\n  }\n\n  @media screen and (max-width: 480px) {\n    .ai-image-gallery__grid-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk {\n      grid-template-columns: repeat(1, 1fr);\n      gap: 6.0px;\n    }\n\n    .ai-image-gallery__title-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk {\n      font-size: 12.8px;\n    }\n\n    .ai-image-gallery__container-avu9jyllzywp2yxf0maigenblockf4be74efwt4kk {\n      padding: 0 10px;\n    }\n  }\n"
+     }
+    ]
+   }
+  },
+  {
+   "id": "section_hgjnMc",
+   "scheme": "scheme-1",
+   "type": "section",
+   "full": false,
+   "style": {
+    "--flex-direction": "column",
+    "--flex-wrap": "nowrap",
+    "--flex-wrap-mobile": "wrap",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+    "--horizontal-alignment": "flex-start",
+    "--vertical-alignment": "center",
+    "--vertical-alignment-mobile": "center",
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))"
+   },
+   "content": {
+    "t": "group",
+    "style": {
+     "--flex-direction": "column",
+     "--flex-wrap": "nowrap",
+     "--flex-wrap-mobile": "wrap",
+     "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 32px))",
+     "--horizontal-alignment": "flex-start",
+     "--vertical-alignment": "center",
+     "--vertical-alignment-mobile": "center",
+     "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+     "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))"
+    },
+    "mobileColumn": true,
+    "children": [
+     {
+      "t": "text",
+      "cls": "h3",
+      "style": {
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--color": "var(--color-foreground)",
+       "--width": "fit-content",
+       "--max-width": "var(--max-width--body-narrow)"
+      },
+      "html": "<h2>WHAT IS Title Presets Bundle?</h2>"
+     },
+     {
+      "t": "text",
+      "cls": "rte",
+      "style": {
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--width": "fit-content",
+       "--max-width": "var(--max-width--body-normal)"
+      },
+      "html": "<p>FREQUENTLY ASKED QUESTIONS</p>"
+     },
+     {
+      "t": "accordion",
+      "style": {
+       "--summary-font-family": "var(--font-h5--family)",
+       "--summary-font-style": "var(--font-h5--style)",
+       "--summary-font-weight": "var(--font-h5--weight)",
+       "--summary-font-size": "var(--font-h5--size)",
+       "--summary-font-line-height": "var(--font-h5--line-height)",
+       "--summary-font-case": "var(--font-h5--case)",
+       "--padding-block-start": "0px",
+       "--padding-block-end": "0px",
+       "--padding-inline-start": "0px",
+       "--padding-inline-end": "0px",
+       "--border-width": "1px",
+       "--border-style": "none",
+       "--border-color": "rgb(var(--color-border-rgb) / 1.0)",
+       "--border-radius": "0px"
+      },
+      "items": [
+       {
+        "title": "What's included in the MASTER BUNDLE?",
+        "open": false,
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>Every LUT, effect, title preset, and creative tool from MoonBear. Including Thermography, Halation, Replica 3, Black &amp; White LUTs + more.</p>"
+         }
+        ]
+       },
+       {
+        "title": "Is the master bundle a subscription?",
+        "open": false,
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>All assets are delivered in industry-standard formats (.cube LUTs, .moef / .moti templates, FCPX/Adobe-compatible presets). They work with Premiere Pro, Final Cut Pro, DaVinci Resolve, After Effects, CapCut, and Sony Vegas.</p>"
+         }
+        ]
+       },
+       {
+        "title": "Will I get to download future products free?",
+        "open": false,
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>The bundle includes everything current at the time of purchase. Occasionally, we run special promotions for free updates, subscribers to our newsletter will be notified.</p>"
+         }
+        ]
+       },
+       {
+        "title": "Is commercial licensing included?",
+        "open": false,
+        "children": [
+         {
+          "t": "text",
+          "cls": "rte",
+          "style": {
+           "--padding-block-start": "0px",
+           "--padding-block-end": "0px",
+           "--padding-inline-start": "0px",
+           "--padding-inline-end": "0px",
+           "--width": "100%",
+           "--max-width": "var(--max-width--body-normal)",
+           "--text-align": "left"
+          },
+          "html": "<p>Yes. You can use these assets in personal projects, paid client work, YouTube monetization, and more.</p><p>For broadcast/large-scale licensing, contact MoonBear.</p>"
+         }
+        ]
+       }
+      ],
+      "plus": false,
+      "dividers": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "product_recommendations_qggXJq",
+   "scheme": "scheme-1",
+   "type": "product-recommendations",
+   "style": {
+    "--padding-block-start": "max(20px, calc(var(--spacing-scale) * 48px))",
+    "--padding-block-end": "max(20px, calc(var(--spacing-scale) * 48px))",
+    "--gap": "max(24px, calc(var(--gap-scale, 1.0) * 28px))",
+    "--resource-list-column-gap-desktop": "12px",
+    "--resource-list-row-gap-desktop": "24px",
+    "--resource-list-columns": "repeat(4, 1fr)",
+    "--resource-list-columns-mobile": "repeat(2, 1fr)"
+   },
+   "heading": "You may also like"
+  }
+ ]
+}
